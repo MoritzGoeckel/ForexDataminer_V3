@@ -174,6 +174,7 @@
     <Compile Include="Trader\MachineLearning\MyLogisticRegression.cs" />
     <Compile Include="Trader\MachineLearning\MyRegression.cs" />
     <Compile Include="Trader\Tests\ArrayHelper_Test.cs" />
+    <Compile Include="Trader\Tests\ArrayVisualizer_Test.cs" />
     <Compile Include="Trader\Tests\DataValidator_Test.cs" />
     <Compile Include="Trader\Tests\IndicatorRunner_Test.cs" />
     <Compile Include="Trader\DistributionHelper.cs" />

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace V3_Trader_Project.Trader
 {
     public enum SampleValuesOutcomeIndices{
-        Start = 0, BuyRatio = 1, SellRatio = 2
+        Start = 0, BuyRatio = 1, SellRatio = 2, SamplesCount = 3
     };
 
     public class IndicatorSampler
@@ -37,9 +37,7 @@ namespace V3_Trader_Project.Trader
 
             double[][] output = new double[steps][];
             for (int i = 0; i < output.Length; i++)
-                output[i] = new double[] { min + stepsSize * i, 0, 0};
-
-            int buyValuesCounted = 0, sellValuesCounted = 0;
+                output[i] = new double[] { min + stepsSize * i, 0, 0, 0};
 
             for(int i = 0; i < values.Length; i++)
             {
@@ -53,15 +51,17 @@ namespace V3_Trader_Project.Trader
                     output[targetIndex][(int)SampleValuesOutcomeIndices.BuyRatio] += buy;
                     output[targetIndex][(int)SampleValuesOutcomeIndices.SellRatio] += sell;
 
-                    buyValuesCounted += buy;
-                    sellValuesCounted += sell;
+                    output[targetIndex][(int)SampleValuesOutcomeIndices.SellRatio] += sell;
+
+                    output[targetIndex][(int)SampleValuesOutcomeIndices.SamplesCount]++;
                 }
             }
 
             for(int i = 0; i < output.Length; i++)
             {
-                output[i][(int)SampleValuesOutcomeIndices.BuyRatio] /= buyValuesCounted;
-                output[i][(int)SampleValuesOutcomeIndices.SellRatio] /= sellValuesCounted;
+                double samplesInStep = output[i][(int)SampleValuesOutcomeIndices.SamplesCount];
+                output[i][(int)SampleValuesOutcomeIndices.BuyRatio] /= samplesInStep;
+                output[i][(int)SampleValuesOutcomeIndices.SellRatio] /= samplesInStep;
             }
 
             return output;
