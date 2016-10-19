@@ -13,7 +13,11 @@ namespace V3_Trader_Project.Trader.Tests
         [TestMethod]
         public void TimestampGeneral_Test()
         {
-            Assert.Fail();
+            string timestampStr = "20150101 130021493";
+            DateTime timestampDt = new DateTime(2015, 1, 1, 13, 00, 21, 493, DateTimeKind.Utc);
+
+            Assert.AreEqual(Timestamp.dateTimeToMilliseconds(timestampDt), Timestamp.getUTCMillisecondsDate(timestampStr));
+            Assert.AreEqual(DateTime.Now.ToUniversalTime().ToString("YYYYMMDDhhmmss"), Timestamp.getDate(Timestamp.getNow()).ToString("YYYYMMDDhhmmss"));
         }
     }
 }

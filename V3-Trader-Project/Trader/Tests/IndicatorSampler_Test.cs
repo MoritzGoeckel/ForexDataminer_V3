@@ -11,13 +11,19 @@ namespace V3_Trader_Project.Trader.Tests
     public class IndicatorSampler_Test
     {
         [TestMethod]
-        public void getStatistics_Test()
+        public void indicatorSamper_getStatistics_Test()
         {
             Assert.Fail();
         }
 
         [TestMethod]
         public void sampleValuesOutcomeCode_Test()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void sampleValuesOutcome_Test()
         {
             Assert.Fail();
         }

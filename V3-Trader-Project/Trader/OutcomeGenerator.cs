@@ -13,10 +13,10 @@ namespace V3_Trader_Project.Trader
 
     public enum OutcomeCodeMatrixIndices
     {
-        Buy = 0, Sell = 0
+        Buy = 0, Sell = 1
     };
 
-    public class OutcomeGenerator
+    public static class OutcomeGenerator
     {
         public static double[][] getOutcome(double[][] dataInput, long msTimeframe)
         {
@@ -29,11 +29,11 @@ namespace V3_Trader_Project.Trader
             {
                 double[] outputLine = new double[3];
                 
-                while (futureElement < dataInput.Length && dataInput[futureElement][(int)DataIndeces.Date] - dataInput[currentElement][(int)DataIndeces.Date] < msTimeframe)
+                while (futureElement < dataInput.Length && dataInput[futureElement][(int)PriceDataIndeces.Date] - dataInput[currentElement][(int)PriceDataIndeces.Date] < msTimeframe)
                 {
                     elementsInTimeframe.Add(dataInput[futureElement]);
 
-                    double mid = (dataInput[futureElement][(int)DataIndeces.Ask] + dataInput[futureElement][(int)DataIndeces.Bid]) / 2d;
+                    double mid = (dataInput[futureElement][(int)PriceDataIndeces.Ask] + dataInput[futureElement][(int)PriceDataIndeces.Bid]) / 2d;
                     if (mid < min)
                         min = mid;
 
@@ -46,9 +46,9 @@ namespace V3_Trader_Project.Trader
                 }
 
                 bool invalidated = false;
-                while(elementsInTimeframe[0][(int)DataIndeces.Date] <= dataInput[currentElement][(int)DataIndeces.Date])
+                while(elementsInTimeframe.Count > 0 && elementsInTimeframe[0][(int)PriceDataIndeces.Date] <= dataInput[currentElement][(int)PriceDataIndeces.Date])
                 {
-                    double mid = (elementsInTimeframe[0][(int)DataIndeces.Ask] + elementsInTimeframe[0][(int)DataIndeces.Bid]) / 2d;
+                    double mid = (elementsInTimeframe[0][(int)PriceDataIndeces.Ask] + elementsInTimeframe[0][(int)PriceDataIndeces.Bid]) / 2d;
                     if (mid == min || mid == max)
                         invalidated = true;
 
@@ -62,7 +62,7 @@ namespace V3_Trader_Project.Trader
 
                     foreach(double[] row in elementsInTimeframe)
                     {
-                        double mid = (row[(int)DataIndeces.Ask] + row[(int)DataIndeces.Bid]) / 2d;
+                        double mid = (row[(int)PriceDataIndeces.Ask] + row[(int)PriceDataIndeces.Bid]) / 2d;
                         if (mid < min)
                             min = mid;
 
@@ -71,16 +71,19 @@ namespace V3_Trader_Project.Trader
                     }
                 }
 
-                if (min == double.MaxValue || max == double.MinValue || actual == double.NaN)
+                if (futureElement != dataInput.Length && (min == double.MaxValue || max == double.MinValue || double.IsNaN(actual)))
                     throw new Exception("Invalid value!");
 
-                output[currentElement] = new double[]{ min, max, actual };
+                if(futureElement != dataInput.Length)
+                    output[currentElement] = new double[]{ min, max, actual };
+                else
+                    output[currentElement] = new double[] { double.NaN, double.NaN, double.NaN };
             }
 
             return output;
         }
 
-        public bool[][] getOutcomeCode(double[][] pricesInput, double[][] outcomeInput, double percent)
+        public static bool[][] getOutcomeCode(double[][] pricesInput, double[][] outcomeInput, double percent)
         {
             if (pricesInput.Length != outcomeInput.Length)
                 throw new Exception("Arrays have to be the same size: " + pricesInput.Length + " != " + outcomeInput.Length);
@@ -88,7 +91,7 @@ namespace V3_Trader_Project.Trader
             bool[][] output = new bool[pricesInput.Length][];
             for(int i = 0; i < pricesInput.Length; i++)
             {
-                double mid = pricesInput[i][(int)DataIndeces.Ask] + pricesInput[i][(int)DataIndeces.Bid] / 2;
+                double mid = pricesInput[i][(int)PriceDataIndeces.Ask] + pricesInput[i][(int)PriceDataIndeces.Bid] / 2;
                 double gain = ((outcomeInput[i][(int)OutcomeMatrixIndices.Max] / mid) - 1) * 100;
                 double fall = ((outcomeInput[i][(int)OutcomeMatrixIndices.Min] / mid) - 1) * 100;
 

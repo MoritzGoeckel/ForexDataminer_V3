@@ -16,9 +16,9 @@ namespace V3_Trader_Project.Trader
         Start = 0, MaxAvg = 1, MinAvg = 2, ActualAvg = 3, SamplesCount = 4
     };
 
-    public class IndicatorSampler
+    public static class IndicatorSampler
     {
-        public void getStatistics(double[] values, bool[][] outcomeCodes, out double spearmanBuy, out double spearmanSell, out double pearsonBuy, out double pearsonSell)
+        public static void getStatistics(double[] values, bool[][] outcomeCodes, out double spearmanBuy, out double spearmanSell, out double pearsonBuy, out double pearsonSell)
         {
             if (values.Length != outcomeCodes.Length)
                 throw new Exception("Arrays have to be the same size: " + values.Length + " != " + outcomeCodes.Length);
@@ -39,7 +39,7 @@ namespace V3_Trader_Project.Trader
             pearsonSell = Correlation.Pearson(values, sellArray);
         }
 
-        public double[][] sampleValuesOutcomeCode(double[] values, bool[][] outcomeCodes, double min, double max, int steps = 20)
+        public static double[][] sampleValuesOutcomeCode(double[] values, bool[][] outcomeCodes, double min, double max, int steps = 20)
         {
             if (values.Length != outcomeCodes.Length)
                 throw new Exception("Arrays have to be the same size: " + values.Length + " != " + outcomeCodes.Length);
@@ -78,7 +78,7 @@ namespace V3_Trader_Project.Trader
             return output;
         }
 
-        public double[][] sampleValuesOutcome(double[] values, double[][] outcomes, double min, double max, out double validValueRatio, int steps = 20)
+        public static double[][] sampleValuesOutcome(double[] values, double[][] outcomes, double min, double max, out double validValueRatio, int steps = 20)
         {
             if (values.Length != outcomes.Length)
                 throw new Exception("Arrays have to be the same size: " + values.Length + " != " + outcomes.Length);
@@ -92,7 +92,7 @@ namespace V3_Trader_Project.Trader
 
             for (int i = 0; i < values.Length; i++)
             {
-                if (values[i] != double.NaN && values[i] > min && values[i] < max)
+                if (double.IsNaN(values[i]) == false && values[i] > min && values[i] < max)
                 {
                     int targetIndex = Convert.ToInt32(Math.Floor((values[i] - min) / stepsSize));
 

@@ -6,38 +6,40 @@ using System.Threading.Tasks;
 
 namespace V3_Trader_Project.Trader
 {
-    public class DataValidator
+    public static class DataValidator
     {
-        public void checkGeneralArray(double[][] input)
+        public static bool checkGeneralArrayIsValid(double[][] input, bool ingoreNan)
         {
             int rowLength = input[0].Length;
             foreach (double[] row in input)
             {
                 if (row.Length != rowLength)
-                    throw new Exception("Bad row length");
+                    return false;
                 else
                     foreach (double d in row)
-                        if (d == double.NaN || d == double.MinValue || double.MaxValue == d || double.IsInfinity(d))
-                            throw new Exception("Bad value: " + d);
+                        if ((double.IsNaN(d) && ingoreNan == false) || d == double.MinValue || double.MaxValue == d || double.IsInfinity(d))
+                            return false;
             }
+
+            return true;
         }
 
-        public void checkPriceDataArray(double[][] input)
+        public static void checkPriceDataArray(double[][] input)
         {
             int maxPercentJump = 15;
             int maxDayJump = 5;
 
-            DateTime lastDate = Timestamp.getDate(Convert.ToInt64(input[0][(int)DataIndeces.Date]));
-            double lastBid = input[0][(int)DataIndeces.Bid],
-                lastAsk = input[0][(int)DataIndeces.Ask],
-                lastVolume = input[0][(int)DataIndeces.Volume];
+            DateTime lastDate = Timestamp.getDate(Convert.ToInt64(input[0][(int)PriceDataIndeces.Date]));
+            double lastBid = input[0][(int)PriceDataIndeces.Bid],
+                lastAsk = input[0][(int)PriceDataIndeces.Ask],
+                lastVolume = input[0][(int)PriceDataIndeces.Volume];
 
             foreach (double[] row in input)
             {
-                DateTime currentTime = Timestamp.getDate(Convert.ToInt64(row[(int)DataIndeces.Date]));
-                double bid = row[(int)DataIndeces.Bid];
-                double ask = row[(int)DataIndeces.Ask];
-                double volume = row[(int)DataIndeces.Volume];
+                DateTime currentTime = Timestamp.getDate(Convert.ToInt64(row[(int)PriceDataIndeces.Date]));
+                double bid = row[(int)PriceDataIndeces.Bid];
+                double ask = row[(int)PriceDataIndeces.Ask];
+                double volume = row[(int)PriceDataIndeces.Volume];
 
                 if (double.IsNaN(bid) || double.IsInfinity(bid) || bid == double.MinValue || bid == double.MaxValue || bid == 0d)
                     throw new Exception("Bad bid: " + bid);

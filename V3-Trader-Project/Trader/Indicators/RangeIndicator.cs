@@ -80,12 +80,9 @@ namespace NinjaTrader_Client.Trader.Indicators
             double output;
 
             if (history.Count == 0 || max == min)
-                output = 0; //Invalid
+                output = double.NaN; //Invalid
             else
                 output = (max - min) / valueNow;
-
-            if (output == double.PositiveInfinity || output == double.NegativeInfinity || output == double.NaN || output == double.MaxValue || output == double.MinValue)
-                output = 0;
 
             return output;
         }

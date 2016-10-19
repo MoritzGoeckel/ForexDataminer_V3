@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace V3_Trader_Project.Trader.Visualizers
 {
-    public class ArrayVisualizer
+    public static class ArrayVisualizer
     {
-        public Image visualizeOutcomeCodeArray(bool[][] outcomeCodes, int width, int height)
+        public static Image visualizeOutcomeCodeArray(bool[][] outcomeCodes, int width, int height)
         {
             Bitmap bmp = new Bitmap(width, height);
 
@@ -34,9 +34,11 @@ namespace V3_Trader_Project.Trader.Visualizers
             return bmp;
         }
 
-        public Image visualizeArray(double[] input, int width, int height, int lineSize = 3)
+        public static Image visualizeArray(double[] input, int width, int height, int lineSize = 3)
         {
             Bitmap bmp = new Bitmap(width, height);
+            Graphics g = Graphics.FromImage(bmp);
+            g.Clear(Color.LightGray);
 
             double stepSize = Convert.ToDouble(input.Length) / Convert.ToDouble(width);
 
@@ -50,12 +52,14 @@ namespace V3_Trader_Project.Trader.Visualizers
             for (int x = 0; x < width; x++)
             {
                 int index = Convert.ToInt32(stepSize * x);
-                int y = Convert.ToInt32((max - min) * (input[index] - min) * height);
+                int y = height - Convert.ToInt32((input[index] - min) / (max - min) * height);
 
                 if (oldX != -1)
                     for (int yOffset = -(lineSize / 2); yOffset < (lineSize / 2); yOffset++)
-                        if(y + yOffset > 0 && y + yOffset < height)
+                    {
+                        if (y + yOffset > 0 && y + yOffset < height)
                             bmp.SetPixel(x, y + yOffset, y > oldY ? cDown : cUp);
+                    }
 
                 oldX = x;
                 oldY = y;
@@ -64,14 +68,10 @@ namespace V3_Trader_Project.Trader.Visualizers
             return bmp;
         }
 
-        public void showImg(Image img)
+        public static void showImg(Image img)
         {
             img.Save("tmp.png");
             Process.Start("tmp.png");
-            try {
-                File.Delete("tmp.png"); //Not sure whether that works
-            }
-            catch { }
         }
     }
 }

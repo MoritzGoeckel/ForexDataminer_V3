@@ -16,11 +16,11 @@ namespace V3_Trader_Project.Trader
 
             for (int i = 0; i < priceData.Length; i++)
             {
-                long timestamp = Convert.ToInt64(priceData[i][(int)DataIndeces.Date]);
-                double mid = (priceData[i][(int)DataIndeces.Ask] + priceData[i][(int)DataIndeces.Bid]) / 2d;
+                long timestamp = Convert.ToInt64(priceData[i][(int)PriceDataIndeces.Date]);
+                double mid = (priceData[i][(int)PriceDataIndeces.Ask] + priceData[i][(int)PriceDataIndeces.Bid]) / 2d;
                 double value = indicator.setNextDataAndGetIndicator(timestamp, mid);
 
-                if (value != double.NaN && double.IsInfinity(value) == false && indicator.isValid(timestamp))
+                if (double.IsNaN(value) == false && double.IsInfinity(value) == false && indicator.isValid(timestamp))
                 {
                     output[i] = value;
                     indicatorValidRatio++;

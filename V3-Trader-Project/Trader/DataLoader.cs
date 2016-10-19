@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace V3_Trader_Project.Trader
 {
-    public enum DataIndeces : int
+    public enum PriceDataIndeces : int
     {
         Date = 0, Bid = 1, Ask = 2, Volume = 3
     }
@@ -44,7 +44,7 @@ namespace V3_Trader_Project.Trader
                 foreach(string line in File.ReadAllLines(rootPath + file))
                 {
                     string[] values = line.Split(',');
-                    rows.Add(new double[] { Timestamp.getUTCMillisecondsDate(values[(int)DataIndeces.Date]) , double.Parse(values[(int)DataIndeces.Bid].Replace(".", ",")), double.Parse(values[(int)DataIndeces.Ask].Replace(".", ",")), double.Parse(values[(int)DataIndeces.Volume].Replace(".", ",")) });
+                    rows.Add(new double[] { Timestamp.getUTCMillisecondsDate(values[(int)PriceDataIndeces.Date]) , double.Parse(values[(int)PriceDataIndeces.Bid].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Ask].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Volume].Replace(".", ",")) });
                 }
             }
 
