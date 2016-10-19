@@ -80,12 +80,15 @@ namespace V3_Trader_Project.Trader
             return output;
         }
 
-        public bool[][] getOutcomeCode(double[][] dataInput, double[][] outcomeInput, double percent)
+        public bool[][] getOutcomeCode(double[][] pricesInput, double[][] outcomeInput, double percent)
         {
-            bool[][] output = new bool[dataInput.Length][];
-            for(int i = 0; i < dataInput.Length; i++)
+            if (pricesInput.Length != outcomeInput.Length)
+                throw new Exception("Arrays have to be the same size: " + pricesInput.Length + " != " + outcomeInput.Length);
+
+            bool[][] output = new bool[pricesInput.Length][];
+            for(int i = 0; i < pricesInput.Length; i++)
             {
-                double mid = dataInput[i][(int)DataIndeces.Ask] + dataInput[i][(int)DataIndeces.Bid] / 2;
+                double mid = pricesInput[i][(int)DataIndeces.Ask] + pricesInput[i][(int)DataIndeces.Bid] / 2;
                 double gain = ((outcomeInput[i][(int)OutcomeMatrixIndices.Max] / mid) - 1) * 100;
                 double fall = ((outcomeInput[i][(int)OutcomeMatrixIndices.Min] / mid) - 1) * 100;
 

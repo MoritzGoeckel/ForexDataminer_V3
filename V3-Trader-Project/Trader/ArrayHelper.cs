@@ -10,6 +10,10 @@ namespace V3_Trader_Project.Trader
     {
         public static double[][] combineArraysHorizontal(double[] a, double[][] inputArrays)
         {
+            foreach(double[] array in inputArrays)
+                if (a.Length != array.Length)
+                    throw new Exception("Arrays have to be the same size: " + a.Length + " != " + array.Length);
+
             double[][] output = new double[a.Length][];
             for(int i = 0; i < output.Length; i++)
             {
