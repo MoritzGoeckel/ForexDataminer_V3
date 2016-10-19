@@ -39,6 +39,15 @@ namespace V3_Trader_Project.Trader
                 double ask = row[(int)DataIndeces.Ask];
                 double volume = row[(int)DataIndeces.Volume];
 
+                if (double.IsNaN(bid) || double.IsInfinity(bid) || bid == double.MinValue || bid == double.MaxValue || bid == 0d)
+                    throw new Exception("Bad bid: " + bid);
+
+                if (double.IsNaN(ask) || double.IsInfinity(ask) || ask == double.MinValue || ask == double.MaxValue || ask == 0d)
+                    throw new Exception("Bad ask: " + ask);
+
+                if (double.IsNaN(volume) || double.IsInfinity(volume) || volume == double.MinValue || volume == double.MaxValue || volume == 0d)
+                    throw new Exception("Bad volume: " + volume);
+
                 double bidJump = ((bid / lastBid) - 1) * 100;
                 if (bidJump > maxPercentJump)
                     throw new Exception("Bid jump: " + bidJump);

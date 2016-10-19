@@ -145,6 +145,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Trader\ArrayHelper.cs" />
     <Compile Include="Trader\Indicators\BolingerBandsIndicator.cs" />
     <Compile Include="Trader\Indicators\IndicatorGenerator.cs" />
     <Compile Include="Trader\Indicators\MACDContinousIndicator.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="Trader\MachineLearning\IMachineLearning.cs" />
     <Compile Include="Trader\MachineLearning\MyLogisticRegression.cs" />
     <Compile Include="Trader\MachineLearning\MyRegression.cs" />
+    <Compile Include="Trader\Tests\ArrayHelper_Test.cs" />
     <Compile Include="Trader\Tests\DataValidator_Test.cs" />
     <Compile Include="Trader\Tests\IndicatorRunner_Test.cs" />
     <Compile Include="Trader\DistributionHelper.cs" />
@@ -189,6 +191,7 @@
     <Compile Include="Trader\Tests\DataLoader_Test.cs" />
     <Compile Include="Trader\Utils\Timestamp.cs" />
     <Compile Include="Trader\IndicatorSampler.cs" />
+    <Compile Include="Trader\Visualizers\ArrayVisualizer.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

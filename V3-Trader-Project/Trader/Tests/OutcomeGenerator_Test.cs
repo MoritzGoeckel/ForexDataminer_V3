@@ -11,19 +11,13 @@ namespace V3_Trader_Project.Trader.Tests
     public class OutcomeGenerator_Test
     {
         [TestMethod]
-        public void getOutcomeMatrix_Test()
+        public void getOutcome_Test()
         {
             Assert.Fail();
         }
 
         [TestMethod]
         public void getOutcomeCode_Test()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod]
-        public void getOutcomeCodeDistribution_Test()
         {
             Assert.Fail();
         }

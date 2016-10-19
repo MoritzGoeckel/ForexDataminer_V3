@@ -18,7 +18,7 @@ namespace V3_Trader_Project.Trader
 
     public class OutcomeGenerator
     {
-        public static double[][] getOutcomeMatrix(double[][] dataInput, long msTimeframe)
+        public static double[][] getOutcome(double[][] dataInput, long msTimeframe)
         {
             double[][] output = new double[dataInput.Length][];
             int futureElement = 0;
