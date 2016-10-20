@@ -30,5 +30,22 @@ namespace V3_Trader_Project.Trader
             max = input.Percentile(100 - percentToDrop / 2);
             min = input.Percentile(percentToDrop / 2);
         }
+
+        public static void getSampleCodesMinMax(double[][] sampleData, out double maxBuy, out double maxSell)
+        {
+            maxBuy = double.MinValue;
+            maxSell = double.MinValue;
+            
+            foreach(double[] row in sampleData)
+            {
+                double b = row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
+                if (b > maxBuy)
+                    maxBuy = b;
+
+                double s = row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
+                if (s > maxSell)
+                    maxSell = s;
+            }
+        }
     }
 }

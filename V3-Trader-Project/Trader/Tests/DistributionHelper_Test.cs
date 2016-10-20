@@ -86,5 +86,11 @@ namespace V3_Trader_Project.Trader.Tests
             Assert.AreEqual(10, min, 1);
             Assert.AreEqual(100, max, 1);
         }
+
+        [TestMethod]
+        public void getSampleCodesMinMax_Test()
+        {
+            Assert.Fail();
+        }
     }
 }
