@@ -140,5 +140,75 @@ namespace V3_Trader_Project.Trader.Tests
             }
             Assert.AreEqual(0, notAssignedCount);
         }
+
+        [TestMethod]
+        public void getOutcomeCode_Test_Negative()
+        {
+            double[][] inputs = new double[100][];
+            DateTime dt = DateTime.Now.ToUniversalTime();
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                //Date bid ask volume
+                dt = dt.AddMilliseconds(1000);
+                inputs[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), 2, 2, 0 };
+            }
+
+            double[][] outcomes = new double[100][];
+            for (int i = 0; i < outcomes.Length; i++)
+            {
+                //Min Max Actual
+                outcomes[i] = new double[] { 1, 4, 3 };
+            }
+
+            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 100);
+
+            int notAssignedCount = 0;
+            foreach (bool[] row in outcomeCodes)
+            {
+                if (row != null)
+                {
+                    Assert.IsTrue(row[(int)OutcomeCodeMatrixIndices.Buy]);
+                    Assert.IsFalse(row[(int)OutcomeCodeMatrixIndices.Sell]);
+                }
+                else
+                    notAssignedCount++;
+            }
+            Assert.AreEqual(0, notAssignedCount);
+        }
+
+        [TestMethod]
+        public void getOutcomeCode_Test_NegativePercent()
+        {
+            double[][] inputs = new double[100][];
+            DateTime dt = DateTime.Now.ToUniversalTime();
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                //Date bid ask volume
+                dt = dt.AddMilliseconds(1000);
+                inputs[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), 2, 2, 0 };
+            }
+
+            double[][] outcomes = new double[100][];
+            for (int i = 0; i < outcomes.Length; i++)
+            {
+                //Min Max Actual
+                outcomes[i] = new double[] { 2, 4, 3 };
+            }
+
+            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 101);
+
+            int notAssignedCount = 0;
+            foreach (bool[] row in outcomeCodes)
+            {
+                if (row != null)
+                {
+                    Assert.IsFalse(row[(int)OutcomeCodeMatrixIndices.Buy]);
+                    Assert.IsFalse(row[(int)OutcomeCodeMatrixIndices.Sell]);
+                }
+                else
+                    notAssignedCount++;
+            }
+            Assert.AreEqual(0, notAssignedCount);
+        }
     }
 }

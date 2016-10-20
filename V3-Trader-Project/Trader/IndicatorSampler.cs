@@ -62,8 +62,6 @@ namespace V3_Trader_Project.Trader
                     output[targetIndex][(int)SampleValuesOutcomeCodesIndices.BuyRatio] += buy;
                     output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SellRatio] += sell;
 
-                    output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SellRatio] += sell;
-
                     output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SamplesCount]++;
                 }
             }
@@ -71,8 +69,13 @@ namespace V3_Trader_Project.Trader
             for(int i = 0; i < output.Length; i++)
             {
                 double samplesInStep = output[i][(int)SampleValuesOutcomeCodesIndices.SamplesCount];
-                output[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio] /= samplesInStep;
-                output[i][(int)SampleValuesOutcomeCodesIndices.SellRatio] /= samplesInStep;
+                if (samplesInStep != 0)
+                {
+                    output[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio] /= samplesInStep;
+                    output[i][(int)SampleValuesOutcomeCodesIndices.SellRatio] /= samplesInStep;
+                }
+                else
+                    output[i] = null;
             }
 
             return output;
@@ -88,7 +91,7 @@ namespace V3_Trader_Project.Trader
 
             double[][] output = new double[steps][];
             for (int i = 0; i < output.Length; i++)
-                output[i] = new double[] { min + stepsSize * i, 0, 0, 0 };
+                output[i] = new double[] { min + stepsSize * i, 0, 0, 0, 0 };
 
             for (int i = 0; i < values.Length; i++)
             {
@@ -110,9 +113,14 @@ namespace V3_Trader_Project.Trader
             for (int i = 0; i < output.Length; i++)
             {
                 double samplesInStep = output[i][(int)SampleValuesOutcomeIndices.SamplesCount];
-                output[i][(int)SampleValuesOutcomeIndices.MinAvg] /= samplesInStep;
-                output[i][(int)SampleValuesOutcomeIndices.MaxAvg] /= samplesInStep;
-                output[i][(int)SampleValuesOutcomeIndices.ActualAvg] /= samplesInStep;
+                if (samplesInStep != 0)
+                {
+                    output[i][(int)SampleValuesOutcomeIndices.MinAvg] /= samplesInStep;
+                    output[i][(int)SampleValuesOutcomeIndices.MaxAvg] /= samplesInStep;
+                    output[i][(int)SampleValuesOutcomeIndices.ActualAvg] /= samplesInStep;
+                }
+                else
+                    output[i] = null;
             }
 
             return output;
