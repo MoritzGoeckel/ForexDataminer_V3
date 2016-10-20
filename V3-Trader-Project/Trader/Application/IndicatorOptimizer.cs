@@ -21,13 +21,16 @@ namespace V3_Trader_Project.Trader.Application
         private IndicatorGenerator generator = new IndicatorGenerator();
         private string resultFolderPath;
 
-        public IndicatorOptimizer(string resultFolderPath, string dataPath, long outcomeTimeframe, int dataDistanceInSeconds)
+        private double desiredOutcomeCodeDistribution;
+
+        public IndicatorOptimizer(string resultFolderPath, string dataPath, long outcomeTimeframe, int dataDistanceInSeconds, double desiredOutcomeCodeDistribution = double.NaN)
         {
             Logger.log("Loading files ...");
             DataLoader dl = new DataLoader(dataPath);
-            data = dl.getArray(1000 * dataDistanceInSeconds); //Nur jede 10 sec
+            data = dl.getArray(1000 * dataDistanceInSeconds);
             Logger.log("End loading files");
-            
+
+            this.desiredOutcomeCodeDistribution = desiredOutcomeCodeDistribution;
             this.outcomeTimeframe = outcomeTimeframe;
             this.resultFolderPath = resultFolderPath;
         }
@@ -38,10 +41,10 @@ namespace V3_Trader_Project.Trader.Application
             if (running == true)
                 throw new Exception("Already running!");
 
-            /*if(outcomeCodes == null || double.IsNaN(outcomeCodePercent))
-                findOutcomeCodeForDesiredDistribution(0.5);*/
+            if(double.IsNaN(desiredOutcomeCodeDistribution) == false && (outcomeCodes == null || double.IsNaN(outcomeCodePercent)))
+                findOutcomeCodeForDesiredDistribution(desiredOutcomeCodeDistribution);
 
-            if (outcomeCodes == null || double.IsNaN(outcomeCodePercent))
+            if (double.IsNaN(desiredOutcomeCodeDistribution) && (outcomeCodes == null || double.IsNaN(outcomeCodePercent)))
                 optimizeOutcomeCodePercentage(300);
 
             Logger.log("Start testing indicators");
