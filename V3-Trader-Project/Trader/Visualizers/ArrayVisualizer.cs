@@ -14,6 +14,8 @@ namespace V3_Trader_Project.Trader.Visualizers
         public static Image visualizeOutcomeCodeArray(bool[][] outcomeCodes, int width, int height)
         {
             Bitmap bmp = new Bitmap(width, height);
+            Graphics g = Graphics.FromImage(bmp);
+            g.Clear(Color.LightGray);
 
             double stepSize = Convert.ToDouble(outcomeCodes.Length) / Convert.ToDouble(width);
 
@@ -21,14 +23,11 @@ namespace V3_Trader_Project.Trader.Visualizers
             {
                 int index = Convert.ToInt32(stepSize * x);
 
-                Color buyColor = outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Buy] ? Color.Green : Color.Gray;
-                Color sellColor = outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Sell] ? Color.Blue : Color.Gray;
+                for (int y = 0; outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Buy] && y < height / 2; y++)
+                    bmp.SetPixel(x, y, Color.Green);
 
-                for (int y = 0; y < height / 2; y++)
-                    bmp.SetPixel(x, y, buyColor);
-
-                for (int y = height / 2; y < height; y++)
-                    bmp.SetPixel(x, y, sellColor);
+                for (int y = height / 2; outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Sell] && y < height; y++)
+                    bmp.SetPixel(x, y, Color.Blue);
             }
             
             return bmp;

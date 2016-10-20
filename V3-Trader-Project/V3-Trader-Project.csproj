@@ -155,6 +155,7 @@
     <Compile Include="Trader\Indicators\MovingAverageSubtractionCrossoverIndicator.cs" />
     <Compile Include="Trader\Indicators\MovingAverageSubtractionIndicator.cs" />
     <Compile Include="Trader\Indicators\RangeIndicator.cs" />
+    <Compile Include="Trader\Indicators\TestIndicator.cs" />
     <Compile Include="Trader\Indicators\RSIBorderCrossoverIndicator.cs" />
     <Compile Include="Trader\Indicators\RSIBorderIndicator.cs" />
     <Compile Include="Trader\Indicators\RSIIndicator.cs" />

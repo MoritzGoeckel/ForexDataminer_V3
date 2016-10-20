@@ -15,13 +15,23 @@ namespace V3_Trader_Project.Trader.Tests
         [TestMethod]
         public void visualizeOutcomeCodeArray_Test()
         {
-            Assert.Fail();
+            Random z = new Random();
+            bool[][] inputs = new bool[1000][];
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                inputs[i] = new bool[] { i > inputs.Length / 2, i < inputs.Length / 2 };
+            }
+
+            Image img = ArrayVisualizer.visualizeOutcomeCodeArray(inputs, 500, 100);
+            //ArrayVisualizer.showImg(img);
+            Bitmap bmp = new Bitmap(img);
+            Assert.AreEqual(Color.FromArgb(255, 0, 0, 255), bmp.GetPixel(bmp.Width / 3, bmp.Height / 3 * 2)); //Sell
+            Assert.AreEqual(Color.FromArgb(255, 0, 128, 0), bmp.GetPixel(bmp.Width / 3 * 2, bmp.Height / 3)); //Buy
         }
 
         [TestMethod]
         public void visualizeArray_Test()
         {
-            Random z = new Random();
             double[] inputs = new double[1000];
             for (int i = 0; i < inputs.Length; i++)
             {

@@ -28,7 +28,7 @@ namespace V3_Trader_Project.Trader.Tests
             int foundNaNs = 0;
             foreach(double[] row in outcomes)
             {
-                if (double.IsNaN(row[(int)OutcomeMatrixIndices.Actual]) == false && double.IsNaN(row[(int)OutcomeMatrixIndices.Max]) == false && double.IsNaN(row[(int)OutcomeMatrixIndices.Min]) == false)
+                if (row != null)
                 {
                     Assert.AreEqual(2, row[(int)OutcomeMatrixIndices.Actual]);
                     Assert.AreEqual(2, row[(int)OutcomeMatrixIndices.Min]);
@@ -39,7 +39,7 @@ namespace V3_Trader_Project.Trader.Tests
             }
 
             Assert.AreEqual(10, foundNaNs);
-            Assert.AreEqual(double.NaN, outcomes[outcomes.Length - 1][(int)OutcomeMatrixIndices.Actual]);
+            Assert.AreEqual(null, outcomes[outcomes.Length - 1]);
         }
 
         [TestMethod]
@@ -60,7 +60,7 @@ namespace V3_Trader_Project.Trader.Tests
             int foundNaNs = 0;
             for (int i = 0; i < outcomes.Length; i++)
             {
-                if (double.IsNaN(outcomes[i][(int)OutcomeMatrixIndices.Actual]) == false && double.IsNaN(outcomes[i][(int)OutcomeMatrixIndices.Max]) == false && double.IsNaN(outcomes[i][(int)OutcomeMatrixIndices.Min]) == false)
+                if (outcomes[i] != null)
                 {
                     Assert.AreEqual(i + 9, outcomes[i][(int)OutcomeMatrixIndices.Actual]);
                     Assert.AreEqual(i + 1, outcomes[i][(int)OutcomeMatrixIndices.Min]);
@@ -71,7 +71,7 @@ namespace V3_Trader_Project.Trader.Tests
             }
 
             Assert.AreEqual(10, foundNaNs);
-            Assert.AreEqual(double.NaN, outcomes[outcomes.Length - 1][(int)OutcomeMatrixIndices.Actual]);
+            Assert.AreEqual(null, outcomes[outcomes.Length - 1]);
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace V3_Trader_Project.Trader.Tests
             int foundNaNs = 0;
             for (int i = 0; i < outcomes.Length; i++)
             {
-                if (double.IsNaN(outcomes[i][(int)OutcomeMatrixIndices.Actual]) == false && double.IsNaN(outcomes[i][(int)OutcomeMatrixIndices.Max]) == false && double.IsNaN(outcomes[i][(int)OutcomeMatrixIndices.Min]) == false)
+                if (outcomes[i] != null)
                 {
                     Assert.AreEqual(inputs.Length - (i + 9), outcomes[i][(int)OutcomeMatrixIndices.Actual]);
                     Assert.AreEqual(inputs.Length - (i + 9), outcomes[i][(int)OutcomeMatrixIndices.Min]);
@@ -103,13 +103,42 @@ namespace V3_Trader_Project.Trader.Tests
             }
 
             Assert.AreEqual(10, foundNaNs);
-            Assert.AreEqual(double.NaN, outcomes[outcomes.Length - 1][(int)OutcomeMatrixIndices.Actual]);
+            Assert.AreEqual(null, outcomes[outcomes.Length - 1]);
         }
 
         [TestMethod]
         public void getOutcomeCode_Test()
         {
-            Assert.Fail();
+            double[][] inputs = new double[100][];
+            DateTime dt = DateTime.Now.ToUniversalTime();
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                //Date bid ask volume
+                dt = dt.AddMilliseconds(1000);
+                inputs[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), 2, 2, 0 };
+            }
+
+            double[][] outcomes = new double[100][];
+            for (int i = 0; i < outcomes.Length; i++)
+            {
+                //Min Max Actual
+                outcomes[i] = new double[] { 0, 4, 3 };
+            }
+
+            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 100);
+
+            int notAssignedCount = 0;
+            foreach (bool[] row in outcomeCodes)
+            {
+                if (row != null)
+                {
+                    Assert.IsTrue(row[(int)OutcomeCodeMatrixIndices.Buy]);
+                    Assert.IsTrue(row[(int)OutcomeCodeMatrixIndices.Sell]);
+                }
+                else
+                    notAssignedCount++;
+            }
+            Assert.AreEqual(0, notAssignedCount);
         }
     }
 }

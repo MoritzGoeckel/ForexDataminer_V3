@@ -76,8 +76,6 @@ namespace V3_Trader_Project.Trader
 
                 if(futureElement != dataInput.Length)
                     output[currentElement] = new double[]{ min, max, actual };
-                else
-                    output[currentElement] = new double[] { double.NaN, double.NaN, double.NaN };
             }
 
             return output;
@@ -91,11 +89,22 @@ namespace V3_Trader_Project.Trader
             bool[][] output = new bool[pricesInput.Length][];
             for(int i = 0; i < pricesInput.Length; i++)
             {
-                double mid = pricesInput[i][(int)PriceDataIndeces.Ask] + pricesInput[i][(int)PriceDataIndeces.Bid] / 2;
-                double gain = ((outcomeInput[i][(int)OutcomeMatrixIndices.Max] / mid) - 1) * 100;
-                double fall = ((outcomeInput[i][(int)OutcomeMatrixIndices.Min] / mid) - 1) * 100;
+                bool foundNan = false;
+                foreach (double o in outcomeInput[i])
+                    if(double.IsNaN(0))
+                    {
+                        foundNan = true;
+                        break;
+                    }
 
-                output[i] = new bool[] { gain >= percent, fall <= -percent};
+                if (foundNan == false)
+                {
+                    double mid = (pricesInput[i][(int)PriceDataIndeces.Ask] + pricesInput[i][(int)PriceDataIndeces.Bid]) / 2d;
+                    double gain = ((outcomeInput[i][(int)OutcomeMatrixIndices.Max] / mid) - 1d) * 100;
+                    double fall = ((outcomeInput[i][(int)OutcomeMatrixIndices.Min] / mid) - 1d) * 100;
+
+                    output[i] = new bool[] { gain >= percent, fall <= -percent };
+                }
             }
 
             return output;
