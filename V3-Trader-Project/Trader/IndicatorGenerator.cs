@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NinjaTrader_Client.Trader.Analysis.Indicators
+namespace V3_Trader_Project.Trader
 {
-    public static class IndicatorGenerator
+    public class IndicatorGenerator
     {
-        private static Random z = new Random();
-        public static WalkerIndicator getRandomIndicator()
+        private Random z = new Random();
+        public WalkerIndicator getRandomIndicator()
         {
             WalkerIndicator theIndicator = null;
 
