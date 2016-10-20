@@ -36,15 +36,22 @@ namespace V3_Trader_Project.Trader
             return output;
         }
 
-        public double[][] getArray()
+        public double[][] getArray(long minDateDistance = 1)
         {
+            long lastAddedDate = 0;
             List<double[]> rows = new List<double[]>();
             foreach(string file in filenames)
             {
                 foreach(string line in File.ReadAllLines(rootPath + file))
                 {
                     string[] values = line.Split(',');
-                    rows.Add(new double[] { Timestamp.getUTCMillisecondsDate(values[(int)PriceDataIndeces.Date]) , double.Parse(values[(int)PriceDataIndeces.Bid].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Ask].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Volume].Replace(".", ",")) });
+                    long dateL = Timestamp.getUTCMillisecondsDate(values[(int)PriceDataIndeces.Date]);
+
+                    if (dateL - lastAddedDate > minDateDistance)
+                    {
+                        rows.Add(new double[] { dateL, double.Parse(values[(int)PriceDataIndeces.Bid].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Ask].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Volume].Replace(".", ",")) });
+                        lastAddedDate = dateL;
+                    }
                 }
             }
 

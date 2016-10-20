@@ -105,7 +105,7 @@ namespace V3_Trader_Project.Trader
             return theIndicator;
         }
 
-        private static double getRanDouble(double min, double max)
+        private double getRanDouble(double min, double max)
         {
             return min + z.NextDouble() * (max - min); 
         }

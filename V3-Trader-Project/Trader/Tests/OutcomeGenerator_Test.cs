@@ -23,7 +23,8 @@ namespace V3_Trader_Project.Trader.Tests
                 inputs[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), 2, 2, 0 };
             }
 
-            double[][] outcomes = OutcomeGenerator.getOutcome(inputs, 1000 * 10);
+            double successRate;
+            double[][] outcomes = OutcomeGenerator.getOutcome(inputs, 1000 * 10, out successRate);
 
             int foundNaNs = 0;
             foreach(double[] row in outcomes)
@@ -55,7 +56,8 @@ namespace V3_Trader_Project.Trader.Tests
                 inputs[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), i, i, 0 };
             }
 
-            double[][] outcomes = OutcomeGenerator.getOutcome(inputs, 1000 * 10);
+            double successRate;
+            double[][] outcomes = OutcomeGenerator.getOutcome(inputs, 1000 * 10, out successRate);
 
             int foundNaNs = 0;
             for (int i = 0; i < outcomes.Length; i++)
@@ -87,7 +89,8 @@ namespace V3_Trader_Project.Trader.Tests
                 inputs[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), inputs.Length - i, inputs.Length - i, 0 };
             }
 
-            double[][] outcomes = OutcomeGenerator.getOutcome(inputs, 1000 * 10);
+            double successRate;
+            double[][] outcomes = OutcomeGenerator.getOutcome(inputs, 1000 * 10, out successRate);
 
             int foundNaNs = 0;
             for (int i = 0; i < outcomes.Length; i++)
@@ -125,7 +128,8 @@ namespace V3_Trader_Project.Trader.Tests
                 outcomes[i] = new double[] { 0, 4, 3 };
             }
 
-            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 100);
+            double successRatio;
+            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 100, out successRatio);
 
             int notAssignedCount = 0;
             foreach (bool[] row in outcomeCodes)
@@ -160,7 +164,8 @@ namespace V3_Trader_Project.Trader.Tests
                 outcomes[i] = new double[] { 1, 4, 3 };
             }
 
-            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 100);
+            double successRatio;
+            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 100, out successRatio);
 
             int notAssignedCount = 0;
             foreach (bool[] row in outcomeCodes)
@@ -195,7 +200,8 @@ namespace V3_Trader_Project.Trader.Tests
                 outcomes[i] = new double[] { 2, 4, 3 };
             }
 
-            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 101);
+            double successRatio;
+            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(inputs, outcomes, 101, out successRatio);
 
             int notAssignedCount = 0;
             foreach (bool[] row in outcomeCodes)

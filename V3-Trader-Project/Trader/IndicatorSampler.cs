@@ -28,8 +28,11 @@ namespace V3_Trader_Project.Trader
 
             for(int i = 0; i < outcomeCodes.Length; i++)
             {
-                buyArray[i] = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy] ? 1 : 0;
-                sellArray[i] = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Sell] ? 1 : 0;
+                if (outcomeCodes[i] != null)
+                {
+                    buyArray[i] = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy] ? 1 : 0;
+                    sellArray[i] = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Sell] ? 1 : 0;
+                }
             }
 
             spearmanBuy = Correlation.Spearman(values, buyArray);
@@ -52,7 +55,7 @@ namespace V3_Trader_Project.Trader
 
             for(int i = 0; i < values.Length; i++)
             {
-                if(values[i] > min && values[i] < max)
+                if(values[i] > min && values[i] < max && outcomeCodes[i] != null)
                 {
                     int targetIndex = Convert.ToInt32(Math.Floor((values[i] - min) / stepsSize));
 
