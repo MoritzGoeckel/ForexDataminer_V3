@@ -42,12 +42,13 @@ namespace V3_Trader_Project.Trader
             pearsonSell = Correlation.Pearson(values, sellArray);
         }
 
-        public static double[][] sampleValuesOutcomeCode(double[] values, bool[][] outcomeCodes, double min, double max, int steps = 20)
+        public static double[][] sampleValuesOutcomeCode(double[] values, bool[][] outcomeCodes, double min, double max, int steps, out double usedValuesRatio)
         {
             if (values.Length != outcomeCodes.Length)
                 throw new Exception("Arrays have to be the same size: " + values.Length + " != " + outcomeCodes.Length);
 
             double stepsSize = (max - min) / steps;
+            usedValuesRatio = 0;
 
             double[][] output = new double[steps][];
             for (int i = 0; i < output.Length; i++)
@@ -66,6 +67,7 @@ namespace V3_Trader_Project.Trader
                     output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SellRatio] += sell;
 
                     output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SamplesCount]++;
+                    usedValuesRatio++;
                 }
             }
 
@@ -76,10 +78,15 @@ namespace V3_Trader_Project.Trader
                 {
                     output[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio] /= samplesInStep;
                     output[i][(int)SampleValuesOutcomeCodesIndices.SellRatio] /= samplesInStep;
+
+                    checkValue(output[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio]);
+                    checkValue(output[i][(int)SampleValuesOutcomeCodesIndices.SellRatio]);
                 }
                 else
                     output[i] = null;
             }
+
+            usedValuesRatio /= values.Length;
 
             return output;
         }
@@ -127,6 +134,12 @@ namespace V3_Trader_Project.Trader
             }
 
             return output;
+        }
+
+        private static void checkValue(double val)
+        {
+            if (double.IsNaN(val) || double.MaxValue == val || double.MinValue == val || val > 1 || val < -1)
+                throw new Exception("Bad value calculated: " + val);
         }
     }
 }

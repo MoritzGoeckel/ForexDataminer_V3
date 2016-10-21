@@ -30,8 +30,19 @@ namespace V3_Trader_Project.Trader
 
         public static void getMinMax(double[] input, int percentToDrop, out double min, out double max)
         {
-            max = input.Percentile(100 - percentToDrop / 2);
-            min = input.Percentile(percentToDrop / 2);
+            List<double> valuesNoNans = new List<double>();
+            foreach (double d in input)
+                if (double.IsNaN(d) == false)
+                    valuesNoNans.Add(d);
+
+            int upperP = Convert.ToInt32(100d - Convert.ToDouble(percentToDrop) / 2d);
+            max = valuesNoNans.Percentile(upperP);
+
+            int lowerP = Convert.ToInt32(percentToDrop / 2d);
+            min = valuesNoNans.Percentile(lowerP);
+
+            if (double.IsNaN(min) || double.IsNaN(max))
+                throw new Exception("Minmax is not valid: " + min + " " + max + " " + upperP + " " + lowerP);
         }
 
         public static void getSampleCodesMinMax(double[][] sampleData, out double maxBuy, out double maxSell)
@@ -52,6 +63,9 @@ namespace V3_Trader_Project.Trader
                         maxSell = s;
                 }
             }
+
+            if (maxBuy == double.MinValue || maxSell == double.MinValue)
+                throw new Exception("Nothing found :(");
         }
     }
 }

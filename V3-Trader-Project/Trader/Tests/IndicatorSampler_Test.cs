@@ -75,7 +75,9 @@ namespace V3_Trader_Project.Trader.Tests
                 values[i] = d;
             }
 
-            double[][] samples = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, 0, 1, 10);
+            double validRatio;
+            double[][] samples = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, 0, 1, 10, out validRatio);
+            Assert.AreEqual(1, validRatio);
 
             for(int i = 0; i < 10; i++)
             {

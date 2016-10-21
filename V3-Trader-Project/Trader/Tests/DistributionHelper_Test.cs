@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MathNet.Numerics.Statistics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,38 @@ namespace V3_Trader_Project.Trader.Tests
             {
                 inputs[i] = i;
             }
+
+            double min, max;
+            DistributionHelper.getMinMax(inputs, 10, out min, out max);
+
+            Assert.AreEqual(5, min, 1);
+            Assert.AreEqual(95, max, 1);
+        }
+
+        [TestMethod]
+        public void getMinMax_NAN_Test()
+        {
+            double[] inputs = new double[200];
+            int v = 0;
+            for (int i = 0; i < inputs.Length; i += 2)
+            {
+                inputs[i] = v++;
+            }
+
+            for (int i = 1; i < inputs.Length; i += 2)
+            {
+                inputs[i] = double.NaN;
+            }
+
+            Assert.AreEqual(inputs[0], 0);
+            Assert.AreEqual(inputs[2], 1);
+            Assert.AreEqual(inputs[4], 2);
+            Assert.AreEqual(inputs[6], 3);
+
+            Assert.AreEqual(inputs[1], double.NaN);
+            Assert.AreEqual(inputs[3], double.NaN);
+            Assert.AreEqual(inputs[5], double.NaN);
+            Assert.AreEqual(inputs[7], double.NaN);
 
             double min, max;
             DistributionHelper.getMinMax(inputs, 10, out min, out max);

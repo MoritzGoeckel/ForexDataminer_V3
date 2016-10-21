@@ -27,8 +27,28 @@ namespace V3_Trader_Project
         private void button1_Click(object sender, EventArgs e)
         {
             button1.Enabled = false;
-            IndicatorOptimizer op = new IndicatorOptimizer(Config.DataPath, Config.DataPath + "EURUSD", 4 * 60 * 60 * 1000, 60);
+            button2.Enabled = false;
+
+            IndicatorOptimizer op = new IndicatorOptimizer(Config.DataPath, Config.DataPath + "EURUSD", 48 * 60 * 60 * 1000, 60);
             op.start();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            button1.Enabled = false;
+            button2.Enabled = false;
+
+            string pair = "EURUSD";
+
+            IndicatorOptimizer longer = new IndicatorOptimizer(Config.DataPath, Config.DataPath + pair, 8 * 60 * 60 * 1000, 60);
+            IndicatorOptimizer shorter = new IndicatorOptimizer(Config.DataPath, Config.DataPath + pair, 3 * 60 * 60 * 1000, 60);
+            IndicatorOptimizer veryShort = new IndicatorOptimizer(Config.DataPath, Config.DataPath + pair, 60 * 60 * 1000, 30);
+            IndicatorOptimizer veryLong = new IndicatorOptimizer(Config.DataPath, Config.DataPath + pair, 48 * 60 * 60 * 1000, 60);
+
+            longer.start();
+            shorter.start();
+            veryShort.start();
+            veryLong.start();
         }
     }
 }

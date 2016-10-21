@@ -52,7 +52,8 @@ namespace V3_Trader_Project.Trader.Application
                 running = true;
                 while(running)
                 {
-                    testRandomIndicator();
+                    try { testRandomIndicator(); } catch { }
+                    //testRandomIndicator();
                 }
             }).Start();
         }
@@ -100,6 +101,7 @@ namespace V3_Trader_Project.Trader.Application
                 round++;
             }
 
+            File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
             Logger.log("SATTLE OPT. dist for "+ outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4) + " after " + round + " rounds");
         }
 
@@ -146,6 +148,7 @@ namespace V3_Trader_Project.Trader.Application
                 round++;
             }
 
+            File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
             Logger.log("SATTLE OPT. for " + outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4) + " after " + round + " rounds");
         }
         
@@ -159,12 +162,19 @@ namespace V3_Trader_Project.Trader.Application
             double validR;
             double[] values = IndicatorRunner.getIndicatorValues(data, indicator, out validR);
 
+            if (validR < 0.7)
+                throw new Exception("Indicator not valid: " + validR);
+
             //Get min / max -10% of indicator
             double min, max;
             DistributionHelper.getMinMax(values, 10, out min, out max);
 
             //Sample the indicator with min max
-            double[][] samplesMatrix = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 20);
+            double usedValuesRatio;
+            double[][] samplesMatrix = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 20, out usedValuesRatio);
+
+            if (usedValuesRatio < 0.7) //Todo: Why does that happen so often?
+                throw new Exception("Invalid sampling: " + usedValuesRatio + " min" + min + " max" + max + " " + indicator.getName());
 
             //Retrive the max for buy and sell
             double maxBuy, maxSell;
@@ -175,8 +185,8 @@ namespace V3_Trader_Project.Trader.Application
             IndicatorSampler.getStatistics(values, outcomeCodes, out spBuy, out spSell, out pBuy, out pSell);
 
             //Submit the results
-            Logger.log("Result: " + Math.Round(spBuy, 4) + " " + Math.Round(spSell, 4) + " " + Math.Round(pBuy, 4) + " " + Math.Round(pSell, 4) + " " + Math.Round(maxBuy, 4) + " " + Math.Round(maxSell, 4));
-            submitResults(spBuy + ";" + spSell + ";" + pBuy + ";" + pSell + ";" + maxBuy + ";" + maxSell + ";" + indicator.getName());
+            Logger.log("Result: " + Math.Round(spBuy, 4) + " " + Math.Round(spSell, 4) + " " + Math.Round(pBuy, 4) + " " + Math.Round(pSell, 4) + " " + Math.Round(maxBuy, 4) + " " + Math.Round(maxSell, 4) + " v" + Math.Round(validR, 1));
+            submitResults(spBuy + ";" + spSell + ";" + pBuy + ";" + pSell + ";" + maxBuy + ";" + maxSell + ";" + validR + ";" + indicator.getName().Split('_')[0] + ";" + indicator.getName());
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
