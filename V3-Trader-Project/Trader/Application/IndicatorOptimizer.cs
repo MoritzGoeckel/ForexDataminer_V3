@@ -52,6 +52,7 @@ namespace V3_Trader_Project.Trader.Application
                 running = true;
                 while(running)
                 {
+                    //How about a genetic algo?
                     try { testRandomIndicator(); } catch { }
                     //testRandomIndicator();
                 }
@@ -182,7 +183,7 @@ namespace V3_Trader_Project.Trader.Application
 
             //Retrive the correalations
             double spBuy, spSell, pBuy, pSell;
-            IndicatorSampler.getStatistics(values, outcomeCodes, out spBuy, out spSell, out pBuy, out pSell);
+            IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out spBuy, out spSell, out pBuy, out pSell);
 
             //Submit the results
             Logger.log("Result: " + Math.Round(spBuy, 4) + " " + Math.Round(spSell, 4) + " " + Math.Round(pBuy, 4) + " " + Math.Round(pSell, 4) + " " + Math.Round(maxBuy, 4) + " " + Math.Round(maxSell, 4) + " v" + Math.Round(validR, 1));

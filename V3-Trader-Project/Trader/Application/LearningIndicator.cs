@@ -14,6 +14,10 @@ namespace V3_Trader_Project.Trader.Application
     public class LearningIndicator
     {
         //Not known is base distribution of outcomeCodes and timeframe
+        
+        //Plug ML in here?
+        //Calculate indicator PP and return as function?
+
         private double[][] outcomeCodeSamplingTable;
         private double[][] outcomeSamplingTable;
 
@@ -32,9 +36,11 @@ namespace V3_Trader_Project.Trader.Application
             if (usedValuesRatio < 0.7)
                 throw new Exception("Not enough sampling for outcomeCode: " + usedValuesRatio);
 
-            outcomeSamplingTable = IndicatorSampler.sampleValuesOutcome(values, outcomes, min, max, out usedValuesRatio, 20);
+            outcomeSamplingTable = IndicatorSampler.sampleValuesOutcome(values, prices, outcomes, min, max, out usedValuesRatio, 20);
             if (usedValuesRatio < 0.7)
                 throw new Exception("Not enough sampling for outcome: " + usedValuesRatio);
+
+            //IndicatorSampler.getStatisticsOutcomeCodes ... todo
 
             this.indicator = indicator;
         }

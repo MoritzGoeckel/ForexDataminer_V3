@@ -7,7 +7,7 @@ using V3_Trader_Project.Trader.Application;
 
 namespace V3_Trader_Project.Trader.Market
 {
-    class LISignalMachine : SignalMachine
+    /*class LISignalMachine : SignalMachine
     {
-    }
+    }*/
 }

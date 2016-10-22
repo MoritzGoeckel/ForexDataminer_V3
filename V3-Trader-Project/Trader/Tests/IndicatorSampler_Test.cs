@@ -28,7 +28,7 @@ namespace V3_Trader_Project.Trader.Tests
             }
 
             double spBuy, spSell, pBuy, pSell;
-            IndicatorSampler.getStatistics(values, outcomeCodes, out spBuy, out spSell, out pBuy, out pSell);
+            IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out spBuy, out spSell, out pBuy, out pSell);
 
             Assert.IsTrue(spBuy > spSell - 0.2);
             Assert.IsTrue(pBuy > pSell - 0.2);
@@ -52,7 +52,7 @@ namespace V3_Trader_Project.Trader.Tests
             }
 
             double spBuy, spSell, pBuy, pSell;
-            IndicatorSampler.getStatistics(values, outcomeCodes, out spBuy, out spSell, out pBuy, out pSell);
+            IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out spBuy, out spSell, out pBuy, out pSell);
 
             Assert.IsTrue(spSell > spBuy - 0.2);
             Assert.IsTrue(pSell > pBuy - 0.2);
@@ -99,21 +99,27 @@ namespace V3_Trader_Project.Trader.Tests
         {
             double[] values = new double[100];
             double[][] outcomes = new double[100][];
+            double[][] prices = new double[100][];
+            DateTime dt = DateTime.Now.ToUniversalTime();
+
             Random z = new Random();
             for (int i = 0; i < values.Length; i++)
             {
                 //Min max actual
                 double d = z.NextDouble();
                 if (d > 0.7)
-                    outcomes[i] = new double[] { -2, 2, 3 };
+                    outcomes[i] = new double[] { 0, 2, 3 };
                 else
-                    outcomes[i] = new double[] { -3, 3, 4 };
+                    outcomes[i] = new double[] { 0.8, 1.2, 4 };
 
                 values[i] = d;
+
+                dt = dt.AddMilliseconds(1000);
+                prices[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), 1, 1, 0 };
             }
 
             double validOut;
-            double[][] samples = IndicatorSampler.sampleValuesOutcome(values, outcomes, 0, 1, out validOut, 10);
+            double[][] samples = IndicatorSampler.sampleValuesOutcome(values, prices, outcomes, 0, 1, out validOut, 10);
 
             Assert.AreEqual(1d, validOut);
 
@@ -125,15 +131,15 @@ namespace V3_Trader_Project.Trader.Tests
 
                     if (i >= 7)
                     {
-                        Assert.AreEqual(2d, samples[i][((int)SampleValuesOutcomeIndices.MaxAvg)]);
-                        Assert.AreEqual(-2d, samples[i][((int)SampleValuesOutcomeIndices.MinAvg)]);
-                        Assert.AreEqual(3d, samples[i][((int)SampleValuesOutcomeIndices.ActualAvg)]);
+                        Assert.AreEqual(1d, samples[i][((int)SampleValuesOutcomeIndices.MaxAvg)], 0.01);
+                        Assert.AreEqual(-1d, samples[i][((int)SampleValuesOutcomeIndices.MinAvg)], 0.01);
+                        Assert.AreEqual(2d, samples[i][((int)SampleValuesOutcomeIndices.ActualAvg)], 0.01);
                     }
                     else
                     {
-                        Assert.AreEqual(3d, samples[i][((int)SampleValuesOutcomeIndices.MaxAvg)]);
-                        Assert.AreEqual(-3d, samples[i][((int)SampleValuesOutcomeIndices.MinAvg)]);
-                        Assert.AreEqual(4d, samples[i][((int)SampleValuesOutcomeIndices.ActualAvg)]);
+                        Assert.AreEqual(0.2d, samples[i][((int)SampleValuesOutcomeIndices.MaxAvg)], 0.01);
+                        Assert.AreEqual(-0.2d, samples[i][((int)SampleValuesOutcomeIndices.MinAvg)], 0.01);
+                        Assert.AreEqual(3d, samples[i][((int)SampleValuesOutcomeIndices.ActualAvg)], 0.01);
                     }
                 }
             }

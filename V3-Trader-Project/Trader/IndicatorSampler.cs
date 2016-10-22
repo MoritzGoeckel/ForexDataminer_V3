@@ -18,28 +18,66 @@ namespace V3_Trader_Project.Trader
 
     public static class IndicatorSampler
     {
-        public static void getStatistics(double[] values, bool[][] outcomeCodes, out double spearmanBuy, out double spearmanSell, out double pearsonBuy, out double pearsonSell)
+        public static void getStatisticsOutcomeCodes(double[] values, bool[][] outcomeCodes, out double spearmanBuy, out double spearmanSell, out double pearsonBuy, out double pearsonSell)
         {
             if (values.Length != outcomeCodes.Length)
                 throw new Exception("Arrays have to be the same size: " + values.Length + " != " + outcomeCodes.Length);
 
-            double[] buyArray = new double[outcomeCodes.Length];
-            double[] sellArray = new double[outcomeCodes.Length];
+            List<double> buyList = new List<double>();
+            List<double> sellList = new List<double>();
+            List<double> valuesList = new List<double>();
 
-            for(int i = 0; i < outcomeCodes.Length; i++)
+            for (int i = 0; i < outcomeCodes.Length; i++)
             {
                 if (outcomeCodes[i] != null)
                 {
-                    buyArray[i] = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy] ? 1 : 0;
-                    sellArray[i] = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Sell] ? 1 : 0;
+                    buyList.Add(outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy] ? 1 : 0);
+                    sellList.Add(outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Sell] ? 1 : 0);
+                    valuesList.Add(values[i]);
                 }
             }
 
-            spearmanBuy = Correlation.Spearman(values, buyArray);
-            spearmanSell = Correlation.Spearman(values, sellArray);
+            spearmanBuy = Correlation.Spearman(valuesList, buyList);
+            spearmanSell = Correlation.Spearman(valuesList, sellList);
 
-            pearsonBuy = Correlation.Pearson(values, buyArray);
-            pearsonSell = Correlation.Pearson(values, sellArray);
+            pearsonBuy = Correlation.Pearson(valuesList, buyList);
+            pearsonSell = Correlation.Pearson(valuesList, sellList);
+        }
+
+        public static void getStatisticsOutcomes(double[] values, double[][] prices, double[][] outcomes, out double spearmanMin, out double spearmanMax, out double spearmanActual, out double pearsonMin, out double pearsonMax, out double pearsonActual)
+        {
+            if (values.Length != outcomes.Length)
+                throw new Exception("Arrays have to be the same size: " + values.Length + " != " + outcomes.Length);
+
+            List<double> minList = new List<double>();
+            List<double> maxList = new List<double>();
+            List<double> actualList = new List<double>();
+            List<double> valuesList = new List<double>();
+
+            for (int i = 0; i < outcomes.Length; i++)
+            {
+                if (outcomes[i] != null)
+                {
+                    double mid = (prices[i][(int)PriceDataIndeces.Ask] + prices[i][(int)PriceDataIndeces.Bid]) / 2d;
+
+                    double minChange = (outcomes[i][(int)OutcomeMatrixIndices.Min] / mid) - 1d;
+                    double maxChange = (outcomes[i][(int)OutcomeMatrixIndices.Max] / mid) - 1d;
+                    double actualChange = (outcomes[i][(int)OutcomeMatrixIndices.Actual] / mid) - 1d;
+
+                    minList.Add(minChange);
+                    maxList.Add(maxChange);
+                    actualList.Add(actualChange);
+                    valuesList.Add(values[i]);
+                }
+            }
+
+            spearmanMin = Correlation.Spearman(valuesList, minList);
+            spearmanMax = Correlation.Spearman(valuesList, maxList);
+            spearmanActual = Correlation.Spearman(valuesList, maxList);
+
+            pearsonMin = Correlation.Pearson(valuesList, minList);
+            pearsonMax = Correlation.Pearson(valuesList, maxList);
+            pearsonActual = Correlation.Pearson(valuesList, actualList);
         }
 
         public static double[][] sampleValuesOutcomeCode(double[] values, bool[][] outcomeCodes, double min, double max, int steps, out double usedValuesRatio)
@@ -91,7 +129,7 @@ namespace V3_Trader_Project.Trader
             return output;
         }
 
-        public static double[][] sampleValuesOutcome(double[] values, double[][] outcomes, double min, double max, out double validValueRatio, int steps = 20)
+        public static double[][] sampleValuesOutcome(double[] values, double[][] prices, double[][] outcomes, double min, double max, out double validValueRatio, int steps = 20)
         {
             if (values.Length != outcomes.Length)
                 throw new Exception("Arrays have to be the same size: " + values.Length + " != " + outcomes.Length);
@@ -109,9 +147,14 @@ namespace V3_Trader_Project.Trader
                 {
                     int targetIndex = Convert.ToInt32(Math.Floor((values[i] - min) / stepsSize));
 
-                    output[targetIndex][(int)SampleValuesOutcomeIndices.MaxAvg] += outcomes[i][(int)OutcomeMatrixIndices.Max];
-                    output[targetIndex][(int)SampleValuesOutcomeIndices.MinAvg] += outcomes[i][(int)OutcomeMatrixIndices.Min];
-                    output[targetIndex][(int)SampleValuesOutcomeIndices.ActualAvg] += outcomes[i][(int)OutcomeMatrixIndices.Actual];
+                    double mid = (prices[i][(int)PriceDataIndeces.Ask] + prices[i][(int)PriceDataIndeces.Bid]) / 2d;
+                    double maxChange = outcomes[i][(int)OutcomeMatrixIndices.Max] / mid - 1d;
+                    double minChange = outcomes[i][(int)OutcomeMatrixIndices.Min] / mid - 1d;
+                    double actualChange = outcomes[i][(int)OutcomeMatrixIndices.Actual] / mid - 1d;
+
+                    output[targetIndex][(int)SampleValuesOutcomeIndices.MaxAvg] += maxChange;
+                    output[targetIndex][(int)SampleValuesOutcomeIndices.MinAvg] += minChange;
+                    output[targetIndex][(int)SampleValuesOutcomeIndices.ActualAvg] += actualChange;
 
                     output[targetIndex][(int)SampleValuesOutcomeIndices.SamplesCount]++;
                     validValueRatio++;
