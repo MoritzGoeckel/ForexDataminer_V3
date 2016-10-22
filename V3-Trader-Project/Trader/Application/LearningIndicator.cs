@@ -1,6 +1,7 @@
 ﻿using NinjaTrader_Client.Trader.Indicators;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -137,6 +138,11 @@ namespace V3_Trader_Project.Trader.Application
 
                 return new double[]{ buyRatio, sellRatio, min, max, actual };
             }
+        }
+
+        public Image visualizeTables()
+        {
+            throw new NotImplementedException(); //Todo:
         }
     }
 }

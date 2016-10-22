@@ -1,0 +1,19 @@
+﻿Visualize the outcomeSamplingTable
+Visualize the outcomeCodeSamplingTable
+
+Visualize Learning indicator
+Visualize the first order machine
+
+Check the tables for some indicators, make it convinient (string name input?)
+
+Implement the important tests
+
+Implement tests for indicators
+
+Check whether the IndicatorGenerator needs to be updated
+
+(Search for indicators)
+Implement the MarketModul and a fake api
+
+Start the backtesting framework
+Visualize it :)
