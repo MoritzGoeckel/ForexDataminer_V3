@@ -46,5 +46,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return ma.isValid(timestamp) && timestamp - timestampNow < 60 * 5; //Neuster preis nicht älter als 5min
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new MovingAveragePriceSubtractionIndicator(timeframe);
+        }
     }
 }

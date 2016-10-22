@@ -67,5 +67,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return rsi.isValid(timestamp) && double.IsNaN(lastSeenValue) != false;
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new RSIBorderCrossoverIndicator(timeframe, border);
+        }
     }
 }

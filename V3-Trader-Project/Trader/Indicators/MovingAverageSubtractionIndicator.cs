@@ -50,5 +50,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return maOne.isValid(timestamp) && maTwo.isValid(timestamp);
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new MovingAverageSubtractionIndicator(timeframeOne, timeframeTwo);
+        }
     }
 }

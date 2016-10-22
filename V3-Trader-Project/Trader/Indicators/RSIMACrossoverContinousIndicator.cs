@@ -50,5 +50,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return rsi.isValid(timestamp) && signalMa.isValid(timestamp);
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new RSIMACrossoverIndicator(rsiTimeframe, signalTimeframe);
+        }
     }
 }

@@ -31,9 +31,6 @@ namespace NinjaTrader_Client.Trader.Indicators
             return getIndicator();
         }
 
-        public WalkerIndicator Clone()
-        {
-            throw new NotImplementedException(); //Todo: Implement :)
-        }
+        public abstract WalkerIndicator Clone();
     }
 }

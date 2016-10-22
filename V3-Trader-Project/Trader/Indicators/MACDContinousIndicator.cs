@@ -52,5 +52,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return maSub.isValid(timestamp) && signalMa.isValid(timestamp);
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new MACDContinousIndicator(timeframeOne, timeframeTwo, signalTimeframe);
+        }
     }
 }

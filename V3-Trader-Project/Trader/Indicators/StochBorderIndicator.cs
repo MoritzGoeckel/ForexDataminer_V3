@@ -61,5 +61,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return stoch.isValid(timestamp);
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new StochBorderIndicator(timeframe, border);
+        }
     }
 }

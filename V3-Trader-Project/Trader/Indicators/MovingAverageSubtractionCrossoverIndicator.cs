@@ -62,5 +62,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return maSub.isValid(timestamp) && double.IsNaN(lastDifference) == false;
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new MovingAverageSubtractionCrossoverIndicator(timeframeOne, timeframeTwo);
+        }
     }
 }

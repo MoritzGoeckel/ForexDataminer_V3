@@ -99,6 +99,7 @@ namespace V3_Trader_Project.Trader.Application
 
             output += indicator.getName().Split('_')[0] + ";" + indicator.getName();
 
+            Logger.log("Result: " + Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName());
             submitResults(output);
         }
 

@@ -63,5 +63,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return ma.isValid(timestamp) && std.isValid(timestamp) && timestamp - timestampNow < 5 * 60; //Last data not older then 5 min
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new BolingerBandsIndicator(timeframe, stdMultiplicator);
+        }
     }
 }

@@ -71,5 +71,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return stoch.isValid(timestamp) && double.IsNaN(lastSeenStochValue) != false;
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new StochBorderCrossoverIndicator(timeframe, border);
+        }
     }
 }

@@ -73,5 +73,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return maSub.isValid(timestamp) && signalMa.isValid(timestamp) && double.IsNaN(lastDifference) == false;
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new MACDIndicator(timeframeOne, timeframeTwo, signalTimeframe);
+        }
     }
 }

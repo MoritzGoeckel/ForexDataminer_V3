@@ -31,5 +31,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return double.IsNaN(lastSeenValue) == false;
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new TestIndicator();
+        }
     }
 }

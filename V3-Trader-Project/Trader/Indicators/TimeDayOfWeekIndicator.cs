@@ -33,5 +33,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return true;
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new TimeDayOfWeekIndicator();
+        }
     }
 }

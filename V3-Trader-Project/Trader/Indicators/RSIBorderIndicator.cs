@@ -57,5 +57,10 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             return rsi.isValid(timestamp);
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new RSIBorderIndicator(timeframe, border);
+        }
     }
 }

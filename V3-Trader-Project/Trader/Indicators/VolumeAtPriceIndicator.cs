@@ -101,5 +101,10 @@ namespace NinjaTrader_Client.Trader.Indicators
             else
                 return false;
         }
+
+        public override WalkerIndicator Clone()
+        {
+            return new VolumeAtPriceIndicator(timeframe, stepsize, samplingRate);
+        }
     }
 }
