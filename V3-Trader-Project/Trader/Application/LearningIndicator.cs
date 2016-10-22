@@ -21,15 +21,20 @@ namespace V3_Trader_Project.Trader.Application
         private double[][] outcomeCodeSamplingTable;
         private double[][] outcomeSamplingTable;
 
+        //Rarely used
+        private double meanBuyDist, meanSellDist;
+        
+        //Not used
         private long timeframe;
-        private double meanBuyDist, meanSellDist, targetPercent;
-
+        private double targetPercent;
+        
         private WalkerIndicator indicator;
         public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double meanBuyDist, double meanSellDist, double targetPercent)
         {
             this.meanBuyDist = meanBuyDist;
             this.meanSellDist = meanSellDist;
             this.targetPercent = targetPercent;
+            this.timeframe = timeframe;
 
             double validRatio;
             double[] values = IndicatorRunner.getIndicatorValues(prices, indicator.Clone(), out validRatio);
