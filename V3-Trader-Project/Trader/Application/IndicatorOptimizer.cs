@@ -84,7 +84,7 @@ namespace V3_Trader_Project.Trader.Application
                 outcomeCodes = OutcomeGenerator.getOutcomeCode(data, outcomeMatrix, outcomeCodePercent, out successRatioCode);
 
                 if (successRatioCode < 0.9)
-                    throw new Exception("Too low success ratio: " + successRatioCode);
+                    throw new Exception("Too few outcome codes: " + successRatioCode);
 
                 DistributionHelper.getOutcomeCodeDistribution(outcomeCodes, out buyDist, out sellDist);
 
@@ -167,13 +167,13 @@ namespace V3_Trader_Project.Trader.Application
 
             //Get min / max -10% of indicator
             double min, max;
-            DistributionHelper.getMinMax(values, 10, out min, out max);
+            DistributionHelper.getMinMax(values, 5, out min, out max);
 
             //Sample the indicator with min max
             double usedValuesRatio;
             double[][] samplesMatrix = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 20, out usedValuesRatio);
 
-            if (usedValuesRatio < 0.7) //Todo: Why does that happen so often?
+            if (usedValuesRatio < 0.65) //Todo: Why does that happen so often when the indicator is fine?
                 throw new Exception("Invalid sampling: " + usedValuesRatio + " min" + min + " max" + max + " " + indicator.getName());
 
             //Retrive the max for buy and sell

@@ -30,5 +30,10 @@ namespace NinjaTrader_Client.Trader.Indicators
             setNextData(timestamp, value);
             return getIndicator();
         }
+
+        public WalkerIndicator Clone()
+        {
+            throw new NotImplementedException(); //Todo: Implement :)
+        }
     }
 }
