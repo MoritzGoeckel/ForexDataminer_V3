@@ -55,7 +55,7 @@ namespace V3_Trader_Project.Trader.Application
                 if (double.IsNaN(desiredOutcomeCodeDistribution))
                 {
                     Logger.log("Optimizing outcomecode percentage");
-                    outcomeCodePercent = OutcomeCodePercentOptimizer.optimizeOutcomeCodePercentage(100, out outcomeCodePercent, data, outcomeMatrix, out buyDist, out sellDist);
+                    outcomeCodePercent = OutcomeCodePercentOptimizer.optimizeOutcomeCodePercentage(200, out outcomeCodePercent, data, outcomeMatrix, out buyDist, out sellDist);
                 }
                 else
                 {
@@ -74,6 +74,8 @@ namespace V3_Trader_Project.Trader.Application
                 File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
                 Logger.log("SATTLE OPT. dist for " + outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
             }
+
+            submitResults(LearningIndicator.getPredictivePowerArrayHeader());
 
             Logger.log("Start testing indicators");
             new Thread(delegate () {

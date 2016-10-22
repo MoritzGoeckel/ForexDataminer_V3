@@ -20,14 +20,12 @@ namespace V3_Trader_Project.Trader.Application
         
         private double[][] outcomeCodeSamplingTable;
         private double[][] outcomeSamplingTable;
-
-        //Rarely used
-        private double meanBuyDist, meanSellDist;
         
         //Not used
         private long timeframe;
         private double targetPercent;
-        
+        private double meanBuyDist, meanSellDist;
+
         private WalkerIndicator indicator;
         public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double meanBuyDist, double meanSellDist, double targetPercent)
         {
@@ -53,14 +51,11 @@ namespace V3_Trader_Project.Trader.Application
                 throw new TooLittleValidDataException("Not enough sampling for outcome: " + usedValuesRatio);
 
             //Predictive power calculation
-            predictivePower = new double[12];
+            predictivePower = new double[16];
             IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
             IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 
             DistributionHelper.getSampleOutcomeCodesMinMax(outcomeCodeSamplingTable, out predictivePower[10], out predictivePower[11]);
-            predictivePower[10] -= meanBuyDist;
-            predictivePower[11] -= meanSellDist;
-
             DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, out predictivePower[12], out predictivePower[13], out predictivePower[14], out predictivePower[15]);
             //End predictive power calculation
 
@@ -85,6 +80,11 @@ namespace V3_Trader_Project.Trader.Application
         public double[] getPredictivePowerArray()
         {
             return predictivePower;
+        }
+
+        public static string getPredictivePowerArrayHeader()
+        {
+            return "spBuy;spSell;pBuy;pSell;spMin;spMax;spActual;pMin;pMax;pActual;maxBuyCode;maxSellCode;maxMaxGain%;minMinFall%;maxActualGain%;minActualFall%;";
         }
 
         public double getPredictivePowerScore()
