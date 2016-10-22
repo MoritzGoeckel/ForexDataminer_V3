@@ -18,6 +18,7 @@ namespace V3_Trader_Project.Trader.Application
         private long outcomeTimeframe;
 
         private bool[][] outcomeCodes = null;
+        private double[][] outcomeMatrix = null;
         private IndicatorGenerator generator = new IndicatorGenerator();
         private string resultFolderPath;
 
@@ -32,6 +33,12 @@ namespace V3_Trader_Project.Trader.Application
             data = dl.getArray(1000 * dataDistanceInSeconds);
             Logger.log("End loading files");
 
+            double successRatio;
+            outcomeMatrix = OutcomeGenerator.getOutcome(data, outcomeTimeframe, out successRatio);
+
+            if (successRatio < 0.9)
+                throw new Exception("Way too low success rate: " + successRatio);
+
             this.desiredOutcomeCodeDistribution = desiredOutcomeCodeDistribution;
             this.outcomeTimeframe = outcomeTimeframe;
             this.resultFolderPath = resultFolderPath;
@@ -45,12 +52,6 @@ namespace V3_Trader_Project.Trader.Application
 
             if (outcomeCodes == null || double.IsNaN(outcomeCodePercent))
             {
-                double successRatio;
-                double[][] outcomeMatrix = OutcomeGenerator.getOutcome(data, outcomeTimeframe, out successRatio);
-
-                if (successRatio < 0.9)
-                    throw new Exception("Way too low success rate: " + successRatio);
-
                 if (double.IsNaN(desiredOutcomeCodeDistribution))
                 {
                     Logger.log("Optimizing outcomecode percentage");
@@ -86,38 +87,19 @@ namespace V3_Trader_Project.Trader.Application
 
         private void testRandomIndicator(WalkerIndicator indicator)
         {
-            //Todo: why not just use the new learning indicator? :)
-            //Create the random Indicator and retrive values
             Logger.log("Testing Indicator: " + indicator.getName());
 
-            double validR;
-            double[] values = IndicatorRunner.getIndicatorValues(data, indicator, out validR);
+            LearningIndicator li = new LearningIndicator(indicator, data, outcomeCodes, outcomeMatrix, outcomeTimeframe, buyDist, sellDist, outcomeCodePercent);
+            double[] pp = li.getPredictivePowerArray();
 
-            if (validR < 0.7)
-                throw new Exception("Indicator not valid: " + validR);
+            //Results
+            string output = "";
+            foreach (double d in pp)
+                output += d + ";";
 
-            //Get min / max -10% of indicator
-            double min, max;
-            DistributionHelper.getMinMax(values, 5, out min, out max);
+            output += indicator.getName().Split('_')[0] + ";" + indicator.getName();
 
-            //Sample the indicator with min max
-            double usedValuesRatio;
-            double[][] samplesMatrix = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 20, out usedValuesRatio);
-
-            if (usedValuesRatio < 0.65) //Todo: Why does that happen so often when the indicator is fine?
-                throw new Exception("Invalid sampling: " + usedValuesRatio + " min" + min + " max" + max + " " + indicator.getName());
-
-            //Retrive the max for buy and sell
-            double maxBuy, maxSell;
-            DistributionHelper.getSampleCodesMinMax(samplesMatrix, out maxBuy, out maxSell);
-
-            //Retrive the correalations
-            double spBuy, spSell, pBuy, pSell;
-            IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out spBuy, out spSell, out pBuy, out pSell);
-
-            //Submit the results
-            Logger.log("Result: " + Math.Round(spBuy, 4) + " " + Math.Round(spSell, 4) + " " + Math.Round(pBuy, 4) + " " + Math.Round(pSell, 4) + " " + Math.Round(maxBuy, 4) + " " + Math.Round(maxSell, 4) + " v" + Math.Round(validR, 1));
-            submitResults(spBuy + ";" + spSell + ";" + pBuy + ";" + pSell + ";" + maxBuy + ";" + maxSell + ";" + validR + ";" + indicator.getName().Split('_')[0] + ";" + indicator.getName());
+            submitResults(output);
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]

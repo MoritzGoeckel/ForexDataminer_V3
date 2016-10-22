@@ -65,6 +65,21 @@ namespace V3_Trader_Project.Trader.Application
             this.indicator = indicator;
         }
 
+        public string getName()
+        {
+            return indicator.getName();
+        }
+
+        public long getTimeframe()
+        {
+            return timeframe;
+        }
+
+        public double getPercent()
+        {
+            return targetPercent;
+        }
+
         public double[] getPredictivePowerArray()
         {
             return predictivePower;
@@ -93,6 +108,7 @@ namespace V3_Trader_Project.Trader.Application
             else
             {
                 double buyRatio = double.NaN, sellRatio = double.NaN, max = double.NaN, min = double.NaN, actual = double.NaN;
+                
                 //Search in outcomeCodeSamplingTable
                 double v = indicator.getIndicator();
                 for(int i = 0; i < outcomeCodeSamplingTable.Length; i++)
