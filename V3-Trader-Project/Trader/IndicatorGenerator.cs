@@ -12,6 +12,7 @@ namespace V3_Trader_Project.Trader
         private Random z = new Random();
         public WalkerIndicator getRandomIndicator()
         {
+            //Todo: Optimze the generator, make it smarter so less indicators fail
             WalkerIndicator theIndicator = null;
 
             long timeframeOne = z.Next(1, 2880) * 60 * 1000;

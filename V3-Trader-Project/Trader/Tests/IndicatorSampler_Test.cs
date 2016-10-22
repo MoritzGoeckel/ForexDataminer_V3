@@ -131,15 +131,15 @@ namespace V3_Trader_Project.Trader.Tests
 
                     if (i >= 7)
                     {
-                        Assert.AreEqual(1d, samples[i][((int)SampleValuesOutcomeIndices.MaxAvg)], 0.01);
-                        Assert.AreEqual(-1d, samples[i][((int)SampleValuesOutcomeIndices.MinAvg)], 0.01);
-                        Assert.AreEqual(2d, samples[i][((int)SampleValuesOutcomeIndices.ActualAvg)], 0.01);
+                        Assert.AreEqual(100d, samples[i][((int)SampleValuesOutcomeIndices.MaxAvg)], 0.01);
+                        Assert.AreEqual(-100d, samples[i][((int)SampleValuesOutcomeIndices.MinAvg)], 0.01);
+                        Assert.AreEqual(200d, samples[i][((int)SampleValuesOutcomeIndices.ActualAvg)], 0.01);
                     }
                     else
                     {
-                        Assert.AreEqual(0.2d, samples[i][((int)SampleValuesOutcomeIndices.MaxAvg)], 0.01);
-                        Assert.AreEqual(-0.2d, samples[i][((int)SampleValuesOutcomeIndices.MinAvg)], 0.01);
-                        Assert.AreEqual(3d, samples[i][((int)SampleValuesOutcomeIndices.ActualAvg)], 0.01);
+                        Assert.AreEqual(20d, samples[i][((int)SampleValuesOutcomeIndices.MaxAvg)], 0.01);
+                        Assert.AreEqual(-20d, samples[i][((int)SampleValuesOutcomeIndices.MinAvg)], 0.01);
+                        Assert.AreEqual(300d, samples[i][((int)SampleValuesOutcomeIndices.ActualAvg)], 0.01);
                     }
                 }
             }
