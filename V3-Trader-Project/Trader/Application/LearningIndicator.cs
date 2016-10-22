@@ -39,27 +39,29 @@ namespace V3_Trader_Project.Trader.Application
             double validRatio;
             double[] values = IndicatorRunner.getIndicatorValues(prices, indicator.Clone(), out validRatio);
             if (validRatio < 0.7)
-                throw new Exception("Not enough valid values: " + validRatio);
+                throw new TooLittleValidDataException("Not enough valid values: " + validRatio);
 
             double min, max, usedValuesRatio;
             DistributionHelper.getMinMax(values, 10, out min, out max);
 
             outcomeCodeSamplingTable = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 20, out usedValuesRatio);
             if (usedValuesRatio < 0.7)
-                throw new Exception("Not enough sampling for outcomeCode: " + usedValuesRatio);
+                throw new TooLittleValidDataException("Not enough sampling for outcomeCode: " + usedValuesRatio);
 
             outcomeSamplingTable = IndicatorSampler.sampleValuesOutcome(values, prices, outcomes, min, max, out usedValuesRatio, 20);
             if (usedValuesRatio < 0.7)
-                throw new Exception("Not enough sampling for outcome: " + usedValuesRatio);
+                throw new TooLittleValidDataException("Not enough sampling for outcome: " + usedValuesRatio);
 
             //Predictive power calculation
             predictivePower = new double[12];
             IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
             IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 
-            DistributionHelper.getSampleCodesMinMax(outcomeCodeSamplingTable, out predictivePower[10], out predictivePower[11]);
+            DistributionHelper.getSampleOutcomeCodesMinMax(outcomeCodeSamplingTable, out predictivePower[10], out predictivePower[11]);
             predictivePower[10] -= meanBuyDist;
             predictivePower[11] -= meanSellDist;
+
+            DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, out predictivePower[12], out predictivePower[13], out predictivePower[14], out predictivePower[15]);
             //End predictive power calculation
 
             this.indicator = indicator;

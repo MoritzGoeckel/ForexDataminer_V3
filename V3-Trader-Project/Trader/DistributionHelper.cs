@@ -45,7 +45,7 @@ namespace V3_Trader_Project.Trader
                 throw new Exception("Minmax is not valid: " + min + " " + max + " " + upperP + " " + lowerP);
         }
 
-        public static void getSampleCodesMinMax(double[][] sampleData, out double maxBuy, out double maxSell)
+        public static void getSampleOutcomeCodesMinMax(double[][] sampleData, out double maxBuy, out double maxSell)
         {
             maxBuy = double.MinValue;
             maxSell = double.MinValue;
@@ -65,6 +65,38 @@ namespace V3_Trader_Project.Trader
             }
 
             if (maxBuy == double.MinValue || maxSell == double.MinValue)
+                throw new Exception("Nothing found :(");
+        }
+
+        public static void getSampleOutcomesMinMax(double[][] sampleData, out double maxMax, out double minMin, out double maxActual, out double minActual)
+        {
+            maxMax = double.MinValue;
+            minMin = double.MaxValue;
+            maxActual = double.MinValue;
+            minActual = double.MaxValue;
+
+            foreach (double[] row in sampleData)
+            {
+                if (row != null)
+                {
+                    double maxAvg = row[(int)SampleValuesOutcomeIndices.MaxAvg];
+                    if (maxAvg > maxMax)
+                        maxMax = maxAvg;
+
+                    double minAvg = row[(int)SampleValuesOutcomeIndices.MinAvg];
+                    if (minAvg < minMin)
+                        minMin = minAvg;
+
+                    double actualAvg = row[(int)SampleValuesOutcomeIndices.ActualAvg];
+                    if (actualAvg > maxActual)
+                        maxActual = actualAvg;
+
+                    if (actualAvg < minActual)
+                        minActual = actualAvg;
+                }
+            }
+
+            if (maxMax == double.MinValue || minMin == double.MaxValue || maxActual == double.MinValue || minActual == double.MaxValue)
                 throw new Exception("Nothing found :(");
         }
     }

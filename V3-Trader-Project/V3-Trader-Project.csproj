@@ -148,6 +148,7 @@
     <Compile Include="Trader\Application\IndicatorOptimizer.cs" />
     <Compile Include="Trader\Application\LearningIndicator.cs" />
     <Compile Include="Trader\Application\OutcomeCodePercentOptimizer.cs" />
+    <Compile Include="Trader\Application\TooLittleValidDataException.cs" />
     <Compile Include="Trader\Market\LISignalMachine.cs" />
     <Compile Include="Trader\Market\MLSignalMachine.cs" />
     <Compile Include="Trader\Market\SignalMachine.cs" />

@@ -60,9 +60,9 @@ namespace V3_Trader_Project.Trader
                 {
                     double mid = (prices[i][(int)PriceDataIndeces.Ask] + prices[i][(int)PriceDataIndeces.Bid]) / 2d;
 
-                    double minChange = (outcomes[i][(int)OutcomeMatrixIndices.Min] / mid) - 1d;
-                    double maxChange = (outcomes[i][(int)OutcomeMatrixIndices.Max] / mid) - 1d;
-                    double actualChange = (outcomes[i][(int)OutcomeMatrixIndices.Actual] / mid) - 1d;
+                    double minChange = ((outcomes[i][(int)OutcomeMatrixIndices.Min] / mid) - 1d) * 100;
+                    double maxChange = ((outcomes[i][(int)OutcomeMatrixIndices.Max] / mid) - 1d) * 100;
+                    double actualChange = ((outcomes[i][(int)OutcomeMatrixIndices.Actual] / mid) - 1d) * 100;
 
                     minList.Add(minChange);
                     maxList.Add(maxChange);
@@ -143,14 +143,14 @@ namespace V3_Trader_Project.Trader
 
             for (int i = 0; i < values.Length; i++)
             {
-                if (double.IsNaN(values[i]) == false && values[i] > min && values[i] < max)
+                if (outcomes[i] != null && double.IsNaN(values[i]) == false && values[i] > min && values[i] < max)
                 {
                     int targetIndex = Convert.ToInt32(Math.Floor((values[i] - min) / stepsSize));
 
                     double mid = (prices[i][(int)PriceDataIndeces.Ask] + prices[i][(int)PriceDataIndeces.Bid]) / 2d;
-                    double maxChange = outcomes[i][(int)OutcomeMatrixIndices.Max] / mid - 1d;
-                    double minChange = outcomes[i][(int)OutcomeMatrixIndices.Min] / mid - 1d;
-                    double actualChange = outcomes[i][(int)OutcomeMatrixIndices.Actual] / mid - 1d;
+                    double maxChange = ((outcomes[i][(int)OutcomeMatrixIndices.Max] / mid) - 1d) * 100d;
+                    double minChange = ((outcomes[i][(int)OutcomeMatrixIndices.Min] / mid) - 1d) * 100d;
+                    double actualChange = ((outcomes[i][(int)OutcomeMatrixIndices.Actual] / mid) - 1d) * 100d;
 
                     output[targetIndex][(int)SampleValuesOutcomeIndices.MaxAvg] += maxChange;
                     output[targetIndex][(int)SampleValuesOutcomeIndices.MinAvg] += minChange;

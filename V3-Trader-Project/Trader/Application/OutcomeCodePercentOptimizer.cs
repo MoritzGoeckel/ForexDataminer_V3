@@ -18,7 +18,7 @@ namespace V3_Trader_Project.Trader.Application
                 bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(priceData, outcomeMatrix, outcomeCodePercent, out successRatioCode);
 
                 if (successRatioCode < 0.9)
-                    throw new Exception("Too few outcome codes: " + successRatioCode);
+                    throw new TooLittleValidDataException("Too few outcome codes: " + successRatioCode);
 
                 DistributionHelper.getOutcomeCodeDistribution(outcomeCodes, out buyDist, out sellDist);
 
@@ -55,7 +55,7 @@ namespace V3_Trader_Project.Trader.Application
                 bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCode(priceData, outcomes, outcomeCodePercent, out successRatioCode);
 
                 if (successRatioCode < 0.9)
-                    throw new Exception("Too low success ratio: " + successRatioCode);
+                    throw new TooLittleValidDataException("Too low success ratio: " + successRatioCode);
 
                 DistributionHelper.getOutcomeCodeDistribution(outcomeCodes, out buyDist, out sellDist);
 

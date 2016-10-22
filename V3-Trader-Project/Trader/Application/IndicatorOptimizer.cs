@@ -37,7 +37,7 @@ namespace V3_Trader_Project.Trader.Application
             outcomeMatrix = OutcomeGenerator.getOutcome(data, outcomeTimeframe, out successRatio);
 
             if (successRatio < 0.9)
-                throw new Exception("Way too low success rate: " + successRatio);
+                throw new TooLittleValidDataException("Way too low success rate: " + successRatio);
 
             this.desiredOutcomeCodeDistribution = desiredOutcomeCodeDistribution;
             this.outcomeTimeframe = outcomeTimeframe;
@@ -55,14 +55,21 @@ namespace V3_Trader_Project.Trader.Application
                 if (double.IsNaN(desiredOutcomeCodeDistribution))
                 {
                     Logger.log("Optimizing outcomecode percentage");
-                    OutcomeCodePercentOptimizer.optimizeOutcomeCodePercentage(300, out outcomeCodePercent, data, outcomeMatrix, out buyDist, out sellDist);
+                    outcomeCodePercent = OutcomeCodePercentOptimizer.optimizeOutcomeCodePercentage(100, out outcomeCodePercent, data, outcomeMatrix, out buyDist, out sellDist);
                 }
                 else
                 {
                     Logger.log("Find outcome percent for " + desiredOutcomeCodeDistribution);
                     double desiredDistributionTolerance = desiredOutcomeCodeDistribution / 100d;
-                    OutcomeCodePercentOptimizer.findOutcomeCodeForDesiredDistribution(desiredOutcomeCodeDistribution, desiredDistributionTolerance, data, outcomeMatrix, out buyDist, out sellDist);
+                    outcomeCodePercent = OutcomeCodePercentOptimizer.findOutcomeCodeForDesiredDistribution(desiredOutcomeCodeDistribution, desiredDistributionTolerance, data, outcomeMatrix, out buyDist, out sellDist);
                 }
+
+                Logger.log("Loading outcome codes: " + outcomeCodePercent);
+
+                double codeSuccessRatio;
+                outcomeCodes = OutcomeGenerator.getOutcomeCode(data, outcomeMatrix, outcomeCodePercent, out codeSuccessRatio);
+                if (codeSuccessRatio < 0.7)
+                    throw new TooLittleValidDataException("The outcome codes deliver to little data " + codeSuccessRatio);
 
                 File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
                 Logger.log("SATTLE OPT. dist for " + outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
@@ -74,7 +81,13 @@ namespace V3_Trader_Project.Trader.Application
                 while(running)
                 {
                     //How about a genetic algo?
-                    try { testRandomIndicator(generator.getRandomIndicator()); } catch { }
+                    try {
+                        testRandomIndicator(generator.getRandomIndicator());
+                    }
+                    catch (TooLittleValidDataException e)
+                    {
+                        Logger.log("E:" + e.Message);
+                    }
                     //testRandomIndicator();
                 }
             }).Start();
