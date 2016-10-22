@@ -46,5 +46,17 @@ namespace V3_Trader_Project.Trader.Tests
             Assert.AreEqual(Color.FromArgb(255, 0, 128, 0), bmp.GetPixel(bmp.Width / 2, bmp.Height / 2));
             Assert.AreEqual(Color.FromArgb(255, 211, 211, 211), bmp.GetPixel(bmp.Width / 2 - 20, bmp.Height / 2 + 20));
         }
+
+        [TestMethod]
+        public void visualizeOutcomeCodeSamplingTable_Test()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void visualizeOutcomeSamplingTable_Test()
+        {
+            Assert.Fail();
+        }
     }
 }

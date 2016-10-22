@@ -144,5 +144,11 @@ namespace V3_Trader_Project.Trader.Tests
                 }
             }
         }
+
+        [TestMethod]
+        public void getStatisticsOutcomes_Test()
+        {
+            Assert.Fail();
+        }
     }
 }

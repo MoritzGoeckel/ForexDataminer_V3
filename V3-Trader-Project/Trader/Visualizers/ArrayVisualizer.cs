@@ -67,6 +67,16 @@ namespace V3_Trader_Project.Trader.Visualizers
             return bmp;
         }
 
+        public static Image visualizeOutcomeCodeSamplingTable(double[][] table, int width, int height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static Image visualizeOutcomeSamplingTable(double[][] table, int width, int height)
+        {
+            throw new NotImplementedException();
+        }
+
         public static void showImg(Image img)
         {
             img.Save("tmp.png");

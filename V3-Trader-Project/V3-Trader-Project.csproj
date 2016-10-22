@@ -191,6 +191,7 @@
     <Compile Include="Trader\OutcomeGenerator.cs" />
     <Compile Include="Trader\Tests\DistributionHelper_Test.cs" />
     <Compile Include="Trader\Tests\IndicatorSampler_Test.cs" />
+    <Compile Include="Trader\Tests\LearningIndicator_Test.cs" />
     <Compile Include="Trader\Tests\MachineLearning_Test.cs" />
     <Compile Include="Trader\Tests\OutcomeGenerator_Test.cs" />
     <Compile Include="Trader\Tests\Timestamp_Test.cs" />

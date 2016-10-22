@@ -17,7 +17,7 @@ namespace V3_Trader_Project.Trader.Tests
             bool[][] inputs = new bool[100][];
             for (int i = 0; i < 50; i++)
             {
-                inputs[i] = new bool[]{ true, true };
+                inputs[i] = new bool[] { true, true };
             }
 
             for (int i = 50; i < 100; i++)
@@ -122,6 +122,12 @@ namespace V3_Trader_Project.Trader.Tests
 
         [TestMethod]
         public void getSampleCodesMinMax_Test()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void getOutcomeMinMax_Test()
         {
             Assert.Fail();
         }
