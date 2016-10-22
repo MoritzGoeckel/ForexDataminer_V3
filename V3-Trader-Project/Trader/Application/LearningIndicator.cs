@@ -13,17 +13,24 @@ namespace V3_Trader_Project.Trader.Application
 
     public class LearningIndicator
     {
-        //Not known is base distribution of outcomeCodes and timeframe
-        
-        //Plug ML in here?
-        //Calculate indicator PP and return as function?
+        private double[] predictivePower;
 
+        //Not known is base distribution of outcomeCodes and timeframe
+        //Plug ML in here?
+        
         private double[][] outcomeCodeSamplingTable;
         private double[][] outcomeSamplingTable;
 
+        private long timeframe;
+        private double meanBuyDist, meanSellDist, targetPercent;
+
         private WalkerIndicator indicator;
-        public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes)
+        public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double meanBuyDist, double meanSellDist, double targetPercent)
         {
+            this.meanBuyDist = meanBuyDist;
+            this.meanSellDist = meanSellDist;
+            this.targetPercent = targetPercent;
+
             double validRatio;
             double[] values = IndicatorRunner.getIndicatorValues(prices, indicator.Clone(), out validRatio);
             if (validRatio < 0.7)
@@ -40,9 +47,32 @@ namespace V3_Trader_Project.Trader.Application
             if (usedValuesRatio < 0.7)
                 throw new Exception("Not enough sampling for outcome: " + usedValuesRatio);
 
-            //IndicatorSampler.getStatisticsOutcomeCodes ... todo
+            //Predictive power calculation
+            predictivePower = new double[12];
+            IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
+            IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
+
+            DistributionHelper.getSampleCodesMinMax(outcomeCodeSamplingTable, out predictivePower[10], out predictivePower[11]);
+            predictivePower[10] -= meanBuyDist;
+            predictivePower[11] -= meanSellDist;
+            //End predictive power calculation
 
             this.indicator = indicator;
+        }
+
+        public double[] getPredictivePowerArray()
+        {
+            return predictivePower;
+        }
+
+        public double getPredictivePowerScore()
+        {
+            double output = 1;
+            foreach (double d in predictivePower)
+                if (double.IsNaN(d) == false)
+                    output += Math.Abs(d);
+
+            return output;
         }
 
         public void setNewPrice(double[] prices)

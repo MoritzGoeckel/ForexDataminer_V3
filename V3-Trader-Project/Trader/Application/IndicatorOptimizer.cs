@@ -23,6 +23,8 @@ namespace V3_Trader_Project.Trader.Application
 
         private double desiredOutcomeCodeDistribution;
 
+        private double buyDist, sellDist;
+
         public IndicatorOptimizer(string resultFolderPath, string dataPath, long outcomeTimeframe, int dataDistanceInSeconds, double desiredOutcomeCodeDistribution = double.NaN)
         {
             Logger.log("Loading files ...");
@@ -41,11 +43,29 @@ namespace V3_Trader_Project.Trader.Application
             if (running == true)
                 throw new Exception("Already running!");
 
-            if(double.IsNaN(desiredOutcomeCodeDistribution) == false && (outcomeCodes == null || double.IsNaN(outcomeCodePercent)))
-                findOutcomeCodeForDesiredDistribution(desiredOutcomeCodeDistribution);
+            if (outcomeCodes == null || double.IsNaN(outcomeCodePercent))
+            {
+                double successRatio;
+                double[][] outcomeMatrix = OutcomeGenerator.getOutcome(data, outcomeTimeframe, out successRatio);
 
-            if (double.IsNaN(desiredOutcomeCodeDistribution) && (outcomeCodes == null || double.IsNaN(outcomeCodePercent)))
-                optimizeOutcomeCodePercentage(300);
+                if (successRatio < 0.9)
+                    throw new Exception("Way too low success rate: " + successRatio);
+
+                if (double.IsNaN(desiredOutcomeCodeDistribution))
+                {
+                    Logger.log("Optimizing outcomecode percentage");
+                    OutcomeCodePercentOptimizer.optimizeOutcomeCodePercentage(300, out outcomeCodePercent, data, outcomeMatrix, out buyDist, out sellDist);
+                }
+                else
+                {
+                    Logger.log("Find outcome percent for " + desiredOutcomeCodeDistribution);
+                    double desiredDistributionTolerance = desiredOutcomeCodeDistribution / 100d;
+                    OutcomeCodePercentOptimizer.findOutcomeCodeForDesiredDistribution(desiredOutcomeCodeDistribution, desiredDistributionTolerance, data, outcomeMatrix, out buyDist, out sellDist);
+                }
+
+                File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
+                Logger.log("SATTLE OPT. dist for " + outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
+            }
 
             Logger.log("Start testing indicators");
             new Thread(delegate () {
@@ -53,7 +73,7 @@ namespace V3_Trader_Project.Trader.Application
                 while(running)
                 {
                     //How about a genetic algo?
-                    try { testRandomIndicator(); } catch { }
+                    try { testRandomIndicator(generator.getRandomIndicator()); } catch { }
                     //testRandomIndicator();
                 }
             }).Start();
@@ -64,100 +84,10 @@ namespace V3_Trader_Project.Trader.Application
             running = false;
         }
 
-        private void findOutcomeCodeForDesiredDistribution(double desiredDistribution)
+        private void testRandomIndicator(WalkerIndicator indicator)
         {
-            Logger.log("Find outcome percent for " + desiredDistribution);
-            double successRatio;
-            double[][] outcomeMatrix = OutcomeGenerator.getOutcome(data, outcomeTimeframe, out successRatio);
-            outcomeCodePercent = 0.5;
-
-            double desiredDistributionTolerance = desiredDistribution / 100d;
-
-            if (successRatio < 0.9)
-                throw new Exception("Way too low success rate: " + successRatio);
-
-            double buyDist, sellDist;
-            
-            int round = 0;
-            while(true)
-            {
-                double successRatioCode;
-                outcomeCodes = OutcomeGenerator.getOutcomeCode(data, outcomeMatrix, outcomeCodePercent, out successRatioCode);
-
-                if (successRatioCode < 0.9)
-                    throw new Exception("Too few outcome codes: " + successRatioCode);
-
-                DistributionHelper.getOutcomeCodeDistribution(outcomeCodes, out buyDist, out sellDist);
-
-                double score = (buyDist + sellDist) / 2;
-                if (score > desiredDistribution - desiredDistributionTolerance && score < desiredDistribution + desiredDistributionTolerance)
-                    break;
-                else if(score > desiredDistribution + desiredDistributionTolerance)
-                    outcomeCodePercent += (outcomeCodePercent / (10 + round));
-                else if(score < desiredDistribution - desiredDistributionTolerance)
-                    outcomeCodePercent -= (outcomeCodePercent / (10 + round));
-
-                Logger.log("SetDist OPT. Round " + round + " -> " + outcomeCodePercent + "% = b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4) + " =" + Math.Round(score, 4));
-
-                round++;
-            }
-
-            File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
-            Logger.log("SATTLE OPT. dist for "+ outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4) + " after " + round + " rounds");
-        }
-
-        private void optimizeOutcomeCodePercentage(int rounds)
-        {
-            Logger.log("Optimizing outcomecode percentage");
-            double successRatio;
-            double[][] outcomeMatrix = OutcomeGenerator.getOutcome(data, outcomeTimeframe, out successRatio);
-            outcomeCodePercent = 0.5;
-
-            if (successRatio < 0.9)
-                throw new Exception("Way too low success rate: " + successRatio);
-
-            double buyDist = double.NaN, sellDist = double.NaN;
-            double lastScore = double.MinValue;
-            double direction = -0.01;
-
-            int round;
-            for (round = 1;  round < rounds; round++)
-            {
-                double successRatioCode;
-                outcomeCodes = OutcomeGenerator.getOutcomeCode(data, outcomeMatrix, outcomeCodePercent, out successRatioCode);
-
-                if (successRatioCode < 0.9)
-                    throw new Exception("Too low success ratio: " + successRatioCode);
-
-                DistributionHelper.getOutcomeCodeDistribution(outcomeCodes, out buyDist, out sellDist);
-
-                double score = ((buyDist + sellDist) / 2) * outcomeCodePercent;
-                if (score < lastScore) //Wrong direction
-                {
-                    direction = direction * (-1);
-                    Logger.log("New opt. direction: " + direction);
-                }
-
-                if(outcomeCodePercent <= 0 && direction <= 0)
-                    direction = Math.Abs(direction);
-
-                outcomeCodePercent += (direction / (1 + (round / 20)));
-
-                Logger.log("PercDist OPT. Round " + round + " -> " + outcomeCodePercent + "% = |s"+ Math.Round(score, 4) + "| b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
-
-                lastScore = score;
-                round++;
-            }
-
-            File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
-            Logger.log("SATTLE OPT. for " + outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4) + " after " + round + " rounds");
-        }
-        
-        private void testRandomIndicator()
-        {
+            //Todo: why not just use the new learning indicator? :)
             //Create the random Indicator and retrive values
-            WalkerIndicator indicator = generator.getRandomIndicator();
-
             Logger.log("Testing Indicator: " + indicator.getName());
 
             double validR;
