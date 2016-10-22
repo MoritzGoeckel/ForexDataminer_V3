@@ -23,11 +23,19 @@ namespace V3_Trader_Project.Trader.Visualizers
             {
                 int index = Convert.ToInt32(stepSize * x);
 
-                for (int y = 0; outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Buy] && y < height / 2; y++)
-                    bmp.SetPixel(x, y, Color.Green);
+                if (outcomeCodes[index] != null)
+                {
+                    for (int y = 0; outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Buy] && y < height / 2; y++)
+                        bmp.SetPixel(x, y, Color.Green);
 
-                for (int y = height / 2; outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Sell] && y < height; y++)
-                    bmp.SetPixel(x, y, Color.Blue);
+                    for (int y = height / 2; outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Sell] && y < height; y++)
+                        bmp.SetPixel(x, y, Color.Blue);
+                }
+                else
+                {
+                    for (int y = 0; outcomeCodes[index][(int)OutcomeCodeMatrixIndices.Sell] && y < height; y++)
+                        bmp.SetPixel(x, y, Color.Yellow);
+                }
             }
             
             return bmp;
@@ -51,17 +59,25 @@ namespace V3_Trader_Project.Trader.Visualizers
             for (int x = 0; x < width; x++)
             {
                 int index = Convert.ToInt32(stepSize * x);
-                int y = height - Convert.ToInt32((input[index] - min) / (max - min) * height);
+                if (double.IsNaN(input[index]) == false)
+                {
+                    int y = height - Convert.ToInt32((input[index] - min) / (max - min) * height);
 
-                if (oldX != -1)
-                    for (int yOffset = -(lineSize / 2); yOffset < (lineSize / 2); yOffset++)
-                    {
-                        if (y + yOffset > 0 && y + yOffset < height)
-                            bmp.SetPixel(x, y + yOffset, y > oldY ? cDown : cUp);
-                    }
+                    if (oldX != -1)
+                        for (int yOffset = -(lineSize / 2); yOffset < (lineSize / 2); yOffset++)
+                        {
+                            if (y + yOffset > 0 && y + yOffset < height)
+                                bmp.SetPixel(x, y + yOffset, y > oldY ? cDown : cUp);
+                        }
 
-                oldX = x;
-                oldY = y;
+                    oldX = x;
+                    oldY = y;
+                }
+                else
+                {
+                    for (int y = 0; y < height; y++)
+                        bmp.SetPixel(x, y, Color.Yellow);
+                }
             }
 
             return bmp;

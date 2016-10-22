@@ -1,19 +1,25 @@
 ﻿Visualize the outcomeSamplingTable
 Visualize the outcomeCodeSamplingTable
-
 Visualize Learning indicator
 Visualize the first order machine
-
 Check the tables for some indicators, make it convinient (string name input?)
-
 Implement the important tests
-
 Implement tests for indicators
-
 Check whether the IndicatorGenerator needs to be updated
-
 (Search for indicators)
 Implement the MarketModul and a fake api
-
+Visualize the MarketModul
 Start the backtesting framework
-Visualize it :)
+Visualize the backtesting framework
+
+Should be stable then, do backtsets
+Try different Order machines
+
+Create live papertrade api / framework
+Create demo account trading api
+
+Alternatives:
+	Create Signalmachine with single indicators
+	Create Signalmachine with machine learning
+	Create new Indicators
+	Implement more tests to find bugs
