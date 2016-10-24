@@ -10,15 +10,15 @@ namespace V3_Trader_Project.Trader
     public class IndicatorGenerator
     {
         private Random z = new Random();
-        public WalkerIndicator getRandomIndicator(int minTimeFrame, int maxTimeframe)
+        public WalkerIndicator getRandomIndicator(int minTimeFrameSeconds, int maxTimeframeSeconds)
         {
             //Todo: Optimze the generator, make it smarter so less indicators fail
             WalkerIndicator theIndicator = null;
 
-            long timeframeOne = z.Next(minTimeFrame, maxTimeframe);
-            long timeframeTwo = z.Next(minTimeFrame, maxTimeframe);
-            long timeFrameThree = z.Next(minTimeFrame, maxTimeframe);
-            long timeFrameSmaller = z.Next(minTimeFrame, maxTimeframe / 2);
+            long timeframeOne = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
+            long timeframeTwo = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
+            long timeFrameThree = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
+            long timeFrameSmaller = z.Next(minTimeFrameSeconds, maxTimeframeSeconds / 2) * 1000l;
 
             switch (z.Next(0, 18)) //Todo: set max value for choosing the indicator
             {

@@ -84,6 +84,9 @@ namespace V3_Trader_Project.Trader.Visualizers
                     double border = columnSize / 5d;
 
                     //Draw the samples amount
+                    if (double.IsNaN(samplesColor))
+                        samplesColor = 1;
+
                     g.FillRectangle(new SolidBrush(Color.FromArgb(Convert.ToInt32(samplesColor), Convert.ToInt32(samplesColor), Convert.ToInt32(samplesColor))), Convert.ToInt32(x), 0, Convert.ToInt32(columnSize), height);
 
                     double mid = height / 2d;

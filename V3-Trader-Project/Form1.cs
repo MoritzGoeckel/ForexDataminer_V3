@@ -19,6 +19,7 @@ namespace V3_Trader_Project
             InitializeComponent();
         }
 
+        IndicatorOptimizer op;
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -29,8 +30,11 @@ namespace V3_Trader_Project
             button1.Enabled = false;
             button2.Enabled = false;
 
-            IndicatorOptimizer op = new IndicatorOptimizer(Config.DataPath, Config.DataPath + "EURUSD", 48 * 60 * 60 * 1000, 60);
+            this.BackgroundImageLayout = ImageLayout.Zoom;
+
+            op = new IndicatorOptimizer(Config.DataPath, Config.DataPath + "EURUSD", 1 * 60 * 60 * 1000, 60, 0.5);
             op.start();
+            timer1.Start();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -49,6 +53,12 @@ namespace V3_Trader_Project
             shorter.start();
             veryShort.start();
             veryLong.start();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            this.BackgroundImage = op.lastImage;
+            this.Text = op.lastIndicatorName;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using NinjaTrader_Client.Trader.Indicators;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -25,6 +26,9 @@ namespace V3_Trader_Project.Trader.Application
         private double desiredOutcomeCodeDistribution;
 
         private double buyDist, sellDist;
+
+        public Image lastImage;
+        public string lastIndicatorName;
 
         public IndicatorOptimizer(string resultFolderPath, string dataPath, long outcomeTimeframe, int dataDistanceInSeconds, double desiredOutcomeCodeDistribution = double.NaN)
         {
@@ -84,11 +88,15 @@ namespace V3_Trader_Project.Trader.Application
                 {
                     //How about a genetic algo?
                     try {
-                        testRandomIndicator(generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 15), Convert.ToInt32(outcomeTimeframe * 100)));
+                        testRandomIndicator(generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000)));
                     }
                     catch (TooLittleValidDataException e)
                     {
                         Logger.log("E:" + e.Message);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.log("FATAL:" + e.Message);
                     }
                     //testRandomIndicator();
                 }
@@ -114,7 +122,8 @@ namespace V3_Trader_Project.Trader.Application
 
             output += indicator.getName().Split('_')[0] + ";" + indicator.getName();
 
-            //Show picture?
+            lastImage = li.visualizeTables(2000, 1000);
+            lastIndicatorName = li.getName();
 
             Logger.log("Result: " + Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName());
             submitResults(output);

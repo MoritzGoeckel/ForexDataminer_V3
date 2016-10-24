@@ -42,13 +42,13 @@ namespace V3_Trader_Project.Trader.Application
                 throw new TooLittleValidDataException("Not enough valid values: " + validRatio);
 
             double min, max, usedValuesRatio;
-            DistributionHelper.getMinMax(values, 10, out min, out max);
+            DistributionHelper.getMinMax(values, 4, out min, out max);
 
-            outcomeCodeSamplingTable = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 20, out usedValuesRatio);
+            outcomeCodeSamplingTable = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 40, out usedValuesRatio);
             if (usedValuesRatio < 0.7)
                 throw new TooLittleValidDataException("Not enough sampling for outcomeCode: " + usedValuesRatio);
 
-            outcomeSamplingTable = IndicatorSampler.sampleValuesOutcome(values, prices, outcomes, min, max, out usedValuesRatio, 20);
+            outcomeSamplingTable = IndicatorSampler.sampleValuesOutcome(values, prices, outcomes, min, max, out usedValuesRatio, 40);
             if (usedValuesRatio < 0.7)
                 throw new TooLittleValidDataException("Not enough sampling for outcome: " + usedValuesRatio);
 
@@ -152,6 +152,7 @@ namespace V3_Trader_Project.Trader.Application
             g.Clear(Color.White);
             g.DrawImage(outcomeImg, 0, 0);
             g.DrawImage(outcomeCodeImg, 0, outcomeImg.Height);
+            g.DrawLine(new Pen(Color.Blue, 3), 0, outcomeImg.Height, outcomeImg.Width, outcomeImg.Height);
 
             return o;
         }
