@@ -57,7 +57,7 @@ namespace V3_Trader_Project.Trader.Application
             IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
             IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 
-            DistributionHelper.getSampleOutcomeCodesMinMax(outcomeCodeSamplingTable, out predictivePower[10], out predictivePower[11]);
+            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(outcomeCodeSamplingTable, out predictivePower[10], out predictivePower[11]);
             DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, out predictivePower[12], out predictivePower[13], out predictivePower[14], out predictivePower[15]);
             //End predictive power calculation
 
@@ -141,13 +141,13 @@ namespace V3_Trader_Project.Trader.Application
             }
         }
 
-        public Image visualizeTables(int width, int heigt)
+        public Image visualizeTables(int width, int height, bool showState = false)
         {
             double currentIndicatorValue = indicator.getIndicator();
-            Image outcomeImg = OutcomeSamplingVisualizer.visualizeOutcomeSamplingTable(outcomeSamplingTable, width, heigt / 2, currentIndicatorValue);
-            Image outcomeCodeImg = OutcomeSamplingVisualizer.visualizeOutcomeCodeSamplingTable(outcomeCodeSamplingTable, width, heigt / 2, currentIndicatorValue);
+            Image outcomeImg = OutcomeSamplingVisualizer.visualizeOutcomeSamplingTable(outcomeSamplingTable, width, height / 2, showState ? currentIndicatorValue : double.NaN);
+            Image outcomeCodeImg = OutcomeSamplingVisualizer.visualizeOutcomeCodeSamplingTable(outcomeCodeSamplingTable, width, height / 2, showState ? currentIndicatorValue : double.NaN);
 
-            Image o = new Bitmap(width, heigt);
+            Image o = new Bitmap(width, height);
             Graphics g = Graphics.FromImage(o);
             g.Clear(Color.White);
             g.DrawImage(outcomeImg, 0, 0);

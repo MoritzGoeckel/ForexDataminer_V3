@@ -121,15 +121,48 @@ namespace V3_Trader_Project.Trader.Tests
         }
 
         [TestMethod]
-        public void getSampleCodesMinMax_Test()
+        public void getSampleCodesBuyMaxSellMax_Test()
         {
-            Assert.Fail();
+            double[][] samples = new double[10][];
+            for(int i = 0; i < samples.Length; i++)
+            {
+                samples[i] = new double[] { i * 0.1, 0.2, 0.2, 10 };
+            }
+
+            samples[3] = null;
+            samples[4][1] = 0.4; //Buy
+            samples[5][2] = 0.41; //Sell
+
+            double buy, sell;
+            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(samples, out buy, out sell);
+            Assert.AreEqual(0.4, buy);
+            Assert.AreEqual(0.41, sell);
         }
 
         [TestMethod]
         public void getOutcomeMinMax_Test()
         {
-            Assert.Fail();
+            double[][] samples = new double[10][];
+            for (int i = 0; i < samples.Length; i++)
+            {
+                samples[i] = new double[] { i * 0.1, -0.2, 0.2, 0.3, 10 };
+            }
+
+            samples[3] = null;
+            samples[4][1] = -0.4; //MinMIn
+            samples[5][2] = 0.41; //MaxMax
+
+            samples[6][3] = 0.42; //MaxActual
+            samples[5][3] = -0.2; //MinActual
+
+
+            double maxMax, minMin, maxActual, minActual;
+            DistributionHelper.getSampleOutcomesMinMax(samples, out maxMax, out minMin, out maxActual, out minActual);
+
+            Assert.AreEqual(0.41, maxMax);
+            Assert.AreEqual(-0.4, minMin);
+            Assert.AreEqual(0.42, maxActual);
+            Assert.AreEqual(-0.2, minActual);
         }
     }
 }

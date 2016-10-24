@@ -84,7 +84,7 @@ namespace V3_Trader_Project.Trader.Application
                 {
                     //How about a genetic algo?
                     try {
-                        testRandomIndicator(generator.getRandomIndicator());
+                        testRandomIndicator(generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 15), Convert.ToInt32(outcomeTimeframe * 100)));
                     }
                     catch (TooLittleValidDataException e)
                     {
@@ -113,6 +113,8 @@ namespace V3_Trader_Project.Trader.Application
                 output += d + ";";
 
             output += indicator.getName().Split('_')[0] + ";" + indicator.getName();
+
+            //Show picture?
 
             Logger.log("Result: " + Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName());
             submitResults(output);

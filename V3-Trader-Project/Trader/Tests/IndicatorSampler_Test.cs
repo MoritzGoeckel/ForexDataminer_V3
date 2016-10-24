@@ -149,6 +149,7 @@ namespace V3_Trader_Project.Trader.Tests
         public void getStatisticsOutcomes_Test()
         {
             Assert.Fail();
+            //IndicatorSampler.getStatisticsOutcomes()
         }
     }
 }

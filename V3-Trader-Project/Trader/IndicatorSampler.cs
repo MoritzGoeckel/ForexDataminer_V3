@@ -13,7 +13,7 @@ namespace V3_Trader_Project.Trader
 
     public enum SampleValuesOutcomeIndices
     {
-        Start = 0, MaxAvg = 1, MinAvg = 2, ActualAvg = 3, SamplesCount = 4
+        Start = 0, MinAvg = 1, MaxAvg = 2, ActualAvg = 3, SamplesCount = 4
     };
 
     public static class IndicatorSampler
