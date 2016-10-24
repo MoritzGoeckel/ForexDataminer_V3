@@ -1,5 +1,4 @@
 ﻿Visualize the outcomeSamplingTable
-Visualize the outcomeCodeSamplingTable
 Visualize Learning indicator
 Visualize the first order machine
 Check the tables for some indicators, make it convinient (string name input?)
