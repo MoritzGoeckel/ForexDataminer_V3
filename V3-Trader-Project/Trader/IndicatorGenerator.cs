@@ -9,6 +9,7 @@ namespace V3_Trader_Project.Trader
 {
     public class IndicatorGenerator
     {
+        private Dictionary<string, bool> doneIndicators = new Dictionary<string, bool>();
         private Random z = new Random();
         public WalkerIndicator getRandomIndicator(int minTimeFrameSeconds, int maxTimeframeSeconds)
         {
@@ -102,7 +103,13 @@ namespace V3_Trader_Project.Trader
                     throw new Exception("Fired a unexpected random value");
             }
 
-            return theIndicator;
+            if (doneIndicators.ContainsKey(theIndicator.getName()) == false)
+            {
+                doneIndicators.Add(theIndicator.getName(), true);
+                return theIndicator;
+            }
+            else
+                return getRandomIndicator(minTimeFrameSeconds, maxTimeframeSeconds);
         }
 
         private double getRanDouble(double min, double max)
