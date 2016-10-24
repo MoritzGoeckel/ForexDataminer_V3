@@ -5,14 +5,14 @@ Visualize the first order machine
 Check the tables for some indicators, make it convinient (string name input?)
 Implement the important tests
 Implement tests for indicators
-Check whether the IndicatorGenerator needs to be updated
+Check whether the IndicatorGenerator needs to be updated, add a parameter
 (Search for indicators)
 Implement the MarketModul and a fake api
 Visualize the MarketModul
 Start the backtesting framework
 Visualize the backtesting framework
 
-Should be stable then, do backtsets
+Should be stable then, do backtests
 Try different Order machines
 
 Create live papertrade api / framework

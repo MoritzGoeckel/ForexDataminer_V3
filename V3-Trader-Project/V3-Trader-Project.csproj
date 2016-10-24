@@ -196,6 +196,7 @@
     <Compile Include="Trader\Tests\LearningIndicator_Test.cs" />
     <Compile Include="Trader\Tests\MachineLearning_Test.cs" />
     <Compile Include="Trader\Tests\OutcomeGenerator_Test.cs" />
+    <Compile Include="Trader\Tests\OutcomeSamplingVisualizer_Test.cs" />
     <Compile Include="Trader\Tests\Timestamp_Test.cs" />
     <Compile Include="Trader\Utils\Config.cs" />
     <Compile Include="Trader\DataLoader.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="Trader\Utils\Timestamp.cs" />
     <Compile Include="Trader\IndicatorSampler.cs" />
     <Compile Include="Trader\Visualizers\ArrayVisualizer.cs" />
+    <Compile Include="Trader\Visualizers\OutcomeSamplingVisualizer.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
