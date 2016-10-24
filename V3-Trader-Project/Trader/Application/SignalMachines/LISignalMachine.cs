@@ -43,9 +43,36 @@ namespace V3_Trader_Project.Trader.SignalMachines
                 i.setNewPrice(price);
         }
 
-        public Image visualize()
+        //Todo: Untested
+        public Image visualize(int width, int inRow)
         {
-            throw new NotImplementedException(); //Todo: !! :)
+            int height = indicators.Length / inRow * width / 2;
+            Bitmap bmp = new Bitmap(width, height);
+            Graphics g = Graphics.FromImage(bmp);
+            g.Clear(Color.Black);
+
+            int border = 10;
+
+            int indexInRow = 0;
+            int row = 0;
+
+            int widthPerIndicator = width / inRow;
+            int heightPerIndicator = height / indicators.Length;
+            for(int i = 0; i < indicators.Length; i++)
+            {
+                if(indexInRow < inRow)
+                {
+                    g.DrawImage(indicators[i].visualizeTables(widthPerIndicator - border, heightPerIndicator - border), indexInRow * widthPerIndicator, row * heightPerIndicator);
+                    indexInRow++;
+                }
+                else
+                {
+                    indexInRow = 0;
+                    row++;
+                }
+            }
+
+            return bmp;
         }
     }
 }

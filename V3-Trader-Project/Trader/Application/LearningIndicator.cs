@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using V3_Trader_Project.Trader.Visualizers;
 
 namespace V3_Trader_Project.Trader.Application
 {
@@ -140,9 +141,19 @@ namespace V3_Trader_Project.Trader.Application
             }
         }
 
-        public Image visualizeTables()
+        public Image visualizeTables(int width, int heigt)
         {
-            throw new NotImplementedException(); //Todo:
+            double currentIndicatorValue = indicator.getIndicator();
+            Image outcomeImg = OutcomeSamplingVisualizer.visualizeOutcomeSamplingTable(outcomeSamplingTable, width, heigt / 2, currentIndicatorValue);
+            Image outcomeCodeImg = OutcomeSamplingVisualizer.visualizeOutcomeCodeSamplingTable(outcomeCodeSamplingTable, width, heigt / 2, currentIndicatorValue);
+
+            Image o = new Bitmap(width, heigt);
+            Graphics g = Graphics.FromImage(o);
+            g.Clear(Color.White);
+            g.DrawImage(outcomeImg, 0, 0);
+            g.DrawImage(outcomeCodeImg, 0, outcomeImg.Height);
+
+            return o;
         }
     }
 }

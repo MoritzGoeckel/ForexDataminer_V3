@@ -1,6 +1,4 @@
-﻿Visualize the outcomeSamplingTable
-Visualize Learning indicator
-Visualize the first order machine
+﻿Visualize the first order machine
 Check the tables for some indicators, make it convinient (string name input?)
 Implement the important tests
 Implement tests for indicators
