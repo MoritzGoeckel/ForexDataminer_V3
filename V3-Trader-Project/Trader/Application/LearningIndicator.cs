@@ -41,8 +41,10 @@ namespace V3_Trader_Project.Trader.Application
             if (validRatio < 0.7)
                 throw new TooLittleValidDataException("Not enough valid values: " + validRatio);
 
+            //May be does not work properly... todo:
             double min, max, usedValuesRatio;
-            DistributionHelper.getMinMax(values, 4, out min, out max);
+            //DistributionHelper.getMinMax(values, 4, out min, out max);
+            DistributionHelper.getMinMax(values, out min, out max);
 
             outcomeCodeSamplingTable = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 40, out usedValuesRatio);
             if (usedValuesRatio < 0.7)
@@ -63,7 +65,7 @@ namespace V3_Trader_Project.Trader.Application
 
             this.indicator = indicator;
         }
-
+        
         public string getName()
         {
             return indicator.getName();
@@ -139,6 +141,13 @@ namespace V3_Trader_Project.Trader.Application
 
                 return new double[]{ buyRatio, sellRatio, min, max, actual };
             }
+        }
+
+        public Image visualizeIndicatorValues(int widht, int height, double[][] prices)
+        {
+            double validRatio;
+            double[] values = IndicatorRunner.getIndicatorValues(prices, indicator.Clone(), out validRatio);
+            return ArrayVisualizer.visualizeArray(values, widht, height, 15);
         }
 
         public Image visualizeTables(int width, int height, bool showState = false)

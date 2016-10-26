@@ -11,6 +11,8 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         private double lastDifference = double.NaN;
 
+        public const string Name = "RSIMACrossoverIndicator";
+        
         public RSIMACrossoverIndicator(long rsiTimeframe, long signalTimeframe)
         {
             this.rsiTimeframe = rsiTimeframe;

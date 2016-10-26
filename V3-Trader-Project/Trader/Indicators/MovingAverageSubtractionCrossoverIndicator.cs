@@ -8,6 +8,9 @@ namespace NinjaTrader_Client.Trader.Indicators
         private long timeframeOne, timeframeTwo;
         private MovingAverageSubtractionIndicator maSub;
         private double lastDifference = double.NaN;
+
+        public const string Name = "MovingAverageSubtractionCrossoverIndicator";
+
         public MovingAverageSubtractionCrossoverIndicator(long timeframeOne, long timeframeTwo)
         {
             this.timeframeOne = timeframeOne;

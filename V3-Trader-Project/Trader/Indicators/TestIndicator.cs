@@ -7,6 +7,8 @@ namespace NinjaTrader_Client.Trader.Indicators
     {
         private double lastSeenValue = double.NaN;
 
+        public const string Name = "TestIndicator";
+
         public TestIndicator()
         {
 

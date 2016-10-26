@@ -11,6 +11,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private StandartDeviationIndicator std;
         private double stdMultiplicator;
 
+        public const string Name = "BolingerBandsIndicator";
+
         public BolingerBandsIndicator(long timeframe, double stdMultiplicator)
         {
             this.stdMultiplicator = stdMultiplicator;
@@ -18,7 +20,7 @@ namespace NinjaTrader_Client.Trader.Indicators
             this.ma = new MovingAverageIndicator(timeframe);
             this.std = new StandartDeviationIndicator(timeframe);
         }
-
+        
         double valueNow;
         long timestampNow;
         public override void setNextData(long _timestamp, double _value)
@@ -56,7 +58,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override string getName()
         {
-            return "BOLINGERBANDS_" + timeframe + "_" + stdMultiplicator;
+            return Name + "_" + timeframe + "_" + stdMultiplicator;
         }
 
         public override bool isValid(long timestamp)

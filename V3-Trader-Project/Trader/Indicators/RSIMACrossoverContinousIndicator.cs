@@ -8,6 +8,9 @@ namespace NinjaTrader_Client.Trader.Indicators
         private long rsiTimeframe, signalTimeframe;
         private RSIIndicator rsi;
         private MovingAverageIndicator signalMa;
+
+        public const string Name = "RSIMACrossoverContinousIndicator";
+
         public RSIMACrossoverContinousIndicator(long rsiTimeframe, long signalTimeframe)
         {
             this.rsiTimeframe = rsiTimeframe;

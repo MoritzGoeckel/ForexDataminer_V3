@@ -9,6 +9,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private long timeframe;
         private StochIndicator stoch;
 
+        public const string Name = "StochBorderIndicator";
+
         /// <summary>
         /// Will return 0 in lower bound, 1 in upper bound and 0.5 in between
         /// </summary>

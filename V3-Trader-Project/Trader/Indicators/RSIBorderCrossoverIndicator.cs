@@ -11,6 +11,8 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         private double lastSeenValue = double.NaN;
 
+        public const string Name = "RSIBorderCrossoverIndicator";
+
         public RSIBorderCrossoverIndicator(long timeframe, double border)
         {
             this.timeframe = timeframe;

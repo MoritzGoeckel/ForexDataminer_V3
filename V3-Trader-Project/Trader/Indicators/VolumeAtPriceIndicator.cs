@@ -9,6 +9,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private double stepsize;
         private List<TimestampValuePair> history = new List<TimestampValuePair>();
 
+        public const string Name = "VolumeAtPriceIndicator";
+
         private Dictionary<int, int> priceOcurrencesDict = new Dictionary<int, int>();
         int entriesInOcurrencesDict = 0;
         private void modifyOccurancesAtValue(double value, int amount)

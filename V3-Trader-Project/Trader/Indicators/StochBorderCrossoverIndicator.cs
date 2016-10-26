@@ -9,6 +9,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private long timeframe;
         private StochIndicator stoch;
 
+        public const string Name = "StochBorderCrossoverIndicator";
+
         private double lastSeenStochValue = double.NaN;
 
         /// <summary>

@@ -6,6 +6,8 @@ namespace NinjaTrader_Client.Trader.Indicators
 {
     class TimeOpeningHoursIndicator : WalkerIndicator
     {
+        public const string Name = "TimeOpeningHoursIndicator";
+
         public TimeOpeningHoursIndicator()
         {
             
@@ -15,7 +17,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override double getIndicator()
         {
-            DateTime dt = Timestamp.getDate(currentTime);
+            DateTime dt = Timestamp.getDate(currentTime).ToUniversalTime();
 
             if (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday)
                 return 0; //Kein trading

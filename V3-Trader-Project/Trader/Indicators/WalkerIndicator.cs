@@ -11,7 +11,7 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             
         }
-
+        
         public abstract void setNextData(long timestamp, double value);
         public abstract double getIndicator();
 

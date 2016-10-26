@@ -11,6 +11,8 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         private double lastDifference = double.NaN;
 
+        public const string Name = "MACDIndicator";
+
         public MACDIndicator(long timeframeOne, long timeframeTwo, long signalTimeframe)
         {
             this.timeframeOne = timeframeOne;

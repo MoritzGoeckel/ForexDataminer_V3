@@ -11,10 +11,22 @@ namespace V3_Trader_Project.Trader.SignalMachines
     class LISignalMachine : SignalMachine
     {
         private LearningIndicator[] indicators;
+        private double[] wights;
 
-        public LISignalMachine(LearningIndicator[] indicators)
+        public LISignalMachine(LearningIndicator[] indicators, double[] wights)
         {
             this.indicators = indicators;
+            this.wights = wights;
+
+            if (wights.Length != indicators.Length)
+                throw new Exception("Wights.length hast to be eaqual to indicators.lengt");
+
+            double sum = 0;
+            foreach (double d in wights)
+                sum += d;
+
+            if (sum != 1d)
+                throw new Exception("Wights have to sum to 1");
         }
 
         public override double[] getSignal(long timestamp)
@@ -24,17 +36,18 @@ namespace V3_Trader_Project.Trader.SignalMachines
             double sumActual = 0;
             double buyPropSum = 0, sellPropSum = 0;
 
-            foreach (LearningIndicator i in this.indicators)
+            for(int i = 0; i < indicators.Length; i++)
             {
-                double[] pred = i.getPrediction(timestamp);
-                sumMax += pred[(int)LearningIndicatorResult.AvgOutcomeMax];
-                sumMin += pred[(int)LearningIndicatorResult.AvgOutcomeMin];
-                sumActual += pred[(int)LearningIndicatorResult.AvgOutcomeActual];
-                buyPropSum += pred[(int)LearningIndicatorResult.BuyCodeProbability];
-                sellPropSum += pred[(int)LearningIndicatorResult.SellCodeProbability];
+                double[] pred = indicators[i].getPrediction(timestamp);
+
+                sumMax += pred[(int)LearningIndicatorResult.AvgOutcomeMax] * wights[i];
+                sumMin += pred[(int)LearningIndicatorResult.AvgOutcomeMin] * wights[i];
+                sumActual += pred[(int)LearningIndicatorResult.AvgOutcomeActual] * wights[i];
+                buyPropSum += pred[(int)LearningIndicatorResult.BuyCodeProbability] * wights[i];
+                sellPropSum += pred[(int)LearningIndicatorResult.SellCodeProbability] * wights[i];
             }
 
-            return new double[] { buyPropSum / indicators.Length, sellPropSum / indicators.Length, sumMin / indicators.Length, sumMax / indicators.Length, sumActual / indicators.Length };
+            return new double[] { buyPropSum, sellPropSum, sumMin, sumMax, sumActual };
         }
 
         public override void pushPrice(double[] price)

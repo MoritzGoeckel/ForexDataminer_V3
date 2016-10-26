@@ -45,6 +45,24 @@ namespace V3_Trader_Project.Trader
                 throw new Exception("Minmax is not valid: " + min + " " + max + " " + upperP + " " + lowerP);
         }
 
+        public static void getMinMax(double[] input, out double min, out double max)
+        {
+            min = double.MaxValue;
+            max = double.MinValue;
+
+            foreach (double d in input)
+            {
+                if (d < min)
+                    min = d;
+
+                if (d > max)
+                    max = d;
+            }
+
+            if (min == double.MaxValue || max == double.MinValue)
+                throw new Exception("Minmax is not valid: " + min + " " + max);
+        }
+
         public static void getSampleOutcomeCodesBuyMaxSellMax(double[][] sampleData, out double maxBuy, out double maxSell)
         {
             maxBuy = double.MinValue;

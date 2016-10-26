@@ -1,7 +1,9 @@
 ﻿Make the indicator generator smarter
-Create a framework to check the indicators manually (debug them) use optimizer
 (Search for indicators, choose some for the signal machine, 
 	many timeframes / markets)
+Debug the indicators
+
+Refactor optimizer and form
 
 Implement the MarketModul and a fake api
 Visualize the MarketModul
@@ -10,9 +12,11 @@ Implement the backtesting framework
 Visualize the backtesting framework
 Implement good Backtesting statistics and visualization
 
-Visualize the first order machine
 Try different Order machines / Signal Machines
 	/ Learning Indicators / Timeframes / Markets / Percentages
+
+Visualize the order machine
+Visualize Situation
 
 Create live papertrade api / framework
 Create demo account trading api
@@ -22,3 +26,4 @@ Alternatives:
 	Create Signalmachine with machine learning
 	Create new Indicators
 	Implement more tests to find bugs
+	Make the Indicator Generation process smart, maybe genetic

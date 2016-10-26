@@ -7,6 +7,9 @@ namespace NinjaTrader_Client.Trader.Indicators
     {
         private long timeframe;
         private MovingAverageIndicator ma;
+
+        public const string Name = "MovingAveragePriceSubtractionIndicator";
+
         public MovingAveragePriceSubtractionIndicator(long timeframe)
         {
             ma = new MovingAverageIndicator(timeframe);

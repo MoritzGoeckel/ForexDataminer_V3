@@ -9,6 +9,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private long timeframe;
         private RSIIndicator rsi;
 
+        public const string Name = "RSIBorderIndicator";
+
         public RSIBorderIndicator(long timeframe, double border)
         {
             this.timeframe = timeframe;

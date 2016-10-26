@@ -116,5 +116,78 @@ namespace V3_Trader_Project.Trader
         {
             return min + z.NextDouble() * (max - min); 
         }
+
+        public WalkerIndicator getIndicatorByString(string input)
+        {
+            string[] args = input.Split('_');
+
+            if (args[0] == BolingerBandsIndicator.Name)
+                return new BolingerBandsIndicator(long.Parse(args[1]), double.Parse(args[2].Replace(',', '.')));
+
+            if (args[0] == MACDContinousIndicator.Name)
+                return new MACDContinousIndicator(long.Parse(args[1]), long.Parse(args[2]), long.Parse(args[3]));
+
+            if (args[0] == MACDIndicator.Name)
+                return new MACDIndicator(long.Parse(args[1]), long.Parse(args[2]), long.Parse(args[3]));
+
+            if (args[0] == MovingAverageIndicator.Name)
+                return new MovingAverageIndicator(long.Parse(args[1]));
+
+            if (args[0] == MovingAveragePriceSubtractionIndicator.Name)
+                return new MovingAveragePriceSubtractionIndicator(long.Parse(args[1]));
+
+            if (args[0] == MovingAverageSubtractionIndicator.Name)
+                return new MovingAverageSubtractionIndicator(long.Parse(args[1]), long.Parse(args[2]));
+
+            if (args[0] == MovingAverageSubtractionCrossoverIndicator.Name)
+                return new MovingAverageSubtractionCrossoverIndicator(long.Parse(args[1]), long.Parse(args[2]));
+
+            if (args[0] == RangeIndicator.Name)
+                return new RangeIndicator(long.Parse(args[1]));
+
+            if (args[0] == RSIBorderCrossoverIndicator.Name)
+                return new RSIBorderCrossoverIndicator(long.Parse(args[1]), double.Parse(args[2].Replace(',', '.')));
+
+            if (args[0] == RSIBorderIndicator.Name)
+                return new RSIBorderIndicator(long.Parse(args[1]), double.Parse(args[2].Replace(',', '.')));
+
+            if (args[0] == RSIIndicator.Name)
+                return new RSIIndicator(long.Parse(args[1]));
+
+            if (args[0] == RSIMACrossoverContinousIndicator.Name)
+                return new RSIMACrossoverContinousIndicator(long.Parse(args[1]), long.Parse(args[2]));
+
+            if (args[0] == RSIMACrossoverIndicator.Name)
+                return new RSIMACrossoverIndicator(long.Parse(args[1]), long.Parse(args[2]));
+
+            if (args[0] == StandartDeviationIndicator.Name)
+                return new StandartDeviationIndicator(long.Parse(args[1]));
+
+            if (args[0] == StochBorderCrossoverIndicator.Name)
+                return new StochBorderCrossoverIndicator(long.Parse(args[1]), double.Parse(args[2].Replace(',', '.')));
+
+            if (args[0] == StochBorderIndicator.Name)
+                return new StochBorderIndicator(long.Parse(args[1]), double.Parse(args[2].Replace(',', '.')));
+
+            if (args[0] == StochIndicator.Name)
+                return new StochIndicator(long.Parse(args[1]));
+
+            if (args[0] == TestIndicator.Name)
+                return new TestIndicator();
+
+            if (args[0] == TimeDayOfWeekIndicator.Name)
+                return new TimeDayOfWeekIndicator();
+
+            if (args[0] == TimeOfDayIndicator.Name)
+                return new TimeOfDayIndicator();
+
+            if (args[0] == TimeOpeningHoursIndicator.Name)
+                return new TimeOpeningHoursIndicator();
+
+            if (args[0] == VolumeAtPriceIndicator.Name)
+                return new VolumeAtPriceIndicator(long.Parse(args[1]), double.Parse(args[2].Replace(',', '.')), long.Parse(args[3]));
+
+            throw new Exception("Name not found: " + args[0]);
+        }
     }
 }

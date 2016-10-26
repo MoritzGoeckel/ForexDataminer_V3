@@ -8,6 +8,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private long timeframe;
         private List<TimestampValuePair> history = new List<TimestampValuePair>();
 
+        public const string Name = "StochIndicator";
+        
         public StochIndicator(long timeframe)
         {
             this.timeframe = timeframe;

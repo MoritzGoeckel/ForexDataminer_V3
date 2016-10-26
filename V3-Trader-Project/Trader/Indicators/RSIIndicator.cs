@@ -15,6 +15,8 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         private double lastSeenPrice;
 
+        public const string Name = "RSIIndicator";
+
         public RSIIndicator(long timeframe)
         {
             this.timeframe = timeframe;

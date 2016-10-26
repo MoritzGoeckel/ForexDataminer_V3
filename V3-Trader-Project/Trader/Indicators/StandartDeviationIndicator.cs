@@ -8,6 +8,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private long timeframe;
         private List<TimestampValuePair> history = new List<TimestampValuePair>();
 
+        public const string Name = "StandartDeviationIndicator";
+
         public StandartDeviationIndicator(long timeframe)
         {
             this.timeframe = timeframe;

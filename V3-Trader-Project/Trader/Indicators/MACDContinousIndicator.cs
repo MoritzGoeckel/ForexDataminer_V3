@@ -9,6 +9,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private MovingAverageSubtractionIndicator maSub;
         private MovingAverageIndicator signalMa;
 
+        public const string Name = "MACDContinousIndicator";
+        
         public MACDContinousIndicator(long timeframeOne, long timeframeTwo, long signalTimeframe)
         {
             this.timeframeOne = timeframeOne;

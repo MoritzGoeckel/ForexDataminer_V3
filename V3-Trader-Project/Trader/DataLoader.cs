@@ -36,9 +36,10 @@ namespace V3_Trader_Project.Trader
             return output;
         }
 
-        public double[][] getArray(long minDateDistance = 1)
+        public double[][] getArray(long minDateDistance = 1, long onlyTimeframe = 0)
         {
             long lastAddedDate = 0;
+            long firstTimestamp = 0;
             List<double[]> rows = new List<double[]>();
             foreach(string file in filenames)
             {
@@ -47,11 +48,17 @@ namespace V3_Trader_Project.Trader
                     string[] values = line.Split(',');
                     long dateL = Timestamp.getUTCMillisecondsDate(values[(int)PriceDataIndeces.Date]);
 
+                    if (firstTimestamp == 0)
+                        firstTimestamp = dateL;
+                    
                     if (dateL - lastAddedDate > minDateDistance)
                     {
                         rows.Add(new double[] { dateL, double.Parse(values[(int)PriceDataIndeces.Bid].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Ask].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Volume].Replace(".", ",")) });
                         lastAddedDate = dateL;
                     }
+
+                    if (onlyTimeframe != 0 && dateL > firstTimestamp + onlyTimeframe)
+                        return rows.ToArray(); //Stop
                 }
             }
 

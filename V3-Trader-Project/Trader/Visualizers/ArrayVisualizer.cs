@@ -41,6 +41,17 @@ namespace V3_Trader_Project.Trader.Visualizers
             return bmp;
         }
 
+        public static Image visualizePriceData(double[][] priceData, int width, int height, int lineSize = 3)
+        {
+            double[] mids = new double[priceData.Length];
+            for(int i = 0; i < priceData.Length; i++)
+            {
+                mids[i] = (priceData[i][(int)PriceDataIndeces.Ask] + priceData[i][(int)PriceDataIndeces.Bid]) / 2d;
+            }
+
+            return visualizeArray(mids, width, height, lineSize);
+        }
+
         public static Image visualizeArray(double[] input, int width, int height, int lineSize = 3)
         {
             Bitmap bmp = new Bitmap(width, height);
@@ -49,7 +60,8 @@ namespace V3_Trader_Project.Trader.Visualizers
 
             double stepSize = Convert.ToDouble(input.Length) / Convert.ToDouble(width);
 
-            double min = input.Min(), max = input.Max();
+            double min, max;
+            DistributionHelper.getMinMax(input, out min, out max);
 
             int oldX = -1, oldY = -1;
 

@@ -8,6 +8,8 @@ namespace NinjaTrader_Client.Trader.Indicators
         private long timeframe;
         private List<TimestampValuePair> history = new List<TimestampValuePair>();
 
+        public const string Name = "RangeIndicator";
+        
         public RangeIndicator(long timeframe)
         {
             this.timeframe = timeframe;

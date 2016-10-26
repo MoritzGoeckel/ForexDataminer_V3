@@ -6,6 +6,8 @@ namespace NinjaTrader_Client.Trader.Indicators
 {
     class TimeDayOfWeekIndicator : WalkerIndicator
     {
+        public const string Name = "TimeDayOfWeekIndicator";
+
         public TimeDayOfWeekIndicator()
         {
             
@@ -15,8 +17,9 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override double getIndicator()
         {
-            DateTime dt = Timestamp.getDate(currentTime);
-            return (dt.DayOfWeek != 0 ? Convert.ToDouble(dt.DayOfWeek) / 7d : 0);
+            DateTime dt = Timestamp.getDate(currentTime).ToUniversalTime();
+            double v = (dt.DayOfWeek != 0 ? Convert.ToDouble(dt.DayOfWeek) / 7d : 0);
+            return v;
         }
 
         public override void setNextData(long timestamp, double value)

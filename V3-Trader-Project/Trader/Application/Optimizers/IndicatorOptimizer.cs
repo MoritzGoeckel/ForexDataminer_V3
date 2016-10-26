@@ -8,76 +8,79 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using V3_Trader_Project.Trader.Visualizers;
 
 namespace V3_Trader_Project.Trader.Application
 {
     class IndicatorOptimizer
     {
-        private double[][] data = null;
+        private double[][] priceData = null;
 
         private double outcomeCodePercent = double.NaN;
         private long outcomeTimeframe;
 
         private bool[][] outcomeCodes = null;
-        private double[][] outcomeMatrix = null;
-        private IndicatorGenerator generator = new IndicatorGenerator();
+        private double[][] outcomes = null;
         private string resultFolderPath;
-
-        private double desiredOutcomeCodeDistribution;
 
         private double buyDist, sellDist;
 
-        public Image lastImage;
-        public string lastIndicatorName;
+        public double[][] getPriceData()
+        {
+            return priceData;
+        }
 
-        public IndicatorOptimizer(string resultFolderPath, string dataPath, long outcomeTimeframe, int dataDistanceInSeconds, double desiredOutcomeCodeDistribution = double.NaN)
+        public IndicatorOptimizer(string resultFolderPath, string dataPath, int dataDistanceInSeconds, long onlyTimeframe = 0)
         {
             Logger.log("Loading files ...");
             DataLoader dl = new DataLoader(dataPath);
-            data = dl.getArray(1000 * dataDistanceInSeconds);
+            priceData = dl.getArray(1000 * dataDistanceInSeconds, onlyTimeframe);
             Logger.log("End loading files");
+                        
+            this.resultFolderPath = resultFolderPath;
+        }
+
+        public void loadOutcomeCodes(long outcomeTimeframe, double desiredOutcomeCodeDistribution = double.NaN)
+        {
+            this.outcomeTimeframe = outcomeTimeframe;
 
             double successRatio;
-            outcomeMatrix = OutcomeGenerator.getOutcome(data, outcomeTimeframe, out successRatio);
+            outcomes = OutcomeGenerator.getOutcome(priceData, outcomeTimeframe, out successRatio);
 
             if (successRatio < 0.9)
                 throw new TooLittleValidDataException("Way too low success rate: " + successRatio);
 
-            this.desiredOutcomeCodeDistribution = desiredOutcomeCodeDistribution;
-            this.outcomeTimeframe = outcomeTimeframe;
-            this.resultFolderPath = resultFolderPath;
+            if (double.IsNaN(desiredOutcomeCodeDistribution))
+            {
+                Logger.log("Optimizing outcomecode percentage");
+                outcomeCodePercent = OutcomeCodePercentOptimizer.optimizeOutcomeCodePercentage(200, out outcomeCodePercent, priceData, outcomes, out buyDist, out sellDist);
+            }
+            else
+            {
+                Logger.log("Find outcome percent for " + desiredOutcomeCodeDistribution);
+                double desiredDistributionTolerance = desiredOutcomeCodeDistribution / 100d;
+                outcomeCodePercent = OutcomeCodePercentOptimizer.findOutcomeCodeForDesiredDistribution(desiredOutcomeCodeDistribution, desiredDistributionTolerance, priceData, outcomes, out buyDist, out sellDist);
+            }
+
+            Logger.log("Loading outcome codes: " + outcomeCodePercent);
+
+            double codeSuccessRatio;
+            outcomeCodes = OutcomeGenerator.getOutcomeCode(priceData, outcomes, outcomeCodePercent, out codeSuccessRatio);
+            if (codeSuccessRatio < 0.7)
+                throw new TooLittleValidDataException("The outcome codes deliver to little data " + codeSuccessRatio);
+
+            File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
+            Logger.log("SATTLE OPT. dist for " + outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
         }
 
         private bool running = false;
-        public void start()
+        public void startRunningRandomIndicators(IndicatorGenerator generator)
         {
             if (running == true)
                 throw new Exception("Already running!");
 
-            if (outcomeCodes == null || double.IsNaN(outcomeCodePercent))
-            {
-                if (double.IsNaN(desiredOutcomeCodeDistribution))
-                {
-                    Logger.log("Optimizing outcomecode percentage");
-                    outcomeCodePercent = OutcomeCodePercentOptimizer.optimizeOutcomeCodePercentage(200, out outcomeCodePercent, data, outcomeMatrix, out buyDist, out sellDist);
-                }
-                else
-                {
-                    Logger.log("Find outcome percent for " + desiredOutcomeCodeDistribution);
-                    double desiredDistributionTolerance = desiredOutcomeCodeDistribution / 100d;
-                    outcomeCodePercent = OutcomeCodePercentOptimizer.findOutcomeCodeForDesiredDistribution(desiredOutcomeCodeDistribution, desiredDistributionTolerance, data, outcomeMatrix, out buyDist, out sellDist);
-                }
-
-                Logger.log("Loading outcome codes: " + outcomeCodePercent);
-
-                double codeSuccessRatio;
-                outcomeCodes = OutcomeGenerator.getOutcomeCode(data, outcomeMatrix, outcomeCodePercent, out codeSuccessRatio);
-                if (codeSuccessRatio < 0.7)
-                    throw new TooLittleValidDataException("The outcome codes deliver to little data " + codeSuccessRatio);
-
-                File.WriteAllText(resultFolderPath + "dist_" + outcomeCodePercent + "_" + outcomeTimeframe + ".txt", outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
-                Logger.log("SATTLE OPT. dist for " + outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
-            }
+            if (outcomes == null || outcomeCodes == null)
+                throw new Exception("Set outcomes and outcomeCodes first");      
 
             submitResults(LearningIndicator.getPredictivePowerArrayHeader());
 
@@ -88,7 +91,7 @@ namespace V3_Trader_Project.Trader.Application
                 {
                     //How about a genetic algo?
                     try {
-                        testRandomIndicator(generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000)));
+                        testIndicator(generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000)));
                     }
                     catch (TooLittleValidDataException e)
                     {
@@ -98,7 +101,6 @@ namespace V3_Trader_Project.Trader.Application
                     {
                         Logger.log("FATAL:" + e.Message);
                     }
-                    //testRandomIndicator();
                 }
             }).Start();
         }
@@ -108,11 +110,11 @@ namespace V3_Trader_Project.Trader.Application
             running = false;
         }
 
-        private void testRandomIndicator(WalkerIndicator indicator)
+        public LearningIndicator testIndicator(WalkerIndicator indicator)
         {
             Logger.log("Testing Indicator: " + indicator.getName());
 
-            LearningIndicator li = new LearningIndicator(indicator, data, outcomeCodes, outcomeMatrix, outcomeTimeframe, buyDist, sellDist, outcomeCodePercent);
+            LearningIndicator li = new LearningIndicator(indicator, priceData, outcomeCodes, outcomes, outcomeTimeframe, buyDist, sellDist, outcomeCodePercent);
             double[] pp = li.getPredictivePowerArray();
 
             //Results
@@ -122,11 +124,10 @@ namespace V3_Trader_Project.Trader.Application
 
             output += indicator.getName().Split('_')[0] + ";" + indicator.getName();
 
-            lastImage = li.visualizeTables(2000, 1000);
-            lastIndicatorName = li.getName();
-
             Logger.log("Result: " + Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName());
             submitResults(output);
+
+            return li;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -135,23 +136,20 @@ namespace V3_Trader_Project.Trader.Application
             string fileName = "outcomeIndicators_" + outcomeCodePercent + "_" + outcomeTimeframe + ".csv";
             File.AppendAllText(resultFolderPath + fileName, results + Environment.NewLine);
         }
-
-        public static IndicatorOptimizer load(string path)
+        
+        public Image visualizePriceAndOutcomeCodes(int width, int height)
         {
-            using (Stream stream = File.Open(path, FileMode.Open))
-            {
-                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                return (IndicatorOptimizer)binaryFormatter.Deserialize(stream);
-            }
-        }
+            Image priceImage = ArrayVisualizer.visualizePriceData(priceData, width, height / 2, 20);
+            Image outcomeCodesImage = ArrayVisualizer.visualizeOutcomeCodeArray(outcomeCodes, width, height / 2);
 
-        public void save(string path)
-        {
-            using (Stream stream = File.Open(path, FileMode.Create))
-            {
-                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                binaryFormatter.Serialize(stream, this);
-            }
+            Image o = new Bitmap(width, height);
+            Graphics g = Graphics.FromImage(o);
+            g.Clear(Color.White);
+            g.DrawImage(priceImage, 0, 0);
+            g.DrawImage(outcomeCodesImage, 0, priceImage.Height);
+            g.DrawLine(new Pen(Color.Blue, 3), 0, priceImage.Height, priceImage.Width, priceImage.Height);
+
+            return o;
         }
     }
 }

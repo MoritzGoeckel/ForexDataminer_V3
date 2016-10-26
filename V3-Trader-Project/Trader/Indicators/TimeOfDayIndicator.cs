@@ -6,6 +6,8 @@ namespace NinjaTrader_Client.Trader.Indicators
 {
     class TimeOfDayIndicator : WalkerIndicator
     {
+        public const string Name = "TimeOfDayIndicator";
+
         public TimeOfDayIndicator()
         {
             
@@ -15,7 +17,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override double getIndicator()
         {
-            DateTime dt = Timestamp.getDate(currentTime);
+            DateTime dt = Timestamp.getDate(currentTime).ToUniversalTime();
             return (dt.Hour != 0 ? Convert.ToDouble(dt.Hour) / 24d : 0);
         }
 
