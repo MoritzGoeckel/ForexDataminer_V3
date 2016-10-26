@@ -62,7 +62,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override string getName()
         {
-            return "SD_" + timeframe;
+            return Name + "_" + timeframe;
         }
 
         public override bool isValid(long timestamp)

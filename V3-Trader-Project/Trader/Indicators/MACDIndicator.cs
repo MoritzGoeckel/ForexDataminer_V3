@@ -68,7 +68,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override string getName()
         {
-            return "MACD_" + timeframeOne + "_" + timeframeTwo + "_" + signalTimeframe;
+            return Name + "_" + timeframeOne + "_" + timeframeTwo + "_" + signalTimeframe;
         }
 
         public override bool isValid(long timestamp)

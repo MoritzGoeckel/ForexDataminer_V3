@@ -58,7 +58,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override string getName()
         {
-            return "MASubCross_" + timeframeOne + "_" + timeframeTwo;
+            return Name + "_" + timeframeOne + "_" + timeframeTwo;
         }
 
         public override bool isValid(long timestamp)

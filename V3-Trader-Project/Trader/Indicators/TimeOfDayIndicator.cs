@@ -28,7 +28,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override string getName()
         {
-            return "TimeOfDay";
+            return Name;
         }
 
         public override bool isValid(long timestamp)

@@ -145,6 +145,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Trader\Application\Optimizers\TestingEnvironment.cs" />
     <Compile Include="Trader\Application\Optimizers\IndicatorOptimizer.cs" />
     <Compile Include="Trader\Application\LearningIndicator.cs" />
     <Compile Include="Trader\Application\OrderMachines\FirstOrderMachine.cs" />

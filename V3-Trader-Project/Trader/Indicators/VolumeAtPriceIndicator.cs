@@ -89,7 +89,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override string getName()
         {
-            return "VolumeAtPrice_" + timeframe + "_" + stepsize;
+            return Name + "_" + timeframe + "_" + stepsize;
         }
 
         public override bool isValid(long timestamp)

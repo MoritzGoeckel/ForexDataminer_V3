@@ -119,7 +119,12 @@ namespace V3_Trader_Project.Trader
 
         public static WalkerIndicator getIndicatorByString(string input)
         {
-            string[] args = input.Split('_');
+            string[] args;
+
+            if (input.Contains("_") == false)
+                args = new string[] { input };
+            else
+                args = input.Split('_');
 
             if (args[0] == BolingerBandsIndicator.Name)
                 return new BolingerBandsIndicator(long.Parse(args[1]), double.Parse(args[2].Replace(',', '.')));

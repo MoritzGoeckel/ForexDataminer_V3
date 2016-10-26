@@ -35,7 +35,6 @@ namespace V3_Trader_Project.Trader.Forms
                 Graphics g = Graphics.FromImage(o);
                 g.Clear(Color.White);
 
-                //g.DrawImage(samplings, 0, 0);
                 g.DrawImage(priceAndOutcomes, 0, values.Height);
                 g.DrawImage(values, 0, 0);
 

@@ -46,7 +46,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override string getName()
         {
-            return "RSIMACrossoverContinous_" + rsiTimeframe + "_" + signalTimeframe;
+            return Name + "_" + rsiTimeframe + "_" + signalTimeframe;
         }
 
         public override bool isValid(long timestamp)
