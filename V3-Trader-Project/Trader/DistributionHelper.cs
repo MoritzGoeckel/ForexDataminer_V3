@@ -63,59 +63,98 @@ namespace V3_Trader_Project.Trader
                 throw new Exception("Minmax is not valid: " + min + " " + max);
         }
 
-        public static void getSampleOutcomeCodesBuyMaxSellMax(double[][] sampleData, out double maxBuy, out double maxSell)
+        public static void getSampleOutcomeCodesBuyMaxSellMax(double[][] sampleData, out double maxBuy, out double maxBuyValuesCount, out double maxSell, out double maxSellValuesCount)
         {
             maxBuy = double.MinValue;
             maxSell = double.MinValue;
-            
+            maxBuyValuesCount = double.NaN;
+            maxSellValuesCount = double.NaN;
+
             foreach(double[] row in sampleData)
             {
                 if (row != null)
                 {
                     double b = row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
                     if (b > maxBuy)
+                    {
                         maxBuy = b;
+                        maxBuyValuesCount = row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
+                    }
 
                     double s = row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
                     if (s > maxSell)
+                    {
                         maxSell = s;
+                        maxSellValuesCount = row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
+                    }
                 }
             }
 
-            if (maxBuy == double.MinValue || maxSell == double.MinValue)
+            if (maxBuy == double.MinValue || maxSell == double.MinValue || double.IsNaN(maxBuyValuesCount) || double.IsNaN(maxSellValuesCount))
                 throw new Exception("Nothing found :(");
         }
 
-        public static void getSampleOutcomesMinMax(double[][] sampleData, out double maxMax, out double minMin, out double maxActual, out double minActual)
+        public static void getSampleOutcomesMinMax(double[][] sampleData, out double maxMax, out double maxMaxValuesCount, out double minMin, out double minMinValuesCount, out double maxMinMaxDistance, out double maxMinMaxDistanceValuesCount, out double maxActual, out double maxActualValuesCount, out double minActual, out double minActualValuesCount)
         {
             maxMax = double.MinValue;
             minMin = double.MaxValue;
             maxActual = double.MinValue;
             minActual = double.MaxValue;
+            maxMinMaxDistance = double.MinValue;
+
+            maxMaxValuesCount = double.NaN;
+            minMinValuesCount = double.NaN;
+            maxActualValuesCount = double.NaN;
+            minActualValuesCount = double.NaN;
+            maxMinMaxDistanceValuesCount = double.NaN;
 
             foreach (double[] row in sampleData)
             {
                 if (row != null)
                 {
+                    double valuesCount = row[(int)SampleValuesOutcomeIndices.SamplesCount];
                     double maxAvg = row[(int)SampleValuesOutcomeIndices.MaxAvg];
                     if (maxAvg > maxMax)
+                    {
                         maxMax = maxAvg;
+                        maxMaxValuesCount = valuesCount;
+                    }
 
                     double minAvg = row[(int)SampleValuesOutcomeIndices.MinAvg];
                     if (minAvg < minMin)
+                    {
                         minMin = minAvg;
+                        minMinValuesCount = valuesCount;
+                    }
 
                     double actualAvg = row[(int)SampleValuesOutcomeIndices.ActualAvg];
                     if (actualAvg > maxActual)
+                    {
                         maxActual = actualAvg;
+                        maxActualValuesCount = valuesCount;
+                    }
 
                     if (actualAvg < minActual)
+                    {
                         minActual = actualAvg;
+                        minActualValuesCount = valuesCount;
+                    }
+
+                    double distance = Math.Abs(Math.Abs(minAvg) - maxAvg);
+                    if (distance > maxMinMaxDistance)
+                    {
+                        maxMinMaxDistance = distance;
+                        maxMinMaxDistanceValuesCount = valuesCount;
+                    }
                 }
             }
 
-            if (maxMax == double.MinValue || minMin == double.MaxValue || maxActual == double.MinValue || minActual == double.MaxValue)
-                throw new Exception("Nothing found :(");
+            if (maxMax == double.MinValue || minMin == double.MaxValue 
+                || maxActual == double.MinValue || minActual == double.MaxValue 
+                || double.IsNaN(maxMaxValuesCount) || double.IsNaN(minMinValuesCount)
+                || double.IsNaN(maxActualValuesCount) || double.IsNaN(minActualValuesCount)
+                || double.IsNaN(maxMinMaxDistanceValuesCount))
+                    throw new Exception("Nothing found :(");
         }
     }
 }

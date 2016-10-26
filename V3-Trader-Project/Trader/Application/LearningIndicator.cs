@@ -60,12 +60,12 @@ namespace V3_Trader_Project.Trader.Application
             this.usedValues = usedValuesRatio;
 
             //Predictive power calculation
-            predictivePower = new double[16];
+            predictivePower = new double[24];
             IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
             IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 
-            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(outcomeCodeSamplingTable, out predictivePower[10], out predictivePower[11]);
-            DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, out predictivePower[12], out predictivePower[13], out predictivePower[14], out predictivePower[15]);
+            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(outcomeCodeSamplingTable, out predictivePower[10], out predictivePower[11], out predictivePower[12],  out predictivePower[13]);
+            DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, out predictivePower[14], out predictivePower[15], out predictivePower[16], out predictivePower[17], out predictivePower[18], out predictivePower[19], out predictivePower[20], out predictivePower[21], out predictivePower[22], out predictivePower[23]);
             //End predictive power calculation
 
             this.indicator = indicator;
@@ -98,7 +98,7 @@ namespace V3_Trader_Project.Trader.Application
 
         public static string getPredictivePowerArrayHeader()
         {
-            return "spBuy;spSell;pBuy;pSell;spMin;spMax;spActual;pMin;pMax;pActual;maxBuyCode;maxSellCode;maxMaxGain%;minMinFall%;maxActualGain%;minActualFall%;";
+            return "spBuy;spSell;pBuy;pSell;spMin;spMax;spActual;pMin;pMax;pActual;maxBuyCode;maxBuyCodeCount;maxSellCode;maxSellCodeCount;maxMaxGain%;maxMaxGain%Count;minMinFall%;minMinFall%Count;maxMinMaxDistance%;maxMinMaxDistance%Count;maxActualGain%;maxActualGain%Count;minActualFall%;minActualFall%Count;";
         }
 
         public double getPredictivePowerScore()
