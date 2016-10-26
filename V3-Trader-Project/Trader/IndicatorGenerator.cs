@@ -117,7 +117,7 @@ namespace V3_Trader_Project.Trader
             return min + z.NextDouble() * (max - min); 
         }
 
-        public WalkerIndicator getIndicatorByString(string input)
+        public static WalkerIndicator getIndicatorByString(string input)
         {
             string[] args = input.Split('_');
 

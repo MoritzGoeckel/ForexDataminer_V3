@@ -24,24 +24,30 @@ namespace V3_Trader_Project.Trader.Forms
 
         private void button_run_Click(object sender, EventArgs e)
         {
-            LearningIndicator li = op.testIndicator(new VolumeAtPriceIndicator(24 * 60 * 60 * 1000, 0.001, 10)); //Decide indicator somehow
-            Image samplings = li.visualizeTables(2000, 1500);
-            Image values = li.visualizeIndicatorValues(2000, 500, op.getPriceData());
+            try {
+                LearningIndicator li = op.testIndicator(IndicatorGenerator.getIndicatorByString(textBox1.Text)); //Decide indicator somehow
+                Image samplings = li.visualizeTables(2000, 1500);
+                Image values = li.visualizeIndicatorValues(2000, 500, op.getPriceData());
 
-            this.Name = li.getName();
+                this.Name = li.getName();
 
-            Image o = new Bitmap(values.Width + samplings.Width, priceAndOutcomes.Height + values.Height);
-            Graphics g = Graphics.FromImage(o);
-            g.Clear(Color.White);
+                Image o = new Bitmap(values.Width + samplings.Width, priceAndOutcomes.Height + values.Height);
+                Graphics g = Graphics.FromImage(o);
+                g.Clear(Color.White);
 
-            //g.DrawImage(samplings, 0, 0);
-            g.DrawImage(priceAndOutcomes, 0, values.Height);
-            g.DrawImage(values, 0, 0);
+                //g.DrawImage(samplings, 0, 0);
+                g.DrawImage(priceAndOutcomes, 0, values.Height);
+                g.DrawImage(values, 0, 0);
 
-            g.DrawLine(new Pen(Color.Blue, 3), 0, values.Height, values.Width, values.Height);
-            g.DrawImage(samplings, values.Width, 0);
+                g.DrawLine(new Pen(Color.Blue, 3), 0, values.Height, values.Width, values.Height);
+                g.DrawImage(samplings, values.Width, 0);
 
-            this.BackgroundImage = o;
+                this.BackgroundImage = o;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
         }
 
         private void IndicatorTestingForm_Load(object sender, EventArgs e)
