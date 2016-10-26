@@ -28,7 +28,10 @@ namespace V3_Trader_Project.Trader.Application
         private double targetPercent;
         private double meanBuyDist, meanSellDist;
 
+        private double usedValues;
+
         private WalkerIndicator indicator;
+
         public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double meanBuyDist, double meanSellDist, double targetPercent)
         {
             this.meanBuyDist = meanBuyDist;
@@ -38,7 +41,7 @@ namespace V3_Trader_Project.Trader.Application
 
             double validRatio;
             double[] values = IndicatorRunner.getIndicatorValues(prices, indicator.Clone(), out validRatio);
-            if (validRatio < 0.7)
+            if (validRatio < 0.5)
                 throw new TooLittleValidDataException("Not enough valid values: " + validRatio);
 
             //May be does not work properly... todo:
@@ -47,12 +50,14 @@ namespace V3_Trader_Project.Trader.Application
             DistributionHelper.getMinMax(values, out min, out max);
 
             outcomeCodeSamplingTable = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 40, out usedValuesRatio);
-            if (usedValuesRatio < 0.7)
+            if (usedValuesRatio < 0.5)
                 throw new TooLittleValidDataException("Not enough sampling for outcomeCode: " + usedValuesRatio);
 
             outcomeSamplingTable = IndicatorSampler.sampleValuesOutcome(values, prices, outcomes, min, max, out usedValuesRatio, 40);
-            if (usedValuesRatio < 0.7)
+            if (usedValuesRatio < 0.5)
                 throw new TooLittleValidDataException("Not enough sampling for outcome: " + usedValuesRatio);
+
+            this.usedValues = usedValuesRatio;
 
             //Predictive power calculation
             predictivePower = new double[16];
@@ -74,6 +79,11 @@ namespace V3_Trader_Project.Trader.Application
         public long getTimeframe()
         {
             return timeframe;
+        }
+
+        public double getUsedValues()
+        {
+            return usedValues;
         }
 
         public double getPercent()

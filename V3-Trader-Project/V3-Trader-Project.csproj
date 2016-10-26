@@ -162,6 +162,12 @@
     <Compile Include="Trader\Forms\IndicatorTestingForm.Designer.cs">
       <DependentUpon>IndicatorTestingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Trader\Forms\OptimizeIndicatorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Trader\Forms\OptimizeIndicatorForm.Designer.cs">
+      <DependentUpon>OptimizeIndicatorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Trader\Indicators\BolingerBandsIndicator.cs" />
     <Compile Include="Trader\IndicatorGenerator.cs" />
     <Compile Include="Trader\Indicators\MACDContinousIndicator.cs" />
@@ -227,6 +233,9 @@
     </Compile>
     <EmbeddedResource Include="Trader\Forms\IndicatorTestingForm.resx">
       <DependentUpon>IndicatorTestingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Trader\Forms\OptimizeIndicatorForm.resx">
+      <DependentUpon>OptimizeIndicatorForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

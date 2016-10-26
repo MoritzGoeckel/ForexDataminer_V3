@@ -17,7 +17,9 @@ namespace V3_Trader_Project.Trader.Application
         private string resultFolderPath;
         private TestingEnvironment env;
 
-        public IndicatorOptimizer(string resultFolderPath, string dataPath, TestingEnvironment env)
+        public string state;
+
+        public IndicatorOptimizer(string resultFolderPath, TestingEnvironment env)
         {
             this.env = env;
             this.resultFolderPath = resultFolderPath;
@@ -32,7 +34,7 @@ namespace V3_Trader_Project.Trader.Application
             if (env.outcomes == null || env.outcomeCodes == null)
                 throw new Exception("Set outcomes and outcomeCodes first");      
 
-            submitResults(LearningIndicator.getPredictivePowerArrayHeader());
+            submitResults(LearningIndicator.getPredictivePowerArrayHeader()+"usedValues;name;id");
 
             Logger.log("Start testing indicators");
             new Thread(delegate () {
@@ -72,9 +74,11 @@ namespace V3_Trader_Project.Trader.Application
             foreach (double d in pp)
                 output += d + ";";
 
+            output += li.getUsedValues() + ";";
             output += indicator.getName().Split('_')[0] + ";" + indicator.getName();
 
             Logger.log("Result: " + Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName());
+            state = Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName();
             submitResults(output);
         }
 
