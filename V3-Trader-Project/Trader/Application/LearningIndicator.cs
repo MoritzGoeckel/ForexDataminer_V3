@@ -9,7 +9,7 @@ using V3_Trader_Project.Trader.Visualizers;
 
 namespace V3_Trader_Project.Trader.Application
 {
-    public enum LearningIndicatorResult{
+    public enum LearningIndicatorPredictionIndecies{
         BuyCodeProbability = 0, SellCodeProbability = 1, AvgOutcomeMax = 2, AvgOutcomeMin = 3, AvgOutcomeActual = 4
     };
 

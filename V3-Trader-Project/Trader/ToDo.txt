@@ -1,8 +1,4 @@
-﻿Make the indicator generator smarter
-(Search for indicators, choose some for the signal machine, 
-	many timeframes / markets)
-Debug the indicators
-
+﻿Debug the indicators
 Refactor optimizer and form
 
 Implement the MarketModul and a fake api

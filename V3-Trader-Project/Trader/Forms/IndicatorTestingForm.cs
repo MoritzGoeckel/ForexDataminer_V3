@@ -19,15 +19,15 @@ namespace V3_Trader_Project.Trader.Forms
             InitializeComponent();
         }
 
-        IndicatorOptimizer op;
+        TestingEnvironment env;
         Image priceAndOutcomes;
 
         private void button_run_Click(object sender, EventArgs e)
         {
             try {
-                LearningIndicator li = op.testIndicator(IndicatorGenerator.getIndicatorByString(textBox1.Text)); //Decide indicator somehow
+                LearningIndicator li = env.testIndicator(IndicatorGenerator.getIndicatorByString(textBox1.Text)); //Decide indicator somehow
                 Image samplings = li.visualizeTables(2000, 1500);
-                Image values = li.visualizeIndicatorValues(2000, 500, op.getPriceData());
+                Image values = li.visualizeIndicatorValues(2000, 500, env.priceData);
 
                 this.Name = li.getName();
 
@@ -43,6 +43,13 @@ namespace V3_Trader_Project.Trader.Forms
                 g.DrawImage(samplings, values.Width, 0);
 
                 this.BackgroundImage = o;
+
+                double[] a = li.getPredictivePowerArray();
+
+                label1.Text = li.getName() + Environment.NewLine
+                    + "PPs: " + li.getPredictivePowerScore() + Environment.NewLine
+                    + "buyC: " + a[10] + Environment.NewLine
+                    + "sellC: " + a[11];
             }
             catch (Exception ex)
             {
@@ -52,9 +59,9 @@ namespace V3_Trader_Project.Trader.Forms
 
         private void IndicatorTestingForm_Load(object sender, EventArgs e)
         {
-            op = new IndicatorOptimizer(Config.DataPath, Config.DataPath + "EURUSD", 60, 1000l * 60 * 60 * 24 * 30);
-            op.loadOutcomeCodes(1 * 60 * 60 * 1000, 0.5);
-            this.BackgroundImage = priceAndOutcomes = op.visualizePriceAndOutcomeCodes(2000, 1000);
+            env = new TestingEnvironment(Config.DataPath, Config.DataPath + "EURUSD", 60, 1000l * 60 * 60 * 24 * 30);
+            env.loadOutcomeCodes(1 * 60 * 60 * 1000, 0.5);
+            this.BackgroundImage = priceAndOutcomes = env.visualizePriceAndOutcomeCodes(2000, 1000);
         }
     }
 }

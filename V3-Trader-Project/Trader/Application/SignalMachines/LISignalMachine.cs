@@ -40,11 +40,11 @@ namespace V3_Trader_Project.Trader.SignalMachines
             {
                 double[] pred = indicators[i].getPrediction(timestamp);
 
-                sumMax += pred[(int)LearningIndicatorResult.AvgOutcomeMax] * wights[i];
-                sumMin += pred[(int)LearningIndicatorResult.AvgOutcomeMin] * wights[i];
-                sumActual += pred[(int)LearningIndicatorResult.AvgOutcomeActual] * wights[i];
-                buyPropSum += pred[(int)LearningIndicatorResult.BuyCodeProbability] * wights[i];
-                sellPropSum += pred[(int)LearningIndicatorResult.SellCodeProbability] * wights[i];
+                sumMax += pred[(int)LearningIndicatorPredictionIndecies.AvgOutcomeMax] * wights[i];
+                sumMin += pred[(int)LearningIndicatorPredictionIndecies.AvgOutcomeMin] * wights[i];
+                sumActual += pred[(int)LearningIndicatorPredictionIndecies.AvgOutcomeActual] * wights[i];
+                buyPropSum += pred[(int)LearningIndicatorPredictionIndecies.BuyCodeProbability] * wights[i];
+                sellPropSum += pred[(int)LearningIndicatorPredictionIndecies.SellCodeProbability] * wights[i];
             }
 
             return new double[] { buyPropSum, sellPropSum, sumMin, sumMax, sumActual };
