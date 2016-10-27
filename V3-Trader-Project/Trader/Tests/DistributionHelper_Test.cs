@@ -135,12 +135,14 @@ namespace V3_Trader_Project.Trader.Tests
 
             double buy, sell;
             double buyCount, sellCount;
-            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(samples, out buy, out buyCount, out sell, out sellCount);
+            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(samples, 0, out buy, out buyCount, out sell, out sellCount);
+
+            //Todo: Write another for minValuesPercent != 0
+
             Assert.AreEqual(0.4, buy);
             Assert.AreEqual(0.41, sell);
             Assert.AreEqual(10, buyCount);
             Assert.AreEqual(10, sellCount);
-
         }
 
         [TestMethod]
@@ -162,7 +164,9 @@ namespace V3_Trader_Project.Trader.Tests
             double maxMax, minMin, maxActual, minActual;
             double maxDistance, maxDistanceCount;
             double maxMaxCount, minMinCount, maxActualCount, minActualCount;
-            DistributionHelper.getSampleOutcomesMinMax(samples, out maxMax, out maxMaxCount, out minMin, out minMinCount, out maxDistance, out maxDistanceCount, out maxActual, out maxActualCount, out minActual, out minActualCount);
+            DistributionHelper.getSampleOutcomesMinMax(samples, 0, out maxMax, out maxMaxCount, out minMin, out minMinCount, out maxDistance, out maxDistanceCount, out maxActual, out maxActualCount, out minActual, out minActualCount);
+
+            //Todo: Write another for minValuesPercent != 0
 
             Assert.AreEqual(0.41, maxMax);
             Assert.AreEqual(-0.4, minMin);

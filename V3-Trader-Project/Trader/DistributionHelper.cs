@@ -63,29 +63,41 @@ namespace V3_Trader_Project.Trader
                 throw new Exception("Minmax is not valid: " + min + " " + max);
         }
 
-        public static void getSampleOutcomeCodesBuyMaxSellMax(double[][] sampleData, out double maxBuy, out double maxBuyValuesCount, out double maxSell, out double maxSellValuesCount)
+        public static void getSampleOutcomeCodesBuyMaxSellMax(double[][] sampleData, double minValuesPercentThreshold, out double maxBuy, out double maxBuyValuesCount, out double maxSell, out double maxSellValuesCount)
         {
             maxBuy = double.MinValue;
             maxSell = double.MinValue;
             maxBuyValuesCount = double.NaN;
             maxSellValuesCount = double.NaN;
 
-            foreach(double[] row in sampleData)
+            double sumAllSamples = 0;
+            foreach (double[] row in sampleData)
+            {
+                if (row != null)
+                    sumAllSamples += row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
+            }
+            
+            foreach (double[] row in sampleData)
             {
                 if (row != null)
                 {
-                    double b = row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
-                    if (b > maxBuy)
-                    {
-                        maxBuy = b;
-                        maxBuyValuesCount = row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
-                    }
+                    double samplesCount = row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
 
-                    double s = row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
-                    if (s > maxSell)
+                    if (samplesCount / sumAllSamples >= minValuesPercentThreshold / 100d)
                     {
-                        maxSell = s;
-                        maxSellValuesCount = row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
+                        double b = row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
+                        if (b > maxBuy)
+                        {
+                            maxBuy = b;
+                            maxBuyValuesCount = samplesCount;
+                        }
+
+                        double s = row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
+                        if (s > maxSell)
+                        {
+                            maxSell = s;
+                            maxSellValuesCount = samplesCount;
+                        }
                     }
                 }
             }
@@ -94,7 +106,7 @@ namespace V3_Trader_Project.Trader
                 throw new Exception("Nothing found :(");
         }
 
-        public static void getSampleOutcomesMinMax(double[][] sampleData, out double maxMax, out double maxMaxValuesCount, out double minMin, out double minMinValuesCount, out double maxMinMaxDistance, out double maxMinMaxDistanceValuesCount, out double maxActual, out double maxActualValuesCount, out double minActual, out double minActualValuesCount)
+        public static void getSampleOutcomesMinMax(double[][] sampleData, double minValuesPercentThreshold, out double maxMax, out double maxMaxValuesCount, out double minMin, out double minMinValuesCount, out double maxMinMaxDistance, out double maxMinMaxDistanceValuesCount, out double maxActual, out double maxActualValuesCount, out double minActual, out double minActualValuesCount)
         {
             maxMax = double.MinValue;
             minMin = double.MaxValue;
@@ -108,43 +120,54 @@ namespace V3_Trader_Project.Trader
             minActualValuesCount = double.NaN;
             maxMinMaxDistanceValuesCount = double.NaN;
 
+            double sumAllSamples = 0;
+            foreach (double[] row in sampleData)
+            {
+                if (row != null)
+                    sumAllSamples += row[(int)SampleValuesOutcomeIndices.SamplesCount];
+            }
+            
             foreach (double[] row in sampleData)
             {
                 if (row != null)
                 {
                     double valuesCount = row[(int)SampleValuesOutcomeIndices.SamplesCount];
-                    double maxAvg = row[(int)SampleValuesOutcomeIndices.MaxAvg];
-                    if (maxAvg > maxMax)
-                    {
-                        maxMax = maxAvg;
-                        maxMaxValuesCount = valuesCount;
-                    }
 
-                    double minAvg = row[(int)SampleValuesOutcomeIndices.MinAvg];
-                    if (minAvg < minMin)
+                    if (valuesCount / sumAllSamples >= minValuesPercentThreshold / 100d)
                     {
-                        minMin = minAvg;
-                        minMinValuesCount = valuesCount;
-                    }
+                        double maxAvg = row[(int)SampleValuesOutcomeIndices.MaxAvg];
+                        if (maxAvg > maxMax)
+                        {
+                            maxMax = maxAvg;
+                            maxMaxValuesCount = valuesCount;
+                        }
 
-                    double actualAvg = row[(int)SampleValuesOutcomeIndices.ActualAvg];
-                    if (actualAvg > maxActual)
-                    {
-                        maxActual = actualAvg;
-                        maxActualValuesCount = valuesCount;
-                    }
+                        double minAvg = row[(int)SampleValuesOutcomeIndices.MinAvg];
+                        if (minAvg < minMin)
+                        {
+                            minMin = minAvg;
+                            minMinValuesCount = valuesCount;
+                        }
 
-                    if (actualAvg < minActual)
-                    {
-                        minActual = actualAvg;
-                        minActualValuesCount = valuesCount;
-                    }
+                        double actualAvg = row[(int)SampleValuesOutcomeIndices.ActualAvg];
+                        if (actualAvg > maxActual)
+                        {
+                            maxActual = actualAvg;
+                            maxActualValuesCount = valuesCount;
+                        }
 
-                    double distance = Math.Abs(Math.Abs(minAvg) - maxAvg);
-                    if (distance > maxMinMaxDistance)
-                    {
-                        maxMinMaxDistance = distance;
-                        maxMinMaxDistanceValuesCount = valuesCount;
+                        if (actualAvg < minActual)
+                        {
+                            minActual = actualAvg;
+                            minActualValuesCount = valuesCount;
+                        }
+
+                        double distance = Math.Abs(Math.Abs(minAvg) - maxAvg);
+                        if (distance > maxMinMaxDistance)
+                        {
+                            maxMinMaxDistance = distance;
+                            maxMinMaxDistanceValuesCount = valuesCount;
+                        }
                     }
                 }
             }

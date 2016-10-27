@@ -1,5 +1,6 @@
 ﻿Debug the indicators
-Refactor optimizer and form
+
+Offset functionality for the dataload getarray
 
 Implement the MarketModul and a fake api
 Visualize the MarketModul
@@ -9,7 +10,7 @@ Visualize the backtesting framework
 Implement good Backtesting statistics and visualization
 
 Try different Order machines / Signal Machines
-	/ Learning Indicators / Timeframes / Markets / Percentages
+	/ Learning Indicators / Timeframes / Markets / Percentages / Train period (y/m/w/d/all)
 
 Visualize the order machine
 Visualize Situation

@@ -36,6 +36,7 @@ namespace V3_Trader_Project.Trader
             return output;
         }
 
+        //Todo: Add offset
         public double[][] getArray(long minDateDistance = 1, long onlyTimeframe = 0)
         {
             long lastAddedDate = 0;
