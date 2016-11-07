@@ -13,9 +13,17 @@ namespace V3_Trader_Project.Trader.SignalMachines
         private LearningIndicator[] indicators;
         private double[] wights;
 
-        public LIWightedSignalMachine(LearningIndicator[] indicators, double[] wights)
+        public LIWightedSignalMachine(LearningIndicator[] indicators, double[] wights = null)
         {
             this.indicators = indicators;
+
+            if(wights == null)
+            {
+                wights = new double[indicators.Length];
+                for (int i = 0; i < wights.Length; i++)
+                    wights[i] = 1d / wights.Length;
+            }
+
             this.wights = wights;
 
             if (wights.Length != indicators.Length)

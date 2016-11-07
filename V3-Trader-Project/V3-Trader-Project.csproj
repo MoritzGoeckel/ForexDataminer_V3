@@ -157,6 +157,12 @@
     <Compile Include="Trader\Application\SignalMachines\MLSignalMachine.cs" />
     <Compile Include="Trader\Application\SignalMachines\SignalMachine.cs" />
     <Compile Include="Trader\ArrayHelper.cs" />
+    <Compile Include="Trader\Forms\BacktestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Trader\Forms\BacktestForm.Designer.cs">
+      <DependentUpon>BacktestForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Trader\Forms\IndicatorTestingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -235,6 +241,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Trader\Forms\BacktestForm.resx">
+      <DependentUpon>BacktestForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Trader\Forms\IndicatorTestingForm.resx">
       <DependentUpon>IndicatorTestingForm.cs</DependentUpon>
     </EmbeddedResource>

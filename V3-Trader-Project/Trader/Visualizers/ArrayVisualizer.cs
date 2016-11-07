@@ -71,7 +71,7 @@ namespace V3_Trader_Project.Trader.Visualizers
             for (int x = 0; x < width; x++)
             {
                 int index = Convert.ToInt32(stepSize * x);
-                if (double.IsNaN(input[index]) == false)
+                if (index < input.Length && double.IsNaN(input[index]) == false)
                 {
                     int y = height - Convert.ToInt32((input[index] - min) / (max - min) * height);
 

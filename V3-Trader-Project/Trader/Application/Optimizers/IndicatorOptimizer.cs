@@ -66,7 +66,7 @@ namespace V3_Trader_Project.Trader.Application
         {
             Logger.log("Testing Indicator: " + indicator.getName());
 
-            LearningIndicator li = env.testIndicator(indicator);
+            LearningIndicator li = env.createTrainedIndicator(indicator);
             double[] pp = li.getPredictivePowerArray();
 
             //Results

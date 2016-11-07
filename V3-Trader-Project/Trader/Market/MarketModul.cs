@@ -9,7 +9,7 @@ using V3_Trader_Project.Trader.Visualizers;
 
 namespace V3_Trader_Project.Trader.Market
 {
-    class MarketModul
+    public class MarketModul
     {
         public enum OrderType : int
         {
@@ -24,51 +24,98 @@ namespace V3_Trader_Project.Trader.Market
         private double bid, ask;
         private long timestamp = -1;
 
-        private List<OpenPosition> openPositions = new List<OpenPosition>();
+        private OpenPosition openPositionsLong, openPositionShort;
         private List<ClosedPosition> closedPositions = new List<ClosedPosition>();
 
-        public void pushPrice(double bid, double ask, long timestamp)
+        private double[] currentPriceData;
+
+        public void pushPrice(double[] price)
         {
-            this.bid = bid;
-            this.ask = ask;
-            this.timestamp = timestamp;
+            this.bid = price[(int)PriceDataIndeces.Bid];
+            this.ask = price[(int)PriceDataIndeces.Ask];
+            this.timestamp = Convert.ToInt64(price[(int)PriceDataIndeces.Date]);
+
+            this.currentPriceData = (double[])price.Clone();
+        }
+
+        public double[] getPriceData()
+        {
+            return currentPriceData;
+        }
+
+        public bool isPositionOpen(OrderType type)
+        {
+            if (type == OrderType.Long)
+                return openPositionsLong != null;
+            else
+                return openPositionShort != null;
+        }
+
+        public OpenPosition getPosition(OrderType type)
+        {
+            if (type == OrderType.Long)
+                return openPositionsLong;
+            else
+                return openPositionShort;
         }
 
         public bool openPosition(double amount, long timestamp, OrderType type)
         {
-            openPositions.Add(new OpenPosition(amount, timestamp, (type == OrderType.Long ? ask : bid), type));
+            OpenPosition p = new OpenPosition(amount, timestamp, (type == OrderType.Long ? ask : bid), type);
+
+            if (type == OrderType.Long)
+            {
+                if (openPositionsLong == null)
+                    openPositionsLong = p;
+                else
+                    return false;
+            }
+            else
+            {
+                if (openPositionShort == null)
+                    openPositionShort = p;
+                else
+                    return false;
+            }
+
             return true;
         }
         
         public bool closePosition(OrderType type, long timestamp)
         {
-            bool didSomething = false;
-            for(int i = 0; i < openPositions.Count; i++)
-            {
-                if(openPositions[i].type == type)
-                {
-                    closedPositions.Add(new ClosedPosition(openPositions[i], timestamp, (type == OrderType.Long ? bid : ask)));
-                    openPositions.RemoveAt(i);
-                    didSomething = true;
-                    i--;
-                }
-            }
+            OpenPosition p = null;
 
-            return didSomething;
+            if (type == OrderType.Long)
+                p = openPositionsLong;
+            else
+                p = openPositionShort;
+
+            if (p != null)
+            {
+                closedPositions.Add(new ClosedPosition(p, timestamp, (type == OrderType.Long ? bid : ask)));
+
+                if (type == OrderType.Long)
+                    openPositionsLong = null;
+                else
+                    openPositionShort = null;
+
+                return true;
+            }
+            else
+                return false;
         }
 
-        public bool flatAll()
+        public bool flatAll(long timestamp)
         {
-            bool didSomething = false;
-            while(openPositions.Count > 0)
-            {
-                closedPositions.Add(new ClosedPosition(openPositions[0], timestamp, (openPositions[0].type == OrderType.Long ? bid : ask)));
-                openPositions.RemoveAt(0);
-                didSomething = true;
-            }
+            closePosition(OrderType.Long, timestamp);
+            closePosition(OrderType.Short, timestamp);
 
-            return didSomething;
+            return true;
         }
+
+        //Todo: does not regard amount yet
+
+        public static double leverage = 1000 * 10;
 
         public double getStatistics(out double standartDeviation, out double profit, out double sharpe, out double trades, out double tradesPerDay, out double profitPerTrade, out double tradesWinningRatio, out double winningTradesAvg, out double loosingTradesAvg, out double maxProfit, out double maxLoss, out double avgTimeframe, out double standartDeviationTimeframes)
         {
@@ -81,21 +128,30 @@ namespace V3_Trader_Project.Trader.Market
                 timeframes[i] = closedPositions[i].getTimeDuration();
             }
 
-            standartDeviation = profits.StandardDeviation();
-            profit = profits.Sum();
+            standartDeviation = profits.StandardDeviation() * leverage;
+            profit = profits.Sum() * leverage;
             sharpe = profit / standartDeviation;
             trades = profits.Length;
             tradesPerDay = trades / ((closedPositions[closedPositions.Count - 1].timestampClose - closedPositions[0].timestampOpen) / 1000 / 60 / 60 / 24);
-            profitPerTrade = profit / trades;
+            profitPerTrade = (profit * leverage) / trades;
             tradesWinningRatio = profits.Count((p => p > 0)) / Convert.ToDouble(profits.Count());
-            winningTradesAvg = profits.Sum((p => (p > 0 ? p : 0))) / Convert.ToDouble(profits.Count((p => p > 0)));
-            loosingTradesAvg = profits.Sum((p => (p < 0 ? p : 0))) / Convert.ToDouble(profits.Count((p => p < 0)));
-            maxProfit = profits.Maximum();
-            maxLoss = profits.Minimum();
-            avgTimeframe = timeframes.Average();
-            standartDeviationTimeframes = timeframes.StandardDeviation();
+            winningTradesAvg = (profits.Sum((p => (p > 0 ? p : 0))) * leverage) / Convert.ToDouble(profits.Count((p => p > 0)));
+            loosingTradesAvg = (profits.Sum((p => (p < 0 ? p : 0))) * leverage) / Convert.ToDouble(profits.Count((p => p < 0)));
+            maxProfit = profits.Maximum() * leverage;
+            maxLoss = profits.Minimum() * leverage;
+            avgTimeframe = timeframes.Average() / 1000d / 60d;
+            standartDeviationTimeframes = timeframes.StandardDeviation() / 1000d / 60d;
 
             return standartDeviation;
+        }
+
+        public string getTradesString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (ClosedPosition p in closedPositions)
+                sb.Append(p.getProfit() + " with " + (p.type == OrderType.Long ? "Long" : "Short") + " " + p.getTimeDuration() / 1000d / 60d + "min" + Environment.NewLine);
+
+            return sb.ToString();
         }
 
         public string getStatisticsString()
@@ -116,14 +172,15 @@ namespace V3_Trader_Project.Trader.Market
                 + "LoosingAvg: " + loosingTradesAvg + sep
                 + "Max+: " + maxProfit + sep
                 + "Max-: " + maxLoss + sep
-                + "AvgTimeInMarket: " + avgTimeframe + sep
-                + "stDTimeInMarket: " + standartDeviationTimeframes;
+                + "AvgTimeInMarket: " + avgTimeframe +"min"+ sep
+                + "stDTimeInMarket: " + standartDeviationTimeframes + "min" + sep
+                + "(assumed leverage: " + leverage / 1000 + "K)";
         }
 
         public Image getCapitalCurveVisualization(int width, int heigth)
         {
             double[] capital = new double[closedPositions.Count];
-            double cumulativeCapital = 0;
+            double cumulativeCapital = 1000;
             for (int i = 0; i < closedPositions.Count; i++)
             {
                 cumulativeCapital += closedPositions[i].getProfit();

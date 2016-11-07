@@ -64,7 +64,7 @@ namespace V3_Trader_Project.Trader.Application
             Logger.log("SATTLE OPT. dist for " + outcomeCodePercent + "% at b" + Math.Round(buyDist, 4) + " s" + Math.Round(sellDist, 4));
         }
 
-        public LearningIndicator testIndicator(WalkerIndicator indicator)
+        public LearningIndicator createTrainedIndicator(WalkerIndicator indicator)
         {
             return new LearningIndicator(indicator, priceData, outcomeCodes, outcomes, outcomeTimeframe, buyDist, sellDist, outcomeCodePercent);
         }

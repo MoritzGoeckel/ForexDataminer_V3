@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace V3_Trader_Project.Trader.Market
 {
-    class OpenPosition
+    public class OpenPosition
     {
         public double price;
         public long timestamp;
@@ -19,6 +19,25 @@ namespace V3_Trader_Project.Trader.Market
             this.price = price;
             this.type = type;
             this.amount = amount;
+        }
+
+        public double getProfit(double[] priceData)
+        {
+            if (type == MarketModul.OrderType.Long)
+                return priceData[(int)PriceDataIndeces.Bid] - price;
+            else
+                return price - priceData[(int)PriceDataIndeces.Ask];
+        }
+
+        public double getProfitPercent(double[] priceData)
+        {
+            double p = getProfit(priceData);
+            return ((price + p / price) - 1d) * 100d;
+        }
+
+        public long getTimeInMarket(double[] priceData)
+        {
+            return Convert.ToInt64(priceData[(int)PriceDataIndeces.Date] - timestamp);
         }
     }
 }

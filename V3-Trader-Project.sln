@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V3-Trader-Project", "V3-Trader-Project\V3-Trader-Project.csproj", "{0FCF00A8-56E1-40BA-9D14-35EBBD48D7CF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D1F1F42-0454-456A-9A8D-01EAFB8C0359}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		64BitC|Any CPU = 64BitC|Any CPU

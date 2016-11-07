@@ -114,7 +114,7 @@ namespace V3_Trader_Project.Trader.Application
         public void setNewPrice(double[] prices)
         {
             double mid = (prices[(int)PriceDataIndeces.Ask] + prices[(int)PriceDataIndeces.Bid]) / 2d;
-            indicator.setNextData(Convert.ToInt32(prices[(int)PriceDataIndeces.Date]), mid);
+            indicator.setNextData(Convert.ToInt64(prices[(int)PriceDataIndeces.Date]), mid);
         }
 
         public double[] getPrediction(long timestamp)

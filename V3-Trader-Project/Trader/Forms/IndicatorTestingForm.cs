@@ -25,7 +25,7 @@ namespace V3_Trader_Project.Trader.Forms
         private void button_run_Click(object sender, EventArgs e)
         {
             try {
-                LearningIndicator li = env.testIndicator(IndicatorGenerator.getIndicatorByString(textBox1.Text)); //Decide indicator somehow
+                LearningIndicator li = env.createTrainedIndicator(IndicatorGenerator.getIndicatorByString(textBox1.Text)); //Decide indicator somehow
                 Image samplings = li.visualizeTables(2000, 1500);
                 Image values = li.visualizeIndicatorValues(2000, 500, env.priceData);
 
