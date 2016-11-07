@@ -128,17 +128,17 @@ namespace V3_Trader_Project.Trader.Market
                 timeframes[i] = closedPositions[i].getTimeDuration();
             }
 
-            standartDeviation = profits.StandardDeviation() * leverage;
-            profit = profits.Sum() * leverage;
+            standartDeviation = profits.StandardDeviation();
+            profit = profits.Sum();
             sharpe = profit / standartDeviation;
             trades = profits.Length;
             tradesPerDay = trades / ((closedPositions[closedPositions.Count - 1].timestampClose - closedPositions[0].timestampOpen) / 1000 / 60 / 60 / 24);
-            profitPerTrade = (profit * leverage) / trades;
+            profitPerTrade = profit / trades;
             tradesWinningRatio = profits.Count((p => p > 0)) / Convert.ToDouble(profits.Count());
-            winningTradesAvg = (profits.Sum((p => (p > 0 ? p : 0))) * leverage) / Convert.ToDouble(profits.Count((p => p > 0)));
-            loosingTradesAvg = (profits.Sum((p => (p < 0 ? p : 0))) * leverage) / Convert.ToDouble(profits.Count((p => p < 0)));
-            maxProfit = profits.Maximum() * leverage;
-            maxLoss = profits.Minimum() * leverage;
+            winningTradesAvg = profits.Sum((p => (p > 0 ? p : 0))) / Convert.ToDouble(profits.Count((p => p > 0)));
+            loosingTradesAvg = profits.Sum((p => (p < 0 ? p : 0))) / Convert.ToDouble(profits.Count((p => p < 0)));
+            maxProfit = profits.Maximum();
+            maxLoss = profits.Minimum();
             avgTimeframe = timeframes.Average() / 1000d / 60d;
             standartDeviationTimeframes = timeframes.StandardDeviation() / 1000d / 60d;
 
@@ -162,16 +162,16 @@ namespace V3_Trader_Project.Trader.Market
             string sep = Environment.NewLine;
 
             return "Sharpe: " + sharpe + sep
-                + "PnL: " + profit + sep
-                + "stD: " + standartDeviation + sep
+                + "PnL: " + profit * leverage + sep
+                + "stD: " + standartDeviation * leverage + sep
                 + "Trades: " + trades + sep
                 + "Trades/d: " + tradesPerDay + sep
-                + "PnL/Trade: " + profitPerTrade + sep
+                + "PnL/Trade: " + profitPerTrade * leverage + sep
                 + "Winning: " + tradesWinningRatio + sep
-                + "WinningAvg: " + winningTradesAvg + sep
-                + "LoosingAvg: " + loosingTradesAvg + sep
-                + "Max+: " + maxProfit + sep
-                + "Max-: " + maxLoss + sep
+                + "WinningAvg: " + winningTradesAvg * leverage + sep
+                + "LoosingAvg: " + loosingTradesAvg * leverage + sep
+                + "Max+: " + maxProfit * leverage + sep
+                + "Max-: " + maxLoss * leverage + sep
                 + "AvgTimeInMarket: " + avgTimeframe +"min"+ sep
                 + "stDTimeInMarket: " + standartDeviationTimeframes + "min" + sep
                 + "(assumed leverage: " + leverage / 1000 + "K)";
