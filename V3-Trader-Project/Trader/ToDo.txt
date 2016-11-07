@@ -1,8 +1,5 @@
 ﻿Debug the indicators
 
-Offset functionality for the dataload getarray
-
-Implement the MarketModul and a fake api
 Visualize the MarketModul
 
 Implement the backtesting framework
@@ -18,9 +15,12 @@ Visualize Situation
 Create live papertrade api / framework
 Create demo account trading api
 
+Select indicators automatically
+
 Alternatives:
 	Create Signalmachine with single indicators
 	Create Signalmachine with machine learning
-	Create new Indicators
+	Sample signalmachines?
+	Create new Indicators (Linear Regression trend, HMacarovChain)
 	Implement more tests to find bugs
 	Make the Indicator Generation process smart, maybe genetic

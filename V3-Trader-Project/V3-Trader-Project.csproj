@@ -152,7 +152,8 @@
     <Compile Include="Trader\Application\OrderMachines\OrderMachine.cs" />
     <Compile Include="Trader\Application\Optimizers\OutcomeCodePercentOptimizer.cs" />
     <Compile Include="Trader\Application\Exceptions\TooLittleValidDataException.cs" />
-    <Compile Include="Trader\Application\SignalMachines\LISignalMachine.cs" />
+    <Compile Include="Trader\Application\SignalMachines\LIAggresiveSignalMachine.cs" />
+    <Compile Include="Trader\Application\SignalMachines\LIWightedSignalMachine.cs" />
     <Compile Include="Trader\Application\SignalMachines\MLSignalMachine.cs" />
     <Compile Include="Trader\Application\SignalMachines\SignalMachine.cs" />
     <Compile Include="Trader\ArrayHelper.cs" />
@@ -196,6 +197,9 @@
     <Compile Include="Trader\MachineLearning\IMachineLearning.cs" />
     <Compile Include="Trader\MachineLearning\MyLogisticRegression.cs" />
     <Compile Include="Trader\MachineLearning\MyRegression.cs" />
+    <Compile Include="Trader\Market\ClosedPosition.cs" />
+    <Compile Include="Trader\Market\MarketModul.cs" />
+    <Compile Include="Trader\Market\OpenPosition.cs" />
     <Compile Include="Trader\Tests\ArrayHelper_Test.cs" />
     <Compile Include="Trader\Tests\ArrayVisualizer_Test.cs" />
     <Compile Include="Trader\Tests\DataValidator_Test.cs" />
@@ -266,9 +270,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Trader\Market\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Trader\ToDo.txt" />
   </ItemGroup>

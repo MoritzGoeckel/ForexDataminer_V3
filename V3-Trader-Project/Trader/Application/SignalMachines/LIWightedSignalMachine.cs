@@ -8,12 +8,12 @@ using V3_Trader_Project.Trader.Application;
 
 namespace V3_Trader_Project.Trader.SignalMachines
 {
-    class LISignalMachine : SignalMachine
+    class LIWightedSignalMachine : SignalMachine
     {
         private LearningIndicator[] indicators;
         private double[] wights;
 
-        public LISignalMachine(LearningIndicator[] indicators, double[] wights)
+        public LIWightedSignalMachine(LearningIndicator[] indicators, double[] wights)
         {
             this.indicators = indicators;
             this.wights = wights;

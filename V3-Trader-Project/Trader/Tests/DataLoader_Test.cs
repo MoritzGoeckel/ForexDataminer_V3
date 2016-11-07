@@ -43,5 +43,19 @@ namespace V3_Trader_Project.Trader.Tests
             //Third file
             Assert.AreEqual(1.209640, array[5][1]); 
         }
+
+        [TestMethod] //Probably okay
+        public void DataLoader_LoadArrayOffset()
+        {
+            DataLoader dl = new DataLoader(Config.DataPath + "TESTDATA");
+            List<string> filenames = dl.getFiles();
+            double[][] array = dl.getArray(25 * 1000, 50000, 1);
+
+            DateTime dt = new DateTime(2015, 1, 1, 13, 0, 44, 493);
+            Assert.AreEqual(array[0][0], Timestamp.dateTimeToMilliseconds(dt)); //YYYYMMDD HHMMSSNNN
+
+            DateTime dt2 = new DateTime(2015, 1, 1, 13, 02, 40, 743);
+            Assert.AreEqual(array[array.Length - 1][0], Timestamp.dateTimeToMilliseconds(dt2)); //YYYYMMDD HHMMSSNNN
+        }
     }
 }

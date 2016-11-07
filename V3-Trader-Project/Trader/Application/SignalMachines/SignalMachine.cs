@@ -15,5 +15,16 @@ namespace V3_Trader_Project.Trader.SignalMachines
     {
         public abstract double[] getSignal(long timestamp);
         public abstract void pushPrice(double[] price);
+
+        public string getInfo(long timestamp)
+        {
+            double[] s = getSignal(timestamp);
+
+            return "BuySignal: " + s[(int)SignalMachineSignal.BuySignal] + Environment.NewLine
+                + "SellSignal: " + s[(int)SignalMachineSignal.SellSignal] + Environment.NewLine
+                + "minPrediction: " + s[(int)SignalMachineSignal.minPrediction] + Environment.NewLine
+                + "maxPrediction: " + s[(int)SignalMachineSignal.maxPrediction] + Environment.NewLine
+                + "Prediction: " + s[(int)SignalMachineSignal.prediction] + Environment.NewLine;
+        }
     }
 }
