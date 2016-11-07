@@ -2,7 +2,9 @@
 
 Visualize the MarketModul
 
-Implement the backtesting framework
+Test the import array thingy, maybe always use a offset. Train and test learning indicator should be more
+	effective then on differen data. Test it!
+
 Visualize the backtesting framework
 Implement good Backtesting statistics and visualization
 
