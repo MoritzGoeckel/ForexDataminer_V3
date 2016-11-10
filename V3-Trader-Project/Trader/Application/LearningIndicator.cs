@@ -127,27 +127,44 @@ namespace V3_Trader_Project.Trader.Application
                 
                 //Search in outcomeCodeSamplingTable
                 double v = indicator.getIndicator();
-                for(int i = 0; i < outcomeCodeSamplingTable.Length; i++)
+                if (v < outcomeCodeSamplingTable[0][(int)SampleValuesOutcomeCodesIndices.Start])
                 {
-                    if (v >= outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.Start] 
-                        && (i == outcomeCodeSamplingTable.Length - 1 || outcomeCodeSamplingTable[i + 1] == null || outcomeCodeSamplingTable[i + 1][(int)SampleValuesOutcomeCodesIndices.Start] > v))
+                    buyRatio = double.NaN;
+                    sellRatio = double.NaN;
+                }
+                else
+                {
+                    for (int i = 0; i < outcomeCodeSamplingTable.Length; i++)
                     {
-                        buyRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio];
-                        sellRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.SellRatio];
-                        break;
+                        if (v >= outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.Start]
+                            && (i == outcomeCodeSamplingTable.Length - 1 || outcomeCodeSamplingTable[i + 1] == null || outcomeCodeSamplingTable[i + 1][(int)SampleValuesOutcomeCodesIndices.Start] > v))
+                        {
+                            buyRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio];
+                            sellRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.SellRatio];
+                            break;
+                        }
                     }
                 }
 
-                //Search in outcomeSamplingTable
-                for (int i = 0; i < outcomeSamplingTable.Length; i++)
+                if (v < outcomeSamplingTable[0][(int)SampleValuesOutcomeIndices.Start])
                 {
-                    if (v >= outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.Start] 
-                        && (i == outcomeSamplingTable.Length - 1 || outcomeSamplingTable[i + 1] == null || outcomeSamplingTable[i + 1][(int)SampleValuesOutcomeIndices.Start] > v))
+                    min = double.NaN;
+                    max = double.NaN;
+                    actual = double.NaN;
+                }
+                else
+                {
+                    //Search in outcomeSamplingTable
+                    for (int i = 0; i < outcomeSamplingTable.Length; i++)
                     {
-                        min = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MinAvg];
-                        max = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MaxAvg];
-                        actual = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.ActualAvg];
-                        break;
+                        if (v >= outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.Start]
+                            && (i == outcomeSamplingTable.Length - 1 || outcomeSamplingTable[i + 1] == null || outcomeSamplingTable[i + 1][(int)SampleValuesOutcomeIndices.Start] > v))
+                        {
+                            min = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MinAvg];
+                            max = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MaxAvg];
+                            actual = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.ActualAvg];
+                            break;
+                        }
                     }
                 }
 

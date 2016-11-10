@@ -93,5 +93,30 @@ namespace V3_Trader_Project.Trader
 
             return rows.ToArray();
         }
+
+        public static double[][] getArrayFromArray(long offset, long timeframe, long minDateDistance = 1, double[][] priceData)
+        {
+            long lastAddedDate = 0;
+            long firstTimestamp = 0;
+            List<double[]> rows = new List<double[]>();
+            foreach (double[] line in priceData)
+            {
+                long dateL = Convert.ToInt64(line[(int)PriceDataIndeces.Date]);
+
+                if (firstTimestamp == 0)
+                    firstTimestamp = dateL;
+
+                if (dateL - offset > firstTimestamp && dateL - lastAddedDate > minDateDistance)
+                {
+                    rows.Add(new double[] { dateL, line[(int)PriceDataIndeces.Bid], line[(int)PriceDataIndeces.Ask], line[(int)PriceDataIndeces.Volume] });
+                    lastAddedDate = dateL;
+                }
+
+                if (timeframe != 0 && dateL > firstTimestamp + offset + timeframe)
+                    return rows.ToArray(); //Stop
+            }
+
+            return rows.ToArray();
+        }
     }
 }

@@ -24,12 +24,9 @@ namespace V3_Trader_Project.Trader.Application
 
         public double buyDist, sellDist;
 
-        public TestingEnvironment(string resultFolderPath, string dataPath, int dataDistanceInSeconds, long onlyTimeframe = 0)
+        public TestingEnvironment(string resultFolderPath, double[][] priceData)
         {
-            Logger.log("Loading files ...");
-            DataLoader dl = new DataLoader(dataPath);
-            priceData = dl.getArray(1000 * dataDistanceInSeconds, onlyTimeframe);
-            Logger.log("End loading files");
+            this.priceData = priceData;
         }
 
         public void loadOutcomeCodes(long outcomeTimeframe, double desiredOutcomeCodeDistribution = double.NaN)

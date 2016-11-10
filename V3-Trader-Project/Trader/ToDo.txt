@@ -2,11 +2,10 @@
 
 Visualize the MarketModul
 
-Test the import array thingy, maybe always use a offset. Train and test learning indicator should be more
-	effective then on differen data. Test it!
-
 Visualize the backtesting framework
 Implement good Backtesting statistics and visualization
+
+Implement Indicator Selector
 
 Test different
 	 wights / Timeframes / Markets / Percentages / Train periods / Signal machines / Order Machines
@@ -17,7 +16,8 @@ Visualize Situation
 Create live papertrade api / framework
 Create demo account trading api
 
-Select indicators automatically
+Possible bugs:
+	Last index of learningIndicator sampling not used
 
 Alternatives:
 	Create Signalmachine with single indicators

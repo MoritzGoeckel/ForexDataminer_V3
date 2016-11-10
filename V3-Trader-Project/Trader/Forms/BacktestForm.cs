@@ -22,7 +22,6 @@ namespace V3_Trader_Project.Trader.Forms
         }
 
         TestingEnvironment env;
-        Image priceAndOutcomes;
 
         string pair = "EURUSD";
         string[] indicatorStrings = { "MovingAverageSubtractionIndicator_86324000_358872000",
@@ -33,10 +32,16 @@ namespace V3_Trader_Project.Trader.Forms
 
         private void BacktestForm_Load(object sender, EventArgs e)
         {
+            DataLoader dl = new DataLoader(Config.DataPath + pair);
+            double[][] priceData = dl.getArray(0,
+                31l * 24l * 60l * 60l * 1000l,
+                60 * 1000);
+
             //Set these args
-            env = new TestingEnvironment(Config.DataPath, Config.DataPath + pair, 60, 1000l * 60 * 60 * 24 * 30);
+            env = new TestingEnvironment(Config.DataPath, priceData);
+
             env.loadOutcomeCodes(1 * 60 * 60 * 1000, 0.5);
-            this.BackgroundImage = priceAndOutcomes = env.visualizePriceAndOutcomeCodes(2000, 1000);
+            this.BackgroundImage = env.visualizePriceAndOutcomeCodes(2000, 1000);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -49,10 +54,12 @@ namespace V3_Trader_Project.Trader.Forms
 
             SignalMachine sm = new LIWightedSignalMachine(indicators.ToArray());
             MarketModul mm = new MarketModul("EURUSD");
-            FirstOrderMachine om = new FirstOrderMachine(mm, 0.06, 3600000);
+            FirstOrderMachine om = new FirstOrderMachine(mm, 0.06, 60 * 60 * 1000l);
 
             DataLoader dl = new DataLoader(Config.DataPath + pair);
-            double[][] priceData = dl.getArray(31l * 24l * 60l * 60l * 1000l, 31l * 24l * 60l * 60l * 1000l, 60 * 1000);
+            double[][] priceData = dl.getArray(31l * 24l * 60l * 60l * 1000l,
+                31l * 24l * 60l * 60l * 1000l * 10,
+                60 * 1000);
 
             for (int i = 0; i < priceData.Length; i++)
             {

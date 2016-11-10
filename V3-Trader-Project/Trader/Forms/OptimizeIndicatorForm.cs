@@ -23,7 +23,7 @@ namespace V3_Trader_Project.Trader.Forms
 
         private void OptimizeIndicatorForm_Load(object sender, EventArgs e)
         {
-            env = new TestingEnvironment(Config.DataPath, Config.DataPath + "EURUSD", 60, 1000l * 60 * 60 * 24 * 30);
+            env = new TestingEnvironment(Config.DataPath, Config.DataPath + "EURUSD", 0, 1000l * 60 * 60 * 24 * 31, 60 * 1000l);
             env.loadOutcomeCodes(1 * 60 * 60 * 1000, 0.5);
             op = new IndicatorOptimizer(Config.DataPath, env);
             op.startRunningRandomIndicators(new IndicatorGenerator());
