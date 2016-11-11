@@ -126,7 +126,12 @@ namespace V3_Trader_Project.Trader
 
             usedValuesRatio /= values.Length;
 
-            return output;
+            List<double[]> nonNullRows = new List<double[]>();
+            foreach (double[] row in output)
+                if (row != null)
+                    nonNullRows.Add(row);
+
+            return nonNullRows.ToArray();
         }
 
         public static double[][] sampleValuesOutcome(double[] values, double[][] prices, double[][] outcomes, double min, double max, out double validValueRatio, int steps = 20)
@@ -176,7 +181,12 @@ namespace V3_Trader_Project.Trader
                     output[i] = null;
             }
 
-            return output;
+            List<double[]> nonNullRows = new List<double[]>();
+            foreach (double[] row in output)
+                if (row != null)
+                    nonNullRows.Add(row);
+
+            return nonNullRows.ToArray();
         }
 
         private static void checkValue(double val)

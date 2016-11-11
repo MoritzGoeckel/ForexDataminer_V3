@@ -139,8 +139,9 @@ namespace V3_Trader_Project.Trader.Application
                 double v = indicator.getIndicator();
                 for (int i = 0; i < outcomeCodeSamplingTable.Length; i++)
                 {
-                    if (outcomeCodeSamplingTable[i] != null
-                        && (i == outcomeCodeSamplingTable.Length - 1 || outcomeCodeSamplingTable[i + 1][(int)SampleValuesOutcomeCodesIndices.Start] > v))
+                    bool lastElement = i == outcomeCodeSamplingTable.Length - 1;
+                    if (lastElement
+                        || (outcomeCodeSamplingTable[i + 1][(int)SampleValuesOutcomeCodesIndices.Start] > v && outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.Start] <= v))
                     {
                         buyRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio];
                         sellRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.SellRatio];
@@ -151,8 +152,9 @@ namespace V3_Trader_Project.Trader.Application
                 //Search in outcomeSamplingTable
                 for (int i = 0; i < outcomeSamplingTable.Length; i++)
                 {
-                    if (outcomeSamplingTable[i] != null
-                        && (i == outcomeSamplingTable.Length - 1 || outcomeSamplingTable[i + 1][(int)SampleValuesOutcomeIndices.Start] > v))
+                    bool lastElement = i == outcomeSamplingTable.Length - 1;
+                    if (lastElement 
+                        || (outcomeSamplingTable[i + 1][(int)SampleValuesOutcomeIndices.Start] > v && outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.Start] <= v))
                     {
                         min = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MinAvg];
                         max = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MaxAvg];

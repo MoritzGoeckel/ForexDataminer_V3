@@ -60,7 +60,7 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
             double[] pp = li.getPredictivePowerArray();
 
             double buySellCodeScore = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxBuyCode] + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxSellCode];
-            if (buySellCodeScore < 1.95) //Dont trust too perfect scores
+            if (buySellCodeScore < 1.9) //Dont trust too perfect scores
             {
                 ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = buySellCodeScore };
 
@@ -75,9 +75,17 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 
         private int analysedIndicators = 0;
 
+        private int okayOnes = 0;
         public override bool isSatisfied()
         {
-            return analysedIndicators > runs;
+            okayOnes = 0;
+            foreach (KeyValuePair<string, ValueAndIDPair> pair in candidates)
+            {
+                if (pair.Value._value > 1.8)
+                    okayOnes++;
+            }
+
+            return analysedIndicators > runs || okayOnes >= targetCount;
         }
 
         public override string getState()
@@ -88,7 +96,8 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
                 s += pair.Key + " " + pair.Value._value + Environment.NewLine;
             }
 
-            s += "Todo: " + (analysedIndicators - runs);
+            s += "Todo: " + (analysedIndicators - runs) + Environment.NewLine +
+                "Okay: " + okayOnes + "/" + targetCount;
 
             return s;
         }

@@ -33,11 +33,11 @@ namespace V3_Trader_Project.Trader.Forms
         {
             DataLoader dl = new DataLoader(Config.DataPath + pair);
             double[][] priceData = dl.getArray(0,
-                31l * 24l * 60l * 60l * 1000l * 11,
+                31l * 24l * 60l * 60l * 1000l * 12,
                 60 * 1000);
 
             MarketModul mm = new MarketModul(pair);
-            StreamingStrategy strategy = new StreamingStrategy(0.06, 1000 * 60 * 60 * 4, mm, new IndicatorGenerator(), 0.5);
+            StreamingStrategy strategy = new StreamingStrategy(0.06, 1000 * 60 * 60 * 4, mm, 0.5);
 
             string lastMessage = "";
 
@@ -51,7 +51,7 @@ namespace V3_Trader_Project.Trader.Forms
                 if (lastUpdateTimestamp == 0)
                     lastUpdateTimestamp = timestampNow;
 
-                if (timestampNow - (2 * 31l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
+                if (timestampNow - (31l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
                 {
                     Logger.log("Updateing indicators...");
                     strategy.updateIndicators(1000l * 60 * 60 * 24 * 30, 

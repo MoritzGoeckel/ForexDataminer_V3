@@ -15,14 +15,14 @@ namespace V3_Trader_Project.Trader.Application
     {
         double outcomeCodePercent;
         long outcomeTimeframe;
-        IndicatorSelector indicatorSelector;
         OrderMachine orderMachine;
-        IndicatorGenerator indicatorGenerator;
 
         SignalMachine signalMachine;
         double minPercentThreshold;
 
-        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, IndicatorGenerator indicatorGenerator, double minPercentThreshold)
+        List<string> provenIndicators = new List<string>();
+
+        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, double minPercentThreshold)
         {
             this.outcomeCodePercent = outcomeCodePercent;
             this.outcomeTimeframe = outcomeTimeframe;
@@ -31,7 +31,6 @@ namespace V3_Trader_Project.Trader.Application
 
             //Make this accessable from outside? todo:
             this.orderMachine = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
-            this.indicatorGenerator = indicatorGenerator;
         }
 
         public void updateIndicators(long timeframeToLookBack, IndicatorSelector indicatorSelector)
@@ -53,7 +52,13 @@ namespace V3_Trader_Project.Trader.Application
             if (s < 0.6) throw new Exception("s < o.6: " + s);
 
             IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
-            string[] indicatorIds = optimizer.getOptimizedIndicators(indicatorGenerator, indicatorSelector);
+            string[] indicatorIds = optimizer.getOptimizedIndicators(new IndicatorGenerator(provenIndicators.ToArray()), indicatorSelector);
+
+            foreach (string ind in indicatorIds)
+            {
+                if(provenIndicators.Contains(ind) == false)
+                provenIndicators.Add(ind);
+            }
 
             Logger.log("Selected indicators: ");
             List<LearningIndicator> lis = new List<LearningIndicator>();

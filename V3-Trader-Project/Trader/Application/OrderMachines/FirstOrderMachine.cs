@@ -39,7 +39,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             }
 
             //aim for prediction
-            if (signal[(int)SignalMachineSignal.prediction] > 0.2)
+            /*if (signal[(int)SignalMachineSignal.prediction] > 0.2)
             {
                 buySignal = true;
             }
@@ -58,7 +58,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 + signal[(int)SignalMachineSignal.minPrediction] < -0.2)
             {
                 sellSignal = true;
-            }
+            }*/
 
             if (sellSignal)
                 SellSignals++;
