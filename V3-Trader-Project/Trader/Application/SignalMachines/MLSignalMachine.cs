@@ -14,6 +14,11 @@ namespace V3_Trader_Project.Trader.SignalMachines
             throw new NotImplementedException();
         }
 
+        public override string getStateMessage()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void pushPrice(double[] price)
         {
             throw new NotImplementedException();

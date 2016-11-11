@@ -36,35 +36,6 @@ namespace V3_Trader_Project.Trader
             return output;
         }
 
-        public double[][] getArray(long minDateDistance = 1, long onlyTimeframe = 0)
-        {
-            long lastAddedDate = 0;
-            long firstTimestamp = 0;
-            List<double[]> rows = new List<double[]>();
-            foreach(string file in filenames)
-            {
-                foreach(string line in File.ReadAllLines(rootPath + file))
-                {
-                    string[] values = line.Split(',');
-                    long dateL = Timestamp.getUTCMillisecondsDate(values[(int)PriceDataIndeces.Date]);
-
-                    if (firstTimestamp == 0)
-                        firstTimestamp = dateL;
-                    
-                    if (dateL - lastAddedDate > minDateDistance)
-                    {
-                        rows.Add(new double[] { dateL, double.Parse(values[(int)PriceDataIndeces.Bid].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Ask].Replace(".", ",")), double.Parse(values[(int)PriceDataIndeces.Volume].Replace(".", ",")) });
-                        lastAddedDate = dateL;
-                    }
-
-                    if (onlyTimeframe != 0 && dateL > firstTimestamp + onlyTimeframe)
-                        return rows.ToArray(); //Stop
-                }
-            }
-
-            return rows.ToArray();
-        }
-
         public double[][] getArray(long offset, long timeframe, long minDateDistance = 1)
         {
             long lastAddedDate = 0;
@@ -94,7 +65,7 @@ namespace V3_Trader_Project.Trader
             return rows.ToArray();
         }
 
-        public static double[][] getArrayFromArray(long offset, long timeframe, long minDateDistance = 1, double[][] priceData)
+        public static double[][] getArrayFromArray(long offset, long timeframe, double[][] priceData, long minDateDistance = 1)
         {
             long lastAddedDate = 0;
             long firstTimestamp = 0;

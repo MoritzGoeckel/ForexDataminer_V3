@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using V3_Trader_Project.Trader.Application;
+using V3_Trader_Project.Trader.Application.IndicatorSelectors;
 using V3_Trader_Project.Trader.Application.OrderMachines;
 using V3_Trader_Project.Trader.Market;
 using V3_Trader_Project.Trader.SignalMachines;
@@ -21,60 +22,56 @@ namespace V3_Trader_Project.Trader.Forms
             InitializeComponent();
         }
 
-        TestingEnvironment env;
-
         string pair = "EURUSD";
-        string[] indicatorStrings = { "MovingAverageSubtractionIndicator_86324000_358872000",
-            "MACDContinousIndicator_215409000_123126000_46108000",
-            "StandartDeviationIndicator_149905000",
-            "RangeIndicator_355669000",
-            "MovingAveragePriceSubtractionIndicator_305560000"};
-
+ 
         private void BacktestForm_Load(object sender, EventArgs e)
         {
-            DataLoader dl = new DataLoader(Config.DataPath + pair);
-            double[][] priceData = dl.getArray(0,
-                31l * 24l * 60l * 60l * 1000l,
-                60 * 1000);
 
-            //Set these args
-            env = new TestingEnvironment(Config.DataPath, priceData);
-
-            env.loadOutcomeCodes(1 * 60 * 60 * 1000, 0.5);
-            this.BackgroundImage = env.visualizePriceAndOutcomeCodes(2000, 1000);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            button1.Enabled = false;
-            List<LearningIndicator> indicators = new List<LearningIndicator>();
-
-            foreach(string s in indicatorStrings)
-                indicators.Add(env.createTrainedIndicator(IndicatorGenerator.getIndicatorByString(s)));
-
-            SignalMachine sm = new LIWightedSignalMachine(indicators.ToArray());
-            MarketModul mm = new MarketModul("EURUSD");
-            FirstOrderMachine om = new FirstOrderMachine(mm, 0.06, 60 * 60 * 1000l);
-
             DataLoader dl = new DataLoader(Config.DataPath + pair);
-            double[][] priceData = dl.getArray(31l * 24l * 60l * 60l * 1000l,
-                31l * 24l * 60l * 60l * 1000l * 10,
+            double[][] priceData = dl.getArray(0,
+                31l * 24l * 60l * 60l * 1000l * 11,
                 60 * 1000);
 
+            MarketModul mm = new MarketModul(pair);
+            StreamingStrategy strategy = new StreamingStrategy(0.06, 1000 * 60 * 60 * 4, mm, new IndicatorGenerator(), 0.5);
+
+            string lastMessage = "";
+
+            long lastUpdateTimestamp = 0;
             for (int i = 0; i < priceData.Length; i++)
             {
-                long timestamp = Convert.ToInt64(priceData[i][(int)PriceDataIndeces.Date]);
+                long timestampNow = Convert.ToInt64(priceData[i][(int)PriceDataIndeces.Date]);
                 mm.pushPrice(priceData[i]);
-                sm.pushPrice(priceData[i]);
-                om.doOrderTick(timestamp, sm.getSignal(timestamp));
+                strategy.pushPrice(priceData[i]);
+
+                if (lastUpdateTimestamp == 0)
+                    lastUpdateTimestamp = timestampNow;
+
+                if (timestampNow - (2 * 31l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
+                {
+                    Logger.log("Updateing indicators...");
+                    strategy.updateIndicators(1000l * 60 * 60 * 24 * 30, 
+                        new DiverseBuySellCodeIndicatorSelector(8, 500));
+
+                    lastUpdateTimestamp = timestampNow;
+                    Logger.log("End updateing indicators.");
+                }
 
                 double percent = Convert.ToDouble(i) / priceData.Length * 100d;
-                this.Text = Math.Round(percent, 0) + "%";
+
+                string msg = "Progress: " + Math.Round(percent, 0) + "%";
+                if (lastMessage != msg)
+                {
+                    Logger.log(msg);
+                    lastMessage = msg;
+                }
             }
 
             mm.flatAll(Convert.ToInt64(priceData[priceData.Length - 1][(int)PriceDataIndeces.Date]));
-
-            MessageBox.Show(om.BuySignals + " " + om.SellSignals);
             
             MessageBox.Show(mm.getStatisticsString());
             this.BackgroundImage = mm.getCapitalCurveVisualization(this.Width, this.Height);

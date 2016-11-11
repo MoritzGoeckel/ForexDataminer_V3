@@ -42,7 +42,7 @@ namespace V3_Trader_Project.Trader
             min = valuesNoNans.Percentile(lowerP);
 
             if (double.IsNaN(min) || double.IsNaN(max))
-                throw new Exception("Minmax is not valid: " + min + " " + max + " " + upperP + " " + lowerP);
+                throw new Exception("#1 - Minmax is not valid: " + min + " " + max + " " + upperP + " " + lowerP);
         }
 
         public static void getMinMax(double[] input, out double min, out double max)
@@ -60,7 +60,7 @@ namespace V3_Trader_Project.Trader
             }
 
             if (min == double.MaxValue || max == double.MinValue)
-                throw new Exception("Minmax is not valid: " + min + " " + max);
+                throw new Exception("#2 - Minmax is not valid: " + min + " " + max);
         }
 
         public static void getSampleOutcomeCodesBuyMaxSellMax(double[][] sampleData, double minValuesPercentThreshold, out double maxBuy, out double maxBuyValuesCount, out double maxSell, out double maxSellValuesCount)

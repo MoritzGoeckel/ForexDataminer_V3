@@ -46,6 +46,22 @@ namespace V3_Trader_Project.Trader.SignalMachines
             return new double[] { maxBuyProp, maxSellProp, minMin, maxMax, sumActual / indicators.Length };
         }
 
+        public override string getStateMessage()
+        {
+            StringBuilder output = new StringBuilder();
+            for (int i = 0; i < indicators.Length; i++)
+            {
+                double[] pred = indicators[i].getPredictivePowerArray();
+
+                foreach (double d in pred)
+                    output.Append(Math.Round(d, 3) + " ");
+
+                output.Append(Environment.NewLine);
+            }
+
+            return output.ToString();
+        }
+
         public override void pushPrice(double[] price)
         {
             foreach (LearningIndicator i in this.indicators)

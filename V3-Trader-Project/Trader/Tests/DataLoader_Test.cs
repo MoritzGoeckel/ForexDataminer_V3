@@ -28,7 +28,9 @@ namespace V3_Trader_Project.Trader.Tests
         [TestMethod]
         public void DataLoader_LoadArray()
         {
-            DataLoader dl = new DataLoader(Config.DataPath + "TESTDATA");
+            Assert.Fail();
+
+            /*DataLoader dl = new DataLoader(Config.DataPath + "TESTDATA");
             List<string> filenames = dl.getFiles();
             double[][] array = dl.getArray();
 
@@ -41,7 +43,7 @@ namespace V3_Trader_Project.Trader.Tests
             Assert.AreEqual(array[0][0], Timestamp.dateTimeToMilliseconds(dt)); //YYYYMMDD HHMMSSNNN
 
             //Third file
-            Assert.AreEqual(1.209640, array[5][1]); 
+            Assert.AreEqual(1.209640, array[5][1]);*/ 
         }
 
         [TestMethod] //Probably okay

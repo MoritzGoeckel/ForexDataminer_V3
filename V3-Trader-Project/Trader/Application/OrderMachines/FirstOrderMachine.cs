@@ -26,7 +26,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             bool buySignal = false;
             bool sellSignal = false;
 
-            double outcomeCodesPropThreshold = 0.6;
+            double outcomeCodesPropThreshold = 0.8;
 
             //aim for outcome codes
             if(signal[(int)SignalMachineSignal.BuySignal] > outcomeCodesPropThreshold)

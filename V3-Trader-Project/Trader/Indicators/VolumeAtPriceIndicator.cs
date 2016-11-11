@@ -42,7 +42,12 @@ namespace NinjaTrader_Client.Trader.Indicators
             this.stepsize = stepsize;
             this.samplingRate = samplingRate;
         }
-            
+
+        public override string getName()
+        {
+            return Name + "_" + timeframe + "_" + stepsize + "_" + samplingRate;
+        }
+
         long timestampNow;
         double lastAddedValue;
         public override void setNextData(long _timestamp, double _value)
@@ -85,11 +90,6 @@ namespace NinjaTrader_Client.Trader.Indicators
                 value = 0;
 
             return value;
-        }
-
-        public override string getName()
-        {
-            return Name + "_" + timeframe + "_" + stepsize;
         }
 
         public override bool isValid(long timestamp)

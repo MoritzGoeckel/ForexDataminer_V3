@@ -26,16 +26,13 @@ namespace V3_Trader_Project.Trader.Application
         //Not used
         private long timeframe;
         private double targetPercent;
-        private double meanBuyDist, meanSellDist;
 
         private double usedValues;
 
         private WalkerIndicator indicator;
 
-        public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double meanBuyDist, double meanSellDist, double targetPercent)
+        public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double targetPercent, double minPercentThreshold)
         {
-            this.meanBuyDist = meanBuyDist;
-            this.meanSellDist = meanSellDist;
             this.targetPercent = targetPercent;
             this.timeframe = timeframe;
 
@@ -64,8 +61,8 @@ namespace V3_Trader_Project.Trader.Application
             IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
             IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 
-            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(outcomeCodeSamplingTable, 0.5, out predictivePower[10], out predictivePower[11], out predictivePower[12],  out predictivePower[13]);
-            DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, 0.5, out predictivePower[14], out predictivePower[15], out predictivePower[16], out predictivePower[17], out predictivePower[18], out predictivePower[19], out predictivePower[20], out predictivePower[21], out predictivePower[22], out predictivePower[23]);
+            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(outcomeCodeSamplingTable, minPercentThreshold, out predictivePower[10], out predictivePower[11], out predictivePower[12],  out predictivePower[13]);
+            DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, minPercentThreshold, out predictivePower[14], out predictivePower[15], out predictivePower[16], out predictivePower[17], out predictivePower[18], out predictivePower[19], out predictivePower[20], out predictivePower[21], out predictivePower[22], out predictivePower[23]);
             //End predictive power calculation
 
             this.indicator = indicator;
@@ -74,6 +71,14 @@ namespace V3_Trader_Project.Trader.Application
         public string getName()
         {
             return indicator.getName();
+        }
+
+        public string getAlgoName()
+        {
+            if (indicator.getName().Contains("_"))
+                return indicator.getName().Split('_')[0];
+            else
+                return indicator.getName();
         }
 
         public long getTimeframe()
@@ -95,6 +100,11 @@ namespace V3_Trader_Project.Trader.Application
         {
             return predictivePower;
         }
+
+        public enum LearningIndicatorPredictivePowerIndecies
+        {
+            spBuy = 0, spSell = 1, pBuy = 2, pSell = 3, spMin = 4, spMax = 5, spActual = 6, pMin = 7, pMax = 8, pActual = 9, maxBuyCode = 10, maxBuyCodeCount = 11, maxSellCode = 12, maxSellCodeCount = 13, maxMaxGainPercent = 14, maxMaxGainPercentCount = 15, minMinFallPercent = 16, minMinFallPercentCount = 17, maxMinMaxDistancePercent = 18, maxMinMaxDistancePercentCount = 19, maxActualGainPercent = 20, maxActualGainPercentCount = 21, minActualFallPercent = 22, minActualFallPercentCount = 23
+        };
 
         public static string getPredictivePowerArrayHeader()
         {
@@ -127,44 +137,27 @@ namespace V3_Trader_Project.Trader.Application
                 
                 //Search in outcomeCodeSamplingTable
                 double v = indicator.getIndicator();
-                if (v < outcomeCodeSamplingTable[0][(int)SampleValuesOutcomeCodesIndices.Start])
+                for (int i = 0; i < outcomeCodeSamplingTable.Length; i++)
                 {
-                    buyRatio = double.NaN;
-                    sellRatio = double.NaN;
-                }
-                else
-                {
-                    for (int i = 0; i < outcomeCodeSamplingTable.Length; i++)
+                    if (outcomeCodeSamplingTable[i] != null
+                        && (i == outcomeCodeSamplingTable.Length - 1 || outcomeCodeSamplingTable[i + 1][(int)SampleValuesOutcomeCodesIndices.Start] > v))
                     {
-                        if (v >= outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.Start]
-                            && (i == outcomeCodeSamplingTable.Length - 1 || outcomeCodeSamplingTable[i + 1] == null || outcomeCodeSamplingTable[i + 1][(int)SampleValuesOutcomeCodesIndices.Start] > v))
-                        {
-                            buyRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio];
-                            sellRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.SellRatio];
-                            break;
-                        }
+                        buyRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.BuyRatio];
+                        sellRatio = outcomeCodeSamplingTable[i][(int)SampleValuesOutcomeCodesIndices.SellRatio];
+                        break;
                     }
                 }
 
-                if (v < outcomeSamplingTable[0][(int)SampleValuesOutcomeIndices.Start])
+                //Search in outcomeSamplingTable
+                for (int i = 0; i < outcomeSamplingTable.Length; i++)
                 {
-                    min = double.NaN;
-                    max = double.NaN;
-                    actual = double.NaN;
-                }
-                else
-                {
-                    //Search in outcomeSamplingTable
-                    for (int i = 0; i < outcomeSamplingTable.Length; i++)
+                    if (outcomeSamplingTable[i] != null
+                        && (i == outcomeSamplingTable.Length - 1 || outcomeSamplingTable[i + 1][(int)SampleValuesOutcomeIndices.Start] > v))
                     {
-                        if (v >= outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.Start]
-                            && (i == outcomeSamplingTable.Length - 1 || outcomeSamplingTable[i + 1] == null || outcomeSamplingTable[i + 1][(int)SampleValuesOutcomeIndices.Start] > v))
-                        {
-                            min = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MinAvg];
-                            max = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MaxAvg];
-                            actual = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.ActualAvg];
-                            break;
-                        }
+                        min = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MinAvg];
+                        max = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.MaxAvg];
+                        actual = outcomeSamplingTable[i][(int)SampleValuesOutcomeIndices.ActualAvg];
+                        break;
                     }
                 }
 

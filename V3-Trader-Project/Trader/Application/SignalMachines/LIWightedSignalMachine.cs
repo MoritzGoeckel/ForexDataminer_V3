@@ -33,8 +33,8 @@ namespace V3_Trader_Project.Trader.SignalMachines
             foreach (double d in wights)
                 sum += d;
 
-            if (sum != 1d)
-                throw new Exception("Wights have to sum to 1");
+            //if (sum != 1d)
+            //    throw new Exception("Wights have to sum to 1");
         }
 
         public override double[] getSignal(long timestamp)
@@ -63,7 +63,7 @@ namespace V3_Trader_Project.Trader.SignalMachines
             foreach (LearningIndicator i in this.indicators)
                 i.setNewPrice(price);
         }
-
+        
         //Todo: Untested
         public Image visualize(int width, int inRow)
         {
@@ -94,6 +94,22 @@ namespace V3_Trader_Project.Trader.SignalMachines
             }
 
             return bmp;
+        }
+
+        public override string getStateMessage()
+        {
+            StringBuilder output = new StringBuilder();
+            for (int i = 0; i < indicators.Length; i++)
+            {
+                double[] pred = indicators[i].getPredictivePowerArray();
+
+                foreach (double d in pred)
+                    output.Append(Math.Round(d, 3) + " ");
+
+                output.Append(Environment.NewLine);
+            }
+
+            return output.ToString();
         }
     }
 }

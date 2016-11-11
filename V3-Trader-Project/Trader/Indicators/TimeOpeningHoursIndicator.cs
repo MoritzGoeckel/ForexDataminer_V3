@@ -13,6 +13,11 @@ namespace NinjaTrader_Client.Trader.Indicators
             
         }
 
+        public override string getName()
+        {
+            return Name;
+        }
+
         long currentTime = 0;
 
         public override double getIndicator()
@@ -36,12 +41,7 @@ namespace NinjaTrader_Client.Trader.Indicators
         {
             currentTime = timestamp;
         }
-
-        public override string getName()
-        {
-            return Name;
-        }
-
+        
         public override bool isValid(long timestamp)
         {
             return true;

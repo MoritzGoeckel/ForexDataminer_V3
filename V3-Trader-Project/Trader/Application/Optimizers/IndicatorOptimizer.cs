@@ -8,85 +8,63 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using V3_Trader_Project.Trader.Application.IndicatorSelectors;
 using V3_Trader_Project.Trader.Visualizers;
 
 namespace V3_Trader_Project.Trader.Application
 {
-    class IndicatorOptimizer
+    public class IndicatorOptimizer
     {
-        private string resultFolderPath;
-        private TestingEnvironment env;
+        private double[][] priceData, outcomeData;
+        private bool[][] outcomeCodeData;
+        private double outcomeCodePercent;
+        private long outcomeTimeframe;
+        private double minPercentThreshold;
 
-        public string state;
-
-        public IndicatorOptimizer(string resultFolderPath, TestingEnvironment env)
+        public IndicatorOptimizer(double[][] priceData, double[][] outcomeData, bool[][] outcomeCodeData, long outcomeTimeframe, double outcomeCodePercent, double minPercentThreshold)
         {
-            this.env = env;
-            this.resultFolderPath = resultFolderPath;
+            this.priceData = priceData;
+            this.outcomeData = outcomeData;
+            this.outcomeCodeData = outcomeCodeData;
+
+            this.minPercentThreshold = minPercentThreshold;
+
+            this.outcomeCodePercent = outcomeCodePercent;
+            this.outcomeTimeframe = outcomeTimeframe;
         }
         
-        private bool running = false;
-        public void startRunningRandomIndicators(IndicatorGenerator generator)
+        public string[] getOptimizedIndicators(IndicatorGenerator generator, IndicatorSelector selector)
         {
-            if (running == true)
-                throw new Exception("Already running!");
-
-            if (env.outcomes == null || env.outcomeCodes == null)
-                throw new Exception("Set outcomes and outcomeCodes first");      
-
-            submitResults(LearningIndicator.getPredictivePowerArrayHeader()+"usedValues;name;id");
-
+            int round = 0;
             Logger.log("Start testing indicators");
-            new Thread(delegate () {
-                running = true;
-                while(running)
-                {
-                    //How about a genetic algo?
-                    try {
-                        testAndSubmitResult(generator.getRandomIndicator(Convert.ToInt32(env.outcomeTimeframe / 1000 / 15), Convert.ToInt32(env.outcomeTimeframe * 100 / 1000)));
-                    }
-                    catch (TooLittleValidDataException e)
-                    {
-                        Logger.log("E:" + e.Message);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.log("FATAL:" + e.Message);
-                    }
+            while(true)
+            {
+                //How about a genetic algo?
+                try {
+                    WalkerIndicator wi = generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000));
+                    LearningIndicator li = new LearningIndicator(wi, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
+
+                    selector.pushIndicatorStatistics(li);
+
+                    if (round % 50 == 0)
+                        Logger.log("#############" + Environment.NewLine + selector.getState() + Environment.NewLine + "##############");
+
+                    if (selector.isSatisfied())
+                        break;
                 }
-            }).Start();
-        }
+                catch (TooLittleValidDataException e)
+                {
+                    //Logger.log("E:" + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Logger.log("FATAL:" + e.Message);
+                }
 
-        public void stop()
-        {
-            running = false;
-        }
-        
-        private void testAndSubmitResult(WalkerIndicator indicator)
-        {
-            Logger.log("Testing Indicator: " + indicator.getName());
+                round++;
+            }
 
-            LearningIndicator li = env.createTrainedIndicator(indicator);
-            double[] pp = li.getPredictivePowerArray();
-
-            //Results
-            string output = "";
-            foreach (double d in pp)
-                output += d + ";";
-
-            output += li.getUsedValues() + ";";
-            output += indicator.getName().Split('_')[0] + ";" + indicator.getName();
-
-            Logger.log("Result: " + Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName());
-            state = Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName();
-            submitResults(output);
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private void submitResults(string results)
-        {
-            string fileName = "outcomeIndicators_" + env.outcomeCodePercent + "_" + env.outcomeTimeframe + ".csv";
-            File.AppendAllText(resultFolderPath + fileName, results + Environment.NewLine);
+            return selector.getResultingCandidates();
         }
     }
 }
