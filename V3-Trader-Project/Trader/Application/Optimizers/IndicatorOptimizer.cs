@@ -32,15 +32,36 @@ namespace V3_Trader_Project.Trader.Application
             this.outcomeCodePercent = outcomeCodePercent;
             this.outcomeTimeframe = outcomeTimeframe;
         }
-        
-        public string[] getOptimizedIndicators(IndicatorGenerator generator, IndicatorSelector selector)
+
+        private int round = 0;
+        private bool ended = false;
+
+        public string[] getOptimizedIndicators(IndicatorGenerator generator, IndicatorSelector selector, int threads)
         {
-            int round = 0;
+            ended = false;
+            round = 0;
             Logger.log("Start testing indicators");
-            while(true)
+            List<Thread> ths = new List<Thread>();
+
+            for(int i = 0; i < threads; i++)
+                ths.Add(new Thread(delegate () { optimizeInternally(generator, selector); }));
+
+            foreach (Thread t in ths)
+                t.Start();
+
+            foreach(Thread t in ths)
+                t.Join();
+            
+            return selector.getResultingCandidates();
+        }
+
+        private void optimizeInternally(IndicatorGenerator generator, IndicatorSelector selector)
+        {
+            while (ended == false && selector.isSatisfied() == false)
             {
                 //How about a genetic algo?
-                try {
+                try
+                {
                     WalkerIndicator wi = generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000));
                     LearningIndicator li = new LearningIndicator(wi, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
 
@@ -48,9 +69,6 @@ namespace V3_Trader_Project.Trader.Application
 
                     if (round % 50 == 0)
                         Logger.log("#############" + Environment.NewLine + selector.getState() + Environment.NewLine + "##############");
-
-                    if (selector.isSatisfied())
-                        break;
                 }
                 catch (TooLittleValidDataException e)
                 {
@@ -64,7 +82,7 @@ namespace V3_Trader_Project.Trader.Application
                 round++;
             }
 
-            return selector.getResultingCandidates();
+            ended = true;
         }
     }
 }

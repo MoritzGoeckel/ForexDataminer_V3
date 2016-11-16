@@ -33,11 +33,13 @@ namespace V3_Trader_Project.Trader.Forms
         {
             DataLoader dl = new DataLoader(Config.DataPath + pair);
             double[][] priceData = dl.getArray(0,
-                31l * 24l * 60l * 60l * 1000l * 12,
+                31l * 24l * 60l * 60l * 1000l * 4,
                 60 * 1000);
 
+            long outcomeTimeframe = 1000 * 60 * 60 * 4;
+
             MarketModul mm = new MarketModul(pair);
-            StreamingStrategy strategy = new StreamingStrategy(0.06, 1000 * 60 * 60 * 4, mm, 0.5);
+            StreamingStrategy strategy = new StreamingStrategy(0.06, outcomeTimeframe, mm, 0.5);
 
             string lastMessage = "";
 
@@ -51,11 +53,11 @@ namespace V3_Trader_Project.Trader.Forms
                 if (lastUpdateTimestamp == 0)
                     lastUpdateTimestamp = timestampNow;
 
-                if (timestampNow - (31l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
+                if (timestampNow - (3l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
                 {
                     Logger.log("Updateing indicators...");
-                    strategy.updateIndicators(1000l * 60 * 60 * 24 * 30, 
-                        new DiverseBuySellCodeIndicatorSelector(8, 500));
+                    strategy.updateIndicators(1000l * 60 * 60 * 24 * 14, 
+                        new DiverseBuySellCodeIndicatorSelector(8, 1000));
 
                     lastUpdateTimestamp = timestampNow;
                     Logger.log("End updateing indicators.");
@@ -72,7 +74,8 @@ namespace V3_Trader_Project.Trader.Forms
             }
 
             mm.flatAll(Convert.ToInt64(priceData[priceData.Length - 1][(int)PriceDataIndeces.Date]));
-            
+
+            mm.removeInvalidTimeFramePositions(outcomeTimeframe * 2);
             MessageBox.Show(mm.getStatisticsString());
             this.BackgroundImage = mm.getCapitalCurveVisualization(this.Width, this.Height);
         }

@@ -52,7 +52,7 @@ namespace V3_Trader_Project.Trader.Application
             if (s < 0.6) throw new Exception("s < o.6: " + s);
 
             IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
-            string[] indicatorIds = optimizer.getOptimizedIndicators(new IndicatorGenerator(provenIndicators.ToArray()), indicatorSelector);
+            string[] indicatorIds = optimizer.getOptimizedIndicators(new IndicatorGenerator(provenIndicators.ToArray()), indicatorSelector, 7);
 
             foreach (string ind in indicatorIds)
             {

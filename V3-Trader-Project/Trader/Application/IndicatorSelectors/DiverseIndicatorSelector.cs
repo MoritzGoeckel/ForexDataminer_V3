@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 {
-    class DiverseBuySellCodeIndicatorSelector : IndicatorSelector
+    class DiverseIndicatorSelector : IndicatorSelector
     {
         struct ValueAndIDPair { public double _value; public string _id; };
 
@@ -15,7 +15,7 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
         private int targetCount;
         private int runs;
 
-        public DiverseBuySellCodeIndicatorSelector(int targetCount, int runs)
+        public DiverseIndicatorSelector(int targetCount, int runs)
         {
             this.targetCount = targetCount;
             this.runs = runs;
@@ -59,8 +59,10 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 
             double[] pp = li.getPredictivePowerArray();
 
-            double buySellCodeScore = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxBuyCode] + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxSellCode];
-            if (buySellCodeScore < 1.9) //Dont trust too perfect scores
+            double buySellCodeScore = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxBuyCode] 
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxSellCode]
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxMinMaxDistancePercent] * 2;
+            if (buySellCodeScore < 5) //Dont trust too perfect scores
             {
                 ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = buySellCodeScore };
 
@@ -78,15 +80,12 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
         private int okayOnes = 0;
         public override bool isSatisfied()
         {
-            try {
-                okayOnes = 0;
-                foreach (KeyValuePair<string, ValueAndIDPair> pair in candidates)
-                {
-                    if (pair.Value._value > 1.8)
-                        okayOnes++;
-                }
+            okayOnes = 0;
+            foreach (KeyValuePair<string, ValueAndIDPair> pair in candidates)
+            {
+                if (pair.Value._value > 1.8)
+                    okayOnes++;
             }
-            catch (Exception e) { }
 
             return analysedIndicators > runs || okayOnes >= targetCount;
         }

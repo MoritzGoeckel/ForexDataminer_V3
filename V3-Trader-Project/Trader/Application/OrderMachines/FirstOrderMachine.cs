@@ -26,7 +26,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             bool buySignal = false;
             bool sellSignal = false;
 
-            double outcomeCodesPropThreshold = 0.8;
+            double outcomeCodesPropThreshold = 0.85;
 
             //aim for outcome codes
             if(signal[(int)SignalMachineSignal.BuySignal] > outcomeCodesPropThreshold)
@@ -60,6 +60,9 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 sellSignal = true;
             }*/
 
+            sellSignal = sellSignal && buySignal == false;
+            buySignal = buySignal && sellSignal == false;
+
             if (sellSignal)
                 SellSignals++;
 
@@ -75,14 +78,14 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             if (buySignal == false && mm.isPositionOpen(MarketModul.OrderType.Long))
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Long);
-                if(p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
+                if(p.getProfitPercent(mm.getPriceData()) <= 15 * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                     mm.closePosition(MarketModul.OrderType.Long, timestamp);
             }
 
             if (sellSignal == false && mm.isPositionOpen(MarketModul.OrderType.Short))
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Short);
-                if (p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
+                if (p.getProfitPercent(mm.getPriceData()) <= 15 * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
             }
         }

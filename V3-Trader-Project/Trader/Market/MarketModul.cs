@@ -131,10 +131,10 @@ namespace V3_Trader_Project.Trader.Market
             standartDeviation = profits.StandardDeviation();
             profit = profits.Sum();
             sharpe = profit / standartDeviation;
-            trades = profits.Length;
+            trades = closedPositions.Count;
             tradesPerDay = trades / ((closedPositions[closedPositions.Count - 1].timestampClose - closedPositions[0].timestampOpen) / 1000 / 60 / 60 / 24);
             profitPerTrade = profit / trades;
-            tradesWinningRatio = profits.Count((p => p > 0)) / Convert.ToDouble(profits.Count());
+            tradesWinningRatio = profits.Count((p => p > 0)) / Convert.ToDouble(closedPositions.Count);
             winningTradesAvg = profits.Sum((p => (p > 0 ? p : 0))) / Convert.ToDouble(profits.Count((p => p > 0)));
             loosingTradesAvg = profits.Sum((p => (p < 0 ? p : 0))) / Convert.ToDouble(profits.Count((p => p < 0)));
             maxProfit = profits.Maximum();
@@ -152,6 +152,16 @@ namespace V3_Trader_Project.Trader.Market
                 sb.Append(p.getProfit() + " with " + (p.type == OrderType.Long ? "Long" : "Short") + " " + p.getTimeDuration() / 1000d / 60d + "min" + Environment.NewLine);
 
             return sb.ToString();
+        }
+
+        public void removeInvalidTimeFramePositions(long maxTimeframeToConsider)
+        {
+            List<ClosedPosition> newClosedPositions = new List<ClosedPosition>();
+            foreach (ClosedPosition c in closedPositions)
+                if (c.getTimeDuration() <= maxTimeframeToConsider)
+                    newClosedPositions.Add(c);
+
+            closedPositions = newClosedPositions;
         }
 
         public string getStatisticsString()
