@@ -60,15 +60,58 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
             double[] pp = li.getPredictivePowerArray();
 
             double buySellCodeScore = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxBuyCode] + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxSellCode];
-            if (buySellCodeScore < 1.9) //Dont trust too perfect scores
-            {
-                ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = buySellCodeScore };
 
-                if (candidates.ContainsKey(algo) == false)
-                    candidates.Add(algo, pair);
-                else if (candidates[algo]._value < buySellCodeScore)
-                    candidates[algo] = pair;
-            }
+            double tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spBuy];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spSell];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pBuy];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pSell];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spActual];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pActual];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxMinMaxDistancePercent] / 100;
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pMax];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pMin];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pBuy];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pSell];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spMax];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spMin];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spBuy];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spSell];
+            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
+
+            ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = buySellCodeScore };
+
+            if (candidates.ContainsKey(algo) == false)
+                candidates.Add(algo, pair);
+            else if (candidates[algo]._value < buySellCodeScore)
+                candidates[algo] = pair;
 
             analysedIndicators++;
         }
@@ -78,7 +121,7 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
         private int okayOnes = 0;
         public override bool isSatisfied()
         {
-            try {
+            /*try {
                 okayOnes = 0;
                 foreach (KeyValuePair<string, ValueAndIDPair> pair in candidates)
                 {
@@ -86,7 +129,7 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
                         okayOnes++;
                 }
             }
-            catch (Exception e) { }
+            catch (Exception e) { }*/
 
             return analysedIndicators > runs || okayOnes >= targetCount;
         }

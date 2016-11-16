@@ -22,111 +22,111 @@ namespace V3_Trader_Project.Trader
         {
             //Todo: Optimze the generator, make it smarter so less indicators fail
             WalkerIndicator theIndicator = null;
-
-            if (provenStrategies.Count != 0)
+            while (true)
             {
-                string strat = provenStrategies[0];
-                provenStrategies.RemoveAt(0);
-
-                theIndicator = IndicatorGenerator.getIndicatorByString(strat);
-            }
-            else
-            {
-
-                long timeframeOne = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
-                long timeframeTwo = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
-                long timeFrameThree = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
-                long timeFrameSmaller = z.Next(minTimeFrameSeconds, maxTimeframeSeconds / 2) * 1000l;
-
-                switch (z.Next(0, 18)) //Todo: set max value for choosing the indicator
+                if (provenStrategies.Count != 0)
                 {
-                    case 0:
-                        theIndicator = new BolingerBandsIndicator(timeframeOne, getRanDouble(0.5d, 5d));
-                        break;
+                    string strat = provenStrategies[0];
+                    provenStrategies.RemoveAt(0);
 
-                    case 1:
-                        theIndicator = new MACDContinousIndicator(timeframeOne, timeframeTwo, timeFrameSmaller);
-                        break;
+                    theIndicator = IndicatorGenerator.getIndicatorByString(strat);
+                }
+                else
+                {
+                    long timeframeOne = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
+                    long timeframeTwo = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
+                    long timeFrameThree = z.Next(minTimeFrameSeconds, maxTimeframeSeconds) * 1000l;
+                    long timeFrameSmaller = z.Next(minTimeFrameSeconds, maxTimeframeSeconds / 2) * 1000l;
 
-                    case 2:
-                        theIndicator = new MACDIndicator(timeframeOne, timeframeTwo, timeFrameSmaller);
-                        break;
+                    switch (z.Next(0, 18)) //Todo: set max value for choosing the indicator
+                    {
+                        case 0:
+                            theIndicator = new BolingerBandsIndicator(timeframeOne, getRanDouble(0.5d, 5d));
+                            break;
 
-                    case 3:
-                        theIndicator = new MovingAveragePriceSubtractionIndicator(timeframeOne);
-                        break;
+                        case 1:
+                            theIndicator = new MACDContinousIndicator(timeframeOne, timeframeTwo, timeFrameSmaller);
+                            break;
 
-                    case 4:
-                        theIndicator = new MovingAverageSubtractionCrossoverIndicator(timeframeOne, timeframeTwo);
-                        break;
+                        case 2:
+                            theIndicator = new MACDIndicator(timeframeOne, timeframeTwo, timeFrameSmaller);
+                            break;
 
-                    case 5:
-                        theIndicator = new MovingAverageSubtractionIndicator(timeframeOne, timeframeTwo);
-                        break;
+                        case 3:
+                            theIndicator = new MovingAveragePriceSubtractionIndicator(timeframeOne);
+                            break;
 
-                    case 6:
-                        theIndicator = new RangeIndicator(timeframeOne);
-                        break;
+                        case 4:
+                            theIndicator = new MovingAverageSubtractionCrossoverIndicator(timeframeOne, timeframeTwo);
+                            break;
 
-                    case 7:
-                        theIndicator = new RSIBorderCrossoverIndicator(timeframeOne, getRanDouble(0.1, 0.4));
-                        break;
+                        case 5:
+                            theIndicator = new MovingAverageSubtractionIndicator(timeframeOne, timeframeTwo);
+                            break;
 
-                    case 8:
-                        theIndicator = new RSIBorderIndicator(timeframeOne, getRanDouble(0.1, 0.4));
-                        break;
+                        case 6:
+                            theIndicator = new RangeIndicator(timeframeOne);
+                            break;
 
-                    case 9:
-                        theIndicator = new RSIIndicator(timeframeOne);
-                        break;
+                        case 7:
+                            theIndicator = new RSIBorderCrossoverIndicator(timeframeOne, getRanDouble(0.1, 0.4));
+                            break;
 
-                    case 10:
-                        theIndicator = new RSIMACrossoverContinousIndicator(timeframeOne, timeFrameSmaller);
-                        break;
+                        case 8:
+                            theIndicator = new RSIBorderIndicator(timeframeOne, getRanDouble(0.1, 0.4));
+                            break;
 
-                    case 11:
-                        theIndicator = new RSIMACrossoverIndicator(timeframeOne, timeFrameSmaller);
-                        break;
+                        case 9:
+                            theIndicator = new RSIIndicator(timeframeOne);
+                            break;
 
-                    case 12:
-                        theIndicator = new StandartDeviationIndicator(timeframeOne);
-                        break;
+                        case 10:
+                            theIndicator = new RSIMACrossoverContinousIndicator(timeframeOne, timeFrameSmaller);
+                            break;
 
-                    case 13:
-                        theIndicator = new StochBorderCrossoverIndicator(timeframeOne, getRanDouble(0.1, 0.4));
-                        break;
+                        case 11:
+                            theIndicator = new RSIMACrossoverIndicator(timeframeOne, timeFrameSmaller);
+                            break;
 
-                    case 14:
-                        theIndicator = new StochBorderIndicator(timeframeOne, getRanDouble(0.1, 0.4));
-                        break;
+                        case 12:
+                            theIndicator = new StandartDeviationIndicator(timeframeOne);
+                            break;
 
-                    case 15:
-                        theIndicator = new StochIndicator(timeframeOne);
-                        break;
+                        case 13:
+                            theIndicator = new StochBorderCrossoverIndicator(timeframeOne, getRanDouble(0.1, 0.4));
+                            break;
 
-                    case 16:
-                        theIndicator = new VolumeAtPriceIndicator(timeframeOne, getRanDouble(0.0003, 0.002), z.Next(1000 * 30, 1000 * 60 * 10));
-                        break; //Not sure about stepsize todo
+                        case 14:
+                            theIndicator = new StochBorderIndicator(timeframeOne, getRanDouble(0.1, 0.4));
+                            break;
 
-                    case 17:
-                        theIndicator = new TimeOfDayIndicator(); //Only once?
-                        break;
+                        case 15:
+                            theIndicator = new StochIndicator(timeframeOne);
+                            break;
 
-                    case 18:
-                        theIndicator = new TimeDayOfWeekIndicator(); //Todo: Only once?
-                        break;
+                        case 16:
+                            theIndicator = new VolumeAtPriceIndicator(timeframeOne, getRanDouble(0.0003, 0.002), z.Next(1000 * 30, 1000 * 60 * 10));
+                            break; //Not sure about stepsize todo
 
-                    default:
-                        throw new Exception("Fired a unexpected random value");
+                        case 17:
+                            theIndicator = new TimeOfDayIndicator(); //Only once?
+                            break;
+
+                        case 18:
+                            theIndicator = new TimeDayOfWeekIndicator(); //Todo: Only once?
+                            break;
+
+                        default:
+                            throw new Exception("Fired a unexpected random value");
+                    }
+                }
+
+                if (doneIndicators.ContainsKey(theIndicator.getName()) == false)
+                {
+                    doneIndicators.Add(theIndicator.getName(), true);
+                    return theIndicator;
                 }
             }
-            if (doneIndicators.ContainsKey(theIndicator.getName()) == false)
-            {
-                doneIndicators.Add(theIndicator.getName(), true);
-                return theIndicator;
-            }
-            else
-                return getRandomIndicator(minTimeFrameSeconds, maxTimeframeSeconds);
         }
 
         private double getRanDouble(double min, double max)

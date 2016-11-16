@@ -53,11 +53,11 @@ namespace V3_Trader_Project.Trader.Forms
                 if (lastUpdateTimestamp == 0)
                     lastUpdateTimestamp = timestampNow;
 
-                if (timestampNow - (3l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
+                if (timestampNow - (14l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
                 {
                     Logger.log("Updateing indicators...");
                     strategy.updateIndicators(1000l * 60 * 60 * 24 * 14, 
-                        new DiverseBuySellCodeIndicatorSelector(8, 1000));
+                        new DiverseBuySellCodeIndicatorSelector(8, 300));
 
                     lastUpdateTimestamp = timestampNow;
                     Logger.log("End updateing indicators.");
