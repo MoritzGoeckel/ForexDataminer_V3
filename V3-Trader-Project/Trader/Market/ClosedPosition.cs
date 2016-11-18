@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace V3_Trader_Project.Trader.Market
 {
-    class ClosedPosition
+    public class ClosedPosition
     {
         public long timestampOpen, timestampClose;
         public double priceOpen, priceClose;
@@ -23,7 +23,7 @@ namespace V3_Trader_Project.Trader.Market
             this.timestampClose = timestampClose;
         }
 
-        public double getProfit()
+        public double getProfitIngoreAmount()
         {
             if (type == MarketModul.OrderType.Long)
                 return priceClose - priceOpen;
@@ -34,6 +34,11 @@ namespace V3_Trader_Project.Trader.Market
         public long getTimeDuration()
         {
             return timestampClose - timestampOpen;
+        }
+
+        public double getProfit()
+        {
+            return getProfitIngoreAmount() * amount;
         }
     }
 }

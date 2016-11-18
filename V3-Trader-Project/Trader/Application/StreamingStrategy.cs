@@ -1,6 +1,7 @@
 ﻿using NinjaTrader_Client.Trader.Indicators;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,20 +21,28 @@ namespace V3_Trader_Project.Trader.Application
         SignalMachine signalMachine;
         double minPercentThreshold;
 
-        List<string> provenIndicators = new List<string>();
+        string fileNameIndicators;
 
-        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, double minPercentThreshold)
+        List<string> okayIndicators = new List<string>();
+
+        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, double minPercentThreshold, string fileNameIndicators)
         {
             this.outcomeCodePercent = outcomeCodePercent;
             this.outcomeTimeframe = outcomeTimeframe;
 
             this.minPercentThreshold = minPercentThreshold;
+            this.fileNameIndicators = fileNameIndicators;
+
+            if (File.Exists(fileNameIndicators))
+                okayIndicators = File.ReadAllText(fileNameIndicators).Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            else
+                okayIndicators = new List<string>();
 
             //Make this accessable from outside? todo:
             this.orderMachine = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
         }
 
-        public void updateIndicators(long timeframeToLookBack, IndicatorSelector indicatorSelector)
+        public void updateIndicators(long timeframeToLookBack, long timeframeToLookBackForIndicatorInit, IndicatorSelector indicatorSelector)
         {
             List<double[]> selectedPriceData = new List<double[]>();
             for (int i = priceData.Count - 1; i > 0; i--)
@@ -52,13 +61,14 @@ namespace V3_Trader_Project.Trader.Application
             if (s < 0.6) throw new Exception("s < o.6: " + s);
 
             IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
-            string[] indicatorIds = optimizer.getOptimizedIndicators(new IndicatorGenerator(provenIndicators.ToArray()), indicatorSelector, 7);
+            IndicatorGenerator generator = new IndicatorGenerator(okayIndicators);
+            string[] indicatorIds = optimizer.getOptimizedIndicators(generator, indicatorSelector, 7);
 
-            foreach (string ind in indicatorIds)
-            {
-                if(provenIndicators.Contains(ind) == false)
-                provenIndicators.Add(ind);
-            }
+            List<string> newGoodIndicators = generator.getGoodGeneratedIndicators();
+            File.AppendAllLines(fileNameIndicators, newGoodIndicators);
+            okayIndicators.AddRange(newGoodIndicators);
+
+            //Shuffle okay indicators? todo:
 
             Logger.log("Selected indicators: ");
             List<LearningIndicator> lis = new List<LearningIndicator>();
@@ -76,7 +86,17 @@ namespace V3_Trader_Project.Trader.Application
             SignalMachine sm = new LIWightedSignalMachine(lis.ToArray());
             Logger.log("SM STATE: ##################" + Environment.NewLine + sm.getStateMessage());
 
-            foreach (double[] row in selectedPriceDataArray)
+            //Make them up to date
+            List<double[]> selectedPriceDataForIndicatorInit = new List<double[]>();
+            for (int i = priceData.Count - 1; i > 0; i--)
+            {
+                if (Convert.ToInt64(priceData[i][(int)PriceDataIndeces.Date]) > timestampNow - timeframeToLookBackForIndicatorInit)
+                    selectedPriceDataForIndicatorInit.Insert(0, priceData[i]); //Todo: List direction correct?
+                else
+                    break;
+            }
+
+            foreach (double[] row in selectedPriceDataForIndicatorInit)
                 sm.pushPrice(row);
 
             this.signalMachine = sm;

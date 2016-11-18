@@ -26,7 +26,10 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             bool buySignal = false;
             bool sellSignal = false;
 
-            double outcomeCodesPropThreshold = 0.85;
+            double sl = 2;
+            double predictionMulitplyer = 2;
+            double outcomeCodesPropThreshold = 0.97;
+            double amount = 10 * 1000;
 
             //aim for outcome codes
             if(signal[(int)SignalMachineSignal.BuySignal] > outcomeCodesPropThreshold)
@@ -39,26 +42,26 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             }
 
             //aim for prediction
-            /*if (signal[(int)SignalMachineSignal.prediction] > 0.2)
+            if (signal[(int)SignalMachineSignal.prediction] > outcomeCodePercentage * predictionMulitplyer)
             {
                 buySignal = true;
             }
-            else if (signal[(int)SignalMachineSignal.prediction] < -0.2)
+            else if (signal[(int)SignalMachineSignal.prediction] < -outcomeCodePercentage * predictionMulitplyer)
             {
                 sellSignal = true;
             }
 
             //aim for min max difference
             if (signal[(int)SignalMachineSignal.maxPrediction]
-                + signal[(int)SignalMachineSignal.minPrediction] > 0.2)
+                + signal[(int)SignalMachineSignal.minPrediction] > outcomeCodePercentage * predictionMulitplyer)
             {
                 buySignal = true;
             }
-            else if(signal[(int)SignalMachineSignal.maxPrediction]
-                + signal[(int)SignalMachineSignal.minPrediction] < -0.2)
+            else if(signal[(int)SignalMachineSignal.minPrediction]
+                + signal[(int)SignalMachineSignal.minPrediction] < -outcomeCodePercentage * predictionMulitplyer)
             {
                 sellSignal = true;
-            }*/
+            }
 
             sellSignal = sellSignal && buySignal == false;
             buySignal = buySignal && sellSignal == false;
@@ -70,22 +73,28 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 BuySignals++;
 
             if (buySignal && mm.isPositionOpen(MarketModul.OrderType.Long) == false)
-                mm.openPosition(1, timestamp, MarketModul.OrderType.Long);
+                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
+                    * amount,
+                    timestamp,
+                    MarketModul.OrderType.Long);
 
             if (sellSignal && mm.isPositionOpen(MarketModul.OrderType.Short) == false)
-                mm.openPosition(1, timestamp, MarketModul.OrderType.Short);
+                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
+                    * amount, 
+                    timestamp, 
+                    MarketModul.OrderType.Short);
 
             if (buySignal == false && mm.isPositionOpen(MarketModul.OrderType.Long))
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Long);
-                if(p.getProfitPercent(mm.getPriceData()) <= 15 * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
+                if(p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                     mm.closePosition(MarketModul.OrderType.Long, timestamp);
             }
 
             if (sellSignal == false && mm.isPositionOpen(MarketModul.OrderType.Short))
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Short);
-                if (p.getProfitPercent(mm.getPriceData()) <= 15 * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
+                if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
             }
         }

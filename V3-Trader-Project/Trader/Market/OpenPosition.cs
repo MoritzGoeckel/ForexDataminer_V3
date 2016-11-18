@@ -21,7 +21,7 @@ namespace V3_Trader_Project.Trader.Market
             this.amount = amount;
         }
 
-        public double getProfit(double[] priceData)
+        public double getProfitNoAmount(double[] priceData)
         {
             if (type == MarketModul.OrderType.Long)
                 return priceData[(int)PriceDataIndeces.Bid] - price;
@@ -29,9 +29,14 @@ namespace V3_Trader_Project.Trader.Market
                 return price - priceData[(int)PriceDataIndeces.Ask];
         }
 
+        public double getProfit(double[] priceData)
+        {
+            return getProfitNoAmount(priceData) * amount;
+        }
+
         public double getProfitPercent(double[] priceData)
         {
-            double p = getProfit(priceData);
+            double p = getProfitNoAmount(priceData);
             return ((price + p / price) - 1d) * 100d;
         }
 

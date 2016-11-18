@@ -22,7 +22,7 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override double getIndicator()
         {
-            DateTime dt = Timestamp.getDate(currentTime).ToUniversalTime();
+            DateTime dt = Timestamp.getDate(currentTime);
 
             if (dt.DayOfWeek == DayOfWeek.Saturday || dt.DayOfWeek == DayOfWeek.Sunday)
                 return 0; //Kein trading

@@ -51,7 +51,7 @@ namespace V3_Trader_Project.Trader.Application
                 {
                     //How about a genetic algo?
                     try {
-                        testAndSubmitResult(generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000)));
+                        testAndSubmitResult(generator.getGeneratedIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000)));
                     }
                     catch (TooLittleValidDataException e)
                     {

@@ -98,14 +98,17 @@ namespace V3_Trader_Project.Trader
                 {
                     int targetIndex = Convert.ToInt32(Math.Floor((values[i] - min) / stepsSize));
 
-                    int buy = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy] ? 1 : 0;
-                    int sell = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Sell] ? 1 : 0;
+                    if (targetIndex < output.Length && targetIndex >= 0)
+                    {
+                        int buy = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy] ? 1 : 0;
+                        int sell = outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Sell] ? 1 : 0;
 
-                    output[targetIndex][(int)SampleValuesOutcomeCodesIndices.BuyRatio] += buy;
-                    output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SellRatio] += sell;
+                        output[targetIndex][(int)SampleValuesOutcomeCodesIndices.BuyRatio] += buy;
+                        output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SellRatio] += sell;
 
-                    output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SamplesCount]++;
-                    usedValuesRatio++;
+                        output[targetIndex][(int)SampleValuesOutcomeCodesIndices.SamplesCount]++;
+                        usedValuesRatio++;
+                    }
                 }
             }
 
@@ -152,17 +155,20 @@ namespace V3_Trader_Project.Trader
                 {
                     int targetIndex = Convert.ToInt32(Math.Floor((values[i] - min) / stepsSize));
 
-                    double mid = (prices[i][(int)PriceDataIndeces.Ask] + prices[i][(int)PriceDataIndeces.Bid]) / 2d;
-                    double maxChange = ((outcomes[i][(int)OutcomeMatrixIndices.Max] / mid) - 1d) * 100d;
-                    double minChange = ((outcomes[i][(int)OutcomeMatrixIndices.Min] / mid) - 1d) * 100d;
-                    double actualChange = ((outcomes[i][(int)OutcomeMatrixIndices.Actual] / mid) - 1d) * 100d;
+                    if (targetIndex < output.Length && targetIndex >= 0)
+                    {
+                        double mid = (prices[i][(int)PriceDataIndeces.Ask] + prices[i][(int)PriceDataIndeces.Bid]) / 2d;
+                        double maxChange = ((outcomes[i][(int)OutcomeMatrixIndices.Max] / mid) - 1d) * 100d;
+                        double minChange = ((outcomes[i][(int)OutcomeMatrixIndices.Min] / mid) - 1d) * 100d;
+                        double actualChange = ((outcomes[i][(int)OutcomeMatrixIndices.Actual] / mid) - 1d) * 100d;
 
-                    output[targetIndex][(int)SampleValuesOutcomeIndices.MaxAvg] += maxChange;
-                    output[targetIndex][(int)SampleValuesOutcomeIndices.MinAvg] += minChange;
-                    output[targetIndex][(int)SampleValuesOutcomeIndices.ActualAvg] += actualChange;
+                        output[targetIndex][(int)SampleValuesOutcomeIndices.MaxAvg] += maxChange;
+                        output[targetIndex][(int)SampleValuesOutcomeIndices.MinAvg] += minChange;
+                        output[targetIndex][(int)SampleValuesOutcomeIndices.ActualAvg] += actualChange;
 
-                    output[targetIndex][(int)SampleValuesOutcomeIndices.SamplesCount]++;
-                    validValueRatio++;
+                        output[targetIndex][(int)SampleValuesOutcomeIndices.SamplesCount]++;
+                        validValueRatio++;
+                    }
                 }
             }
 

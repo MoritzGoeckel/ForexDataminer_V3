@@ -5,8 +5,6 @@ Visualize the MarketModul
 Visualize the backtesting framework
 Implement good Backtesting statistics and visualization
 
-Implement Indicator Selector
-
 Test different
 	 wights / Timeframes / Markets / Percentages / Train periods / Signal machines / Order Machines
 

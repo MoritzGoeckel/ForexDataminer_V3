@@ -61,51 +61,6 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 
             double buySellCodeScore = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxBuyCode] + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxSellCode];
 
-            double tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spBuy];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spSell];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pBuy];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pSell];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spActual];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pActual];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxMinMaxDistancePercent] / 100;
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pMax];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pMin];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pBuy];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.pSell];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spMax];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spMin];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spBuy];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
-            tmp = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.spSell];
-            buySellCodeScore += double.IsNaN(tmp) ? 0 : Math.Abs(tmp);
-
             ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = buySellCodeScore };
 
             if (candidates.ContainsKey(algo) == false)
@@ -131,6 +86,7 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
             }
             catch (Exception e) { }*/
 
+            Logger.log("Analyzed: " + analysedIndicators + " / " + runs);
             return analysedIndicators > runs || okayOnes >= targetCount;
         }
 

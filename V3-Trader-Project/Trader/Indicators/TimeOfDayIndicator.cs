@@ -17,8 +17,8 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override double getIndicator()
         {
-            DateTime dt = Timestamp.getDate(currentTime).ToUniversalTime();
-            return (dt.Hour != 0 ? Convert.ToDouble(dt.Hour) / 24d : 0);
+            DateTime dt = Timestamp.getDate(currentTime);
+            return Convert.ToInt32(Convert.ToDouble(dt.Hour) / 24d);
         }
 
         public override void setNextData(long timestamp, double value)

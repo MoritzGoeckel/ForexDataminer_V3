@@ -17,9 +17,41 @@ namespace NinjaTrader_Client.Trader.Indicators
 
         public override double getIndicator()
         {
-            DateTime dt = Timestamp.getDate(currentTime).ToUniversalTime();
-            double v = (dt.DayOfWeek != 0 ? Convert.ToDouble(dt.DayOfWeek) / 7d : 0);
-            return v;
+            DateTime dt = Timestamp.getDate(currentTime);
+
+            int day = 0;
+            switch(dt.DayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                    day = 0;
+                    break;
+
+                case DayOfWeek.Tuesday:
+                    day = 1;
+                    break;
+
+                case DayOfWeek.Wednesday:
+                    day = 2;
+                    break;
+
+                case DayOfWeek.Thursday:
+                    day = 3;
+                    break;
+
+                case DayOfWeek.Friday:
+                    day = 4;
+                    break;
+
+                case DayOfWeek.Saturday:
+                    day = 5;
+                    break;
+
+                case DayOfWeek.Sunday:
+                    day = 6;
+                    break;
+            }
+
+            return Convert.ToInt32(Convert.ToDouble(day) / 6d);
         }
 
         public override void setNextData(long timestamp, double value)

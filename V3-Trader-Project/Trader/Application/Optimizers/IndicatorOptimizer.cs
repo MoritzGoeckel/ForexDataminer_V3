@@ -42,7 +42,7 @@ namespace V3_Trader_Project.Trader.Application
             round = 0;
             Logger.log("Start testing indicators");
             List<Thread> ths = new List<Thread>();
-
+            
             for(int i = 0; i < threads; i++)
                 ths.Add(new Thread(delegate () { optimizeInternally(generator, selector); }));
 
@@ -50,8 +50,11 @@ namespace V3_Trader_Project.Trader.Application
                 t.Start();
 
             foreach(Thread t in ths)
-                t.Join();
-            
+            {
+                if(t.IsAlive)
+                    t.Join();
+            }
+
             return selector.getResultingCandidates();
         }
 
@@ -59,16 +62,13 @@ namespace V3_Trader_Project.Trader.Application
         {
             while (ended == false && selector.isSatisfied() == false)
             {
-                //How about a genetic algo?
                 try
                 {
-                    WalkerIndicator wi = generator.getRandomIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000));
+                    WalkerIndicator wi = generator.getGeneratedIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000));
                     LearningIndicator li = new LearningIndicator(wi, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
 
                     selector.pushIndicatorStatistics(li);
-
-                    if (round % 50 == 0)
-                        Logger.log("#############" + Environment.NewLine + selector.getState() + Environment.NewLine + "##############");
+                    generator.feedBackGoodIndicator(wi.getName());
                 }
                 catch (TooLittleValidDataException e)
                 {
@@ -78,8 +78,6 @@ namespace V3_Trader_Project.Trader.Application
                 {
                     Logger.log("FATAL:" + e.Message);
                 }
-
-                round++;
             }
 
             ended = true;

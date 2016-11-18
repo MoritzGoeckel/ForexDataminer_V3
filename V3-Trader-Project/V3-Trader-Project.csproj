@@ -198,6 +198,7 @@
     <Compile Include="Trader\Market\ClosedPosition.cs" />
     <Compile Include="Trader\Market\MarketModul.cs" />
     <Compile Include="Trader\Market\OpenPosition.cs" />
+    <Compile Include="Trader\Market\OrderHistoryTimeAnalysis.cs" />
     <Compile Include="Trader\Tests\ArrayHelper_Test.cs" />
     <Compile Include="Trader\Tests\ArrayVisualizer_Test.cs" />
     <Compile Include="Trader\Tests\DataValidator_Test.cs" />

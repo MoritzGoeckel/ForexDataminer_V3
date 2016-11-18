@@ -29,6 +29,11 @@ namespace V3_Trader_Project.Trader.Market
 
         private double[] currentPriceData;
 
+        public List<ClosedPosition> getPositionHistory()
+        {
+            return closedPositions;
+        }
+
         public void pushPrice(double[] price)
         {
             this.bid = price[(int)PriceDataIndeces.Bid];
@@ -113,17 +118,15 @@ namespace V3_Trader_Project.Trader.Market
             return true;
         }
 
-        //Todo: does not regard amount yet
-
-        public static double leverage = 1000 * 10;
-
-        public double getStatistics(out double standartDeviation, out double profit, out double sharpe, out double trades, out double tradesPerDay, out double profitPerTrade, out double tradesWinningRatio, out double winningTradesAvg, out double loosingTradesAvg, out double maxProfit, out double maxLoss, out double avgTimeframe, out double standartDeviationTimeframes)
+        public double getStatistics(out double standartDeviation, out double profit, out double profitIngoreAmount, out double sharpe, out double trades, out double tradesPerDay, out double profitPerTrade, out double tradesWinningRatio, out double winningTradesAvg, out double loosingTradesAvg, out double maxProfit, out double maxLoss, out double avgTimeframe, out double standartDeviationTimeframes)
         {
             double[] profits = new double[closedPositions.Count];
             double[] timeframes = new double[closedPositions.Count];
+            profitIngoreAmount = 0;
 
             for (int i = 0; i < closedPositions.Count; i++)
             {
+                profitIngoreAmount += (closedPositions[i].getProfitIngoreAmount() * 10 * 1000);
                 profits[i] = closedPositions[i].getProfit();
                 timeframes[i] = closedPositions[i].getTimeDuration();
             }
@@ -149,7 +152,7 @@ namespace V3_Trader_Project.Trader.Market
         {
             StringBuilder sb = new StringBuilder();
             foreach (ClosedPosition p in closedPositions)
-                sb.Append(p.getProfit() + " with " + (p.type == OrderType.Long ? "Long" : "Short") + " " + p.getTimeDuration() / 1000d / 60d + "min" + Environment.NewLine);
+                sb.Append(p.getProfitIngoreAmount() + " with " + (p.type == OrderType.Long ? "Long" : "Short") + " " + p.getTimeDuration() / 1000d / 60d + "min" + Environment.NewLine);
 
             return sb.ToString();
         }
@@ -166,25 +169,25 @@ namespace V3_Trader_Project.Trader.Market
 
         public string getStatisticsString()
         {
-            double standartDeviation, profit, sharpe, trades, tradesPerDay, profitPerTrade, tradesWinningRatio, winningTradesAvg, loosingTradesAvg, maxProfit, maxLoss, avgTimeframe, standartDeviationTimeframes;
-            getStatistics(out standartDeviation, out profit, out sharpe, out trades, out tradesPerDay, out profitPerTrade, out tradesWinningRatio, out winningTradesAvg, out loosingTradesAvg, out maxProfit, out maxLoss, out avgTimeframe, out standartDeviationTimeframes);
+            double standartDeviation, profit, profitIngoreAmount, sharpe, trades, tradesPerDay, profitPerTrade, tradesWinningRatio, winningTradesAvg, loosingTradesAvg, maxProfit, maxLoss, avgTimeframe, standartDeviationTimeframes;
+            getStatistics(out standartDeviation, out profit, out profitIngoreAmount, out sharpe, out trades, out tradesPerDay, out profitPerTrade, out tradesWinningRatio, out winningTradesAvg, out loosingTradesAvg, out maxProfit, out maxLoss, out avgTimeframe, out standartDeviationTimeframes);
 
             string sep = Environment.NewLine;
 
             return "Sharpe: " + sharpe + sep
-                + "PnL: " + profit * leverage + sep
-                + "stD: " + standartDeviation * leverage + sep
+                + "PnL: " + profit + sep
+                + "PnL noA: " + profitIngoreAmount + sep
+                + "stD: " + standartDeviation + sep
                 + "Trades: " + trades + sep
                 + "Trades/d: " + tradesPerDay + sep
-                + "PnL/Trade: " + profitPerTrade * leverage + sep
+                + "PnL/Trade: " + profitPerTrade + sep
                 + "Winning: " + tradesWinningRatio + sep
-                + "WinningAvg: " + winningTradesAvg * leverage + sep
-                + "LoosingAvg: " + loosingTradesAvg * leverage + sep
-                + "Max+: " + maxProfit * leverage + sep
-                + "Max-: " + maxLoss * leverage + sep
-                + "AvgTimeInMarket: " + avgTimeframe +"min"+ sep
-                + "stDTimeInMarket: " + standartDeviationTimeframes + "min" + sep
-                + "(assumed leverage: " + leverage / 1000 + "K)";
+                + "WinningAvg: " + winningTradesAvg + sep
+                + "LoosingAvg: " + loosingTradesAvg + sep
+                + "Max+: " + maxProfit + sep
+                + "Max-: " + maxLoss + sep
+                + "AvgTimeInMarket: " + avgTimeframe + "min" + sep
+                + "stDTimeInMarket: " + standartDeviationTimeframes + "min";
         }
 
         public Image getCapitalCurveVisualization(int width, int heigth)
@@ -193,7 +196,7 @@ namespace V3_Trader_Project.Trader.Market
             double cumulativeCapital = 1000;
             for (int i = 0; i < closedPositions.Count; i++)
             {
-                cumulativeCapital += closedPositions[i].getProfit();
+                cumulativeCapital += closedPositions[i].getProfitIngoreAmount();
                 capital[i] = cumulativeCapital;
             }
 
