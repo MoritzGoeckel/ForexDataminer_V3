@@ -8,15 +8,15 @@ namespace V3_Trader_Project.Trader.Market
 {
     public class OpenPosition
     {
-        public double price;
-        public long timestamp;
+        public double priceOpen;
+        public long timestampOpen;
         public MarketModul.OrderType type;
         public double amount;
 
-        public OpenPosition(double amount, long timestamp, double price, MarketModul.OrderType type)
+        public OpenPosition(double amount, long timestampOpen, double priceOpen, MarketModul.OrderType type)
         {
-            this.timestamp = timestamp;
-            this.price = price;
+            this.timestampOpen = timestampOpen;
+            this.priceOpen = priceOpen;
             this.type = type;
             this.amount = amount;
         }
@@ -24,9 +24,9 @@ namespace V3_Trader_Project.Trader.Market
         public double getProfitNoAmount(double[] priceData)
         {
             if (type == MarketModul.OrderType.Long)
-                return priceData[(int)PriceDataIndeces.Bid] - price;
+                return priceData[(int)PriceDataIndeces.Bid] - priceOpen;
             else
-                return price - priceData[(int)PriceDataIndeces.Ask];
+                return priceOpen - priceData[(int)PriceDataIndeces.Ask];
         }
 
         public double getProfit(double[] priceData)
@@ -37,12 +37,12 @@ namespace V3_Trader_Project.Trader.Market
         public double getProfitPercent(double[] priceData)
         {
             double p = getProfitNoAmount(priceData);
-            return ((price + p / price) - 1d) * 100d;
+            return ((priceOpen + p / priceOpen) - 1d) * 100d;
         }
 
         public long getTimeInMarket(double[] priceData)
         {
-            return Convert.ToInt64(priceData[(int)PriceDataIndeces.Date] - timestamp);
+            return Convert.ToInt64(priceData[(int)PriceDataIndeces.Date] - timestampOpen);
         }
     }
 }

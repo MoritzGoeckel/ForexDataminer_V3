@@ -157,12 +157,16 @@ namespace V3_Trader_Project.Trader.Market
             return sb.ToString();
         }
 
-        public void removeInvalidTimeFramePositions(long maxTimeframeToConsider)
+        //Sanity check
+        public void removeInvalidTimeFramePositions(long maxTimeframeToConsider, double maxProfit, double maxLoss)
         {
             List<ClosedPosition> newClosedPositions = new List<ClosedPosition>();
             foreach (ClosedPosition c in closedPositions)
-                if (c.getTimeDuration() <= maxTimeframeToConsider)
+            {
+                double profitPercent = c.getProfitPercent();
+                if (c.getTimeDuration() <= maxTimeframeToConsider && profitPercent < maxProfit && profitPercent > maxLoss)
                     newClosedPositions.Add(c);
+            }
 
             closedPositions = newClosedPositions;
         }

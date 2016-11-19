@@ -53,12 +53,12 @@ namespace V3_Trader_Project.Trader.Forms
                 if (lastUpdateTimestamp == 0)
                     lastUpdateTimestamp = timestampNow;
 
-                if (timestampNow - (1l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
+                if (timestampNow - (2l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
                 {
                     Logger.log("Updateing indicators...");
-                    strategy.updateIndicators(1000l * 60 * 60 * 24 * 7,
-                        1000l * 60 * 60 * 24 * 7, 
-                        new DiverseIndicatorSelector(10, 500));
+                    strategy.updateIndicators(1000l * 60 * 60 * 24 * 10,
+                        1000l * 60 * 60 * 24 * 5, 
+                        new DiverseIndicatorSelector(8, 1000));
 
                     lastUpdateTimestamp = timestampNow;
                     Logger.log("End updateing indicators.");
@@ -77,7 +77,7 @@ namespace V3_Trader_Project.Trader.Forms
 
             mm.flatAll(Convert.ToInt64(priceData[priceData.Length - 1][(int)PriceDataIndeces.Date]));
 
-            mm.removeInvalidTimeFramePositions(outcomeTimeframe * 2);
+            mm.removeInvalidTimeFramePositions(outcomeTimeframe * 2, 0.07, -2* 0.07);
             MessageBox.Show(mm.getStatisticsString());
             this.BackgroundImage = mm.getCapitalCurveVisualization(this.Width, this.Height);
         }

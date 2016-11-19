@@ -27,16 +27,18 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             bool sellSignal = false;
 
             double sl = 2;
-            double predictionMulitplyer = 2;
-            double outcomeCodesPropThreshold = 0.97;
+            double predictionMulitplyer = 2.5;
+            double outcomeCodesPropThreshold = 0.9;
+            double negativeCodesPropThreshold = 0.1;
             double amount = 10 * 1000;
 
             //aim for outcome codes
-            if(signal[(int)SignalMachineSignal.BuySignal] > outcomeCodesPropThreshold)
+            if(signal[(int)SignalMachineSignal.BuySignal] >= outcomeCodesPropThreshold && signal[(int)SignalMachineSignal.SellSignal] <= negativeCodesPropThreshold)
             {
                 buySignal = true;
             }
-            else if (signal[(int)SignalMachineSignal.SellSignal] > outcomeCodesPropThreshold)
+
+            if (signal[(int)SignalMachineSignal.SellSignal] >= outcomeCodesPropThreshold && signal[(int)SignalMachineSignal.BuySignal] <= negativeCodesPropThreshold)
             {
                 sellSignal = true;
             }
@@ -63,26 +65,27 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 sellSignal = true;
             }
 
-            sellSignal = sellSignal && buySignal == false;
-            buySignal = buySignal && sellSignal == false;
+            //Only open position if unamigous
+            if (buySignal != sellSignal)
+            {
+                if (sellSignal)
+                    SellSignals++;
 
-            if (sellSignal)
-                SellSignals++;
+                if (buySignal)
+                    BuySignals++;
 
-            if (buySignal)
-                BuySignals++;
+                if (buySignal && mm.isPositionOpen(MarketModul.OrderType.Long) == false)
+                    mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
+                        * amount,
+                        timestamp,
+                        MarketModul.OrderType.Long);
 
-            if (buySignal && mm.isPositionOpen(MarketModul.OrderType.Long) == false)
-                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
-                    * amount,
-                    timestamp,
-                    MarketModul.OrderType.Long);
-
-            if (sellSignal && mm.isPositionOpen(MarketModul.OrderType.Short) == false)
-                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
-                    * amount, 
-                    timestamp, 
-                    MarketModul.OrderType.Short);
+                if (sellSignal && mm.isPositionOpen(MarketModul.OrderType.Short) == false)
+                    mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
+                        * amount,
+                        timestamp,
+                        MarketModul.OrderType.Short);
+            }
 
             if (buySignal == false && mm.isPositionOpen(MarketModul.OrderType.Long))
             {

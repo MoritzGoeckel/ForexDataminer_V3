@@ -15,12 +15,17 @@ namespace V3_Trader_Project.Trader.Market
 
         public ClosedPosition(OpenPosition openPosition, long timestampClose, double priceClose)
         {
-            this.priceOpen = openPosition.price;
-            this.timestampOpen = openPosition.timestamp;
+            this.priceOpen = openPosition.priceOpen;
+            this.timestampOpen = openPosition.timestampOpen;
             this.amount = openPosition.amount;
 
             this.priceClose = priceClose;
             this.timestampClose = timestampClose;
+        }
+
+        public double getProfitPercent()
+        {
+            return ((priceClose / priceOpen) - 1d) * 100d;
         }
 
         public double getProfitIngoreAmount()
