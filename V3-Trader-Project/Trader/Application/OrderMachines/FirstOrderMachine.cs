@@ -26,7 +26,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             bool buySignal = false;
             bool sellSignal = false;
 
-            double sl = 2;
+            double sl = 1;
             double predictionMulitplyer = 2.5;
             double outcomeCodesPropThreshold = 0.9;
             double negativeCodesPropThreshold = 0.1;
