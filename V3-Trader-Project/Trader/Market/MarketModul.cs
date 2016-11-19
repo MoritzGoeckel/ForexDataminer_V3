@@ -118,17 +118,20 @@ namespace V3_Trader_Project.Trader.Market
             return true;
         }
 
-        public double getStatistics(out double standartDeviation, out double profit, out double profitIngoreAmount, out double sharpe, out double trades, out double tradesPerDay, out double profitPerTrade, out double tradesWinningRatio, out double winningTradesAvg, out double loosingTradesAvg, out double maxProfit, out double maxLoss, out double avgTimeframe, out double standartDeviationTimeframes)
+        public double getStatistics(out double standartDeviation, out double profit, out double profitIngoreAmount, out double sharpe, out double trades, out double tradesPerDay, out double profitPerTrade, out double tradesWinningRatio, out double winningTradesAvg, out double loosingTradesAvg, out double maxProfit, out double maxLoss, out double avgTimeframe, out double standartDeviationTimeframes, out double volume)
         {
             double[] profits = new double[closedPositions.Count];
             double[] timeframes = new double[closedPositions.Count];
             profitIngoreAmount = 0;
+
+            volume = 0;
 
             for (int i = 0; i < closedPositions.Count; i++)
             {
                 profitIngoreAmount += (closedPositions[i].getProfitIngoreAmount() * 10 * 1000);
                 profits[i] = closedPositions[i].getProfit();
                 timeframes[i] = closedPositions[i].getTimeDuration();
+                volume += closedPositions[i].amount * 2;
             }
 
             standartDeviation = profits.StandardDeviation();
@@ -173,8 +176,8 @@ namespace V3_Trader_Project.Trader.Market
 
         public string getStatisticsString()
         {
-            double standartDeviation, profit, profitIngoreAmount, sharpe, trades, tradesPerDay, profitPerTrade, tradesWinningRatio, winningTradesAvg, loosingTradesAvg, maxProfit, maxLoss, avgTimeframe, standartDeviationTimeframes;
-            getStatistics(out standartDeviation, out profit, out profitIngoreAmount, out sharpe, out trades, out tradesPerDay, out profitPerTrade, out tradesWinningRatio, out winningTradesAvg, out loosingTradesAvg, out maxProfit, out maxLoss, out avgTimeframe, out standartDeviationTimeframes);
+            double standartDeviation, profit, profitIngoreAmount, sharpe, trades, tradesPerDay, profitPerTrade, tradesWinningRatio, winningTradesAvg, loosingTradesAvg, maxProfit, maxLoss, avgTimeframe, standartDeviationTimeframes, volume;
+            getStatistics(out standartDeviation, out profit, out profitIngoreAmount, out sharpe, out trades, out tradesPerDay, out profitPerTrade, out tradesWinningRatio, out winningTradesAvg, out loosingTradesAvg, out maxProfit, out maxLoss, out avgTimeframe, out standartDeviationTimeframes, out volume);
 
             string sep = Environment.NewLine;
 
@@ -191,7 +194,8 @@ namespace V3_Trader_Project.Trader.Market
                 + "Max+: " + maxProfit + sep
                 + "Max-: " + maxLoss + sep
                 + "AvgTimeInMarket: " + avgTimeframe + "min" + sep
-                + "stDTimeInMarket: " + standartDeviationTimeframes + "min";
+                + "stDTimeInMarket: " + standartDeviationTimeframes + "min" + sep
+                + "Volume: " + volume;
         }
 
         public Image getCapitalCurveVisualization(int width, int heigth)
