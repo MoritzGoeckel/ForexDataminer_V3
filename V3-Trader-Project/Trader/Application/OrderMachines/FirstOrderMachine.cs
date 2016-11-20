@@ -14,6 +14,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         private long outcomeCodeTimestpan;
 
         //Todo: Outside accessable
+        private double tp = 1;
         private double sl = 1;
         private double predictionMulitplyer = 2.0;
         private double differenceMutliplyer = 2.0;
@@ -109,14 +110,14 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             if (buySignal == false && mm.isPositionOpen(MarketModul.OrderType.Long))
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Long);
-                if(p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
+                if(p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                     mm.closePosition(MarketModul.OrderType.Long, timestamp);
             }
 
             if (sellSignal == false && mm.isPositionOpen(MarketModul.OrderType.Short))
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Short);
-                if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
+                if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
             }
         }

@@ -40,7 +40,7 @@ namespace V3_Trader_Project.Trader.Market
         public double getProfitPercent(double[] priceData)
         {
             double p = getProfitNoAmount(priceData);
-            return ((priceOpen + p / priceOpen) - 1d) * 100d;
+            return (((priceOpen + p) / priceOpen) - 1d) * 100d;
         }
 
         public long getTimeInMarket(double[] priceData)
