@@ -33,7 +33,7 @@ namespace V3_Trader_Project.Trader.Forms
         {
             DataLoader dl = new DataLoader(Config.DataPath + pair);
             double[][] priceData = dl.getArray(0,
-                31l * 24l * 60l * 60l * 1000l * 1,
+                31l * 24l * 60l * 60l * 1000l * 11,
                 10 * 1000);
 
             long outcomeTimeframe = 1000 * 60 * 60 * 4;
@@ -42,7 +42,7 @@ namespace V3_Trader_Project.Trader.Forms
             MarketModul mm = new MarketModul(pair);
             OrderMachine om = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
 
-            StreamingStrategy strategy = new StreamingStrategy(outcomeCodePercent, outcomeTimeframe, mm, om, 0.3, "goodIndicators.txt");
+            StreamingStrategy strategy = new StreamingStrategy(outcomeCodePercent, outcomeTimeframe, mm, om, 0.3, "#cache");
 
             string lastMessage = "";
 
@@ -82,7 +82,10 @@ namespace V3_Trader_Project.Trader.Forms
 
             mm.removeInvalidTimeFramePositions(outcomeTimeframe * 2, outcomeCodePercent + 0.01, -(outcomeCodePercent + 0.01));
 
-            string report = mm.getStatisticsString() + Environment.NewLine + om.getStatistics();
+            string report = mm.getStatisticsString() + Environment.NewLine 
+                + om.getStatistics() + Environment.NewLine 
+                + mm.getProfitabilityByInfoString();
+
             MessageBox.Show(report);
 
             this.BackgroundImage = mm.getCapitalCurveVisualization(this.Width, this.Height);

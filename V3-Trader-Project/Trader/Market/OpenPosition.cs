@@ -13,12 +13,15 @@ namespace V3_Trader_Project.Trader.Market
         public MarketModul.OrderType type;
         public double amount;
 
-        public OpenPosition(double amount, long timestampOpen, double priceOpen, MarketModul.OrderType type)
+        public string info = null;
+
+        public OpenPosition(double amount, long timestampOpen, double priceOpen, MarketModul.OrderType type, string info = null)
         {
             this.timestampOpen = timestampOpen;
             this.priceOpen = priceOpen;
             this.type = type;
             this.amount = amount;
+            this.info = info;
         }
 
         public double getProfitNoAmount(double[] priceData)

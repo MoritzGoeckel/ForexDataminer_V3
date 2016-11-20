@@ -13,6 +13,8 @@ namespace V3_Trader_Project.Trader.Market
         public MarketModul.OrderType type;
         public double amount;
 
+        public string info = null;
+
         public ClosedPosition(OpenPosition openPosition, long timestampClose, double priceClose)
         {
             this.priceOpen = openPosition.priceOpen;
@@ -21,6 +23,7 @@ namespace V3_Trader_Project.Trader.Market
 
             this.priceClose = priceClose;
             this.timestampClose = timestampClose;
+            this.info = openPosition.info;
         }
 
         public double getProfitPercent()

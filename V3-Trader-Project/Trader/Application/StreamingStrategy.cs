@@ -21,20 +21,28 @@ namespace V3_Trader_Project.Trader.Application
         SignalMachine signalMachine;
         double minPercentThreshold;
 
-        string fileNameIndicators;
+        string cachePath;
+        string cachedIndicatorsFile;
 
         List<string> okayIndicators = new List<string>();
 
-        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, OrderMachine om, double minPercentThreshold, string fileNameIndicators)
+        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, OrderMachine om, double minPercentThreshold, string cachePath = null)
         {
             this.outcomeCodePercent = outcomeCodePercent;
             this.outcomeTimeframe = outcomeTimeframe;
 
             this.minPercentThreshold = minPercentThreshold;
-            this.fileNameIndicators = fileNameIndicators;
+            this.cachePath = cachePath;
 
-            if (File.Exists(fileNameIndicators))
-                okayIndicators = File.ReadAllText(fileNameIndicators).Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            if (cachePath != null && Directory.Exists(cachePath) == false)
+            {
+                Directory.CreateDirectory(cachePath);
+                Logger.log("Created log directory: " + cachePath);
+            }
+
+            this.cachedIndicatorsFile = cachePath + "/" + "cachedIndicators"+ outcomeTimeframe +".txt";
+            if (cachePath != null && File.Exists(cachedIndicatorsFile))
+                okayIndicators = File.ReadAllText(cachedIndicatorsFile).Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList<string>();
             else
                 okayIndicators = new List<string>();
             
@@ -59,15 +67,33 @@ namespace V3_Trader_Project.Trader.Application
             bool[][] outcomeCodeData = OutcomeGenerator.getOutcomeCode(selectedPriceDataArray, outcomeData, outcomeCodePercent, out s);
             if (s < 0.6) throw new Exception("s < o.6: " + s);
 
-            IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
-            IndicatorGenerator generator = new IndicatorGenerator(okayIndicators);
-            string[] indicatorIds = optimizer.getOptimizedIndicators(generator, indicatorSelector, 7);
+            string[] indicatorIds;
 
-            List<string> newGoodIndicators = generator.getGoodGeneratedIndicators();
-            File.AppendAllLines(fileNameIndicators, newGoodIndicators);
-            okayIndicators.AddRange(newGoodIndicators);
+            //This part can be skipped by caching
+            double hash = outcomeTimeframe + selectedPriceData[0].Sum() + selectedPriceData[selectedPriceData.Count - 1].Sum() + selectedPriceData[selectedPriceData.Count / 2].Sum();
+            string optimalIndicatorsFileName = cachePath + "/" + "optimalIndicatorsIn_" + hash + "_" + selectedPriceData[selectedPriceData.Count - 1][(int)PriceDataIndeces.Date] + "_" + timeframeToLookBack + "_" + outcomeCodePercent + ".txt";
+            if (cachePath != null && File.Exists(optimalIndicatorsFileName))
+            {
+                indicatorIds = File.ReadAllText(optimalIndicatorsFileName).Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                Logger.log("Loaded optimal indicators from file: " + optimalIndicatorsFileName);
+            }
+            else
+            {
+                //Shuffle okay indicators? todo:
+                Logger.log("Generated optimal indicators");
+                IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
+                IndicatorGenerator generator = new IndicatorGenerator(okayIndicators);
+                indicatorIds = optimizer.getOptimizedIndicators(generator, indicatorSelector, 7);
 
-            //Shuffle okay indicators? todo:
+                List<string> newGoodIndicators = generator.getGoodGeneratedIndicators();
+                if (cachePath != null)
+                {
+                    File.AppendAllLines(cachedIndicatorsFile, newGoodIndicators);
+                    File.WriteAllLines(optimalIndicatorsFileName, indicatorIds);
+                }
+
+                okayIndicators.AddRange(newGoodIndicators);
+            }
 
             Logger.log("Selected indicators: ");
             List<LearningIndicator> lis = new List<LearningIndicator>();

@@ -15,10 +15,10 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
 
         //Todo: Outside accessable
         private double sl = 1;
-        private double predictionMulitplyer = 2.1;
-        private double differenceMutliplyer = 2.1;
-        private double outcomeCodesPropThreshold = 0.9;
-        private double negativeCodesPropThreshold = 0.1;
+        private double predictionMulitplyer = 2.0;
+        private double differenceMutliplyer = 2.0;
+        private double outcomeCodesPropThreshold = 0.7;
+        private double negativeCodesPropThreshold = 0.3;
         private double amount = 10 * 1000;
 
         public FirstOrderMachine(MarketModul mm, double outcomeCodePercentage, long outcomeCodeTimestpan) : base(mm)
@@ -32,6 +32,8 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
 
         public override void doOrderTick(long timestamp, double[] signal)
         {
+            string info = "";
+
             bool buySignal = false;
             bool sellSignal = false;
 
@@ -40,12 +42,14 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             {
                 buySignal = true;
                 BuyByCodeProb++;
+                info += "codeprop";
             }
 
             if (signal[(int)SignalMachineSignal.SellSignal] >= outcomeCodesPropThreshold && signal[(int)SignalMachineSignal.BuySignal] <= negativeCodesPropThreshold)
             {
                 sellSignal = true;
                 SellByCodeProb++;
+                info += "codeprop";
             }
 
             //aim for prediction
@@ -53,11 +57,14 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             {
                 buySignal = true;
                 BuyByPrediction++;
+                info += "pred";
             }
-            else if (signal[(int)SignalMachineSignal.prediction] < -outcomeCodePercentage * predictionMulitplyer)
+
+            if (signal[(int)SignalMachineSignal.prediction] < -outcomeCodePercentage * predictionMulitplyer)
             {
                 sellSignal = true;
                 SellByPrediction++;
+                info += "pred";
             }
 
             //aim for min max difference
@@ -66,12 +73,15 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             {
                 buySignal = true;
                 BuyByDifference++;
+                info += "diff";
             }
-            else if(signal[(int)SignalMachineSignal.minPrediction]
+
+            if (signal[(int)SignalMachineSignal.minPrediction]
                 + signal[(int)SignalMachineSignal.minPrediction] < -outcomeCodePercentage * differenceMutliplyer)
             {
                 sellSignal = true;
                 SellByDifference++;
+                info += "diff";
             }
 
             //Only open position if unamigous
@@ -87,13 +97,13 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                     mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
                         * amount,
                         timestamp,
-                        MarketModul.OrderType.Long);
+                        MarketModul.OrderType.Long, info);
 
                 if (sellSignal && mm.isPositionOpen(MarketModul.OrderType.Short) == false)
                     mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
                         * amount,
                         timestamp,
-                        MarketModul.OrderType.Short);
+                        MarketModul.OrderType.Short, info);
             }
 
             if (buySignal == false && mm.isPositionOpen(MarketModul.OrderType.Long))

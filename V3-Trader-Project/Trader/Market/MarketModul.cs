@@ -64,9 +64,9 @@ namespace V3_Trader_Project.Trader.Market
                 return openPositionShort;
         }
 
-        public bool openPosition(double amount, long timestamp, OrderType type)
+        public bool openPosition(double amount, long timestamp, OrderType type, string info = null)
         {
-            OpenPosition p = new OpenPosition(amount, timestamp, (type == OrderType.Long ? ask : bid), type);
+            OpenPosition p = new OpenPosition(amount, timestamp, (type == OrderType.Long ? ask : bid), type, info);
 
             if (type == OrderType.Long)
             {
@@ -196,6 +196,35 @@ namespace V3_Trader_Project.Trader.Market
                 + "AvgTimeInMarket: " + avgTimeframe + "min" + sep
                 + "stDTimeInMarket: " + standartDeviationTimeframes + "min" + sep
                 + "Volume: " + volume;
+        }
+
+        private struct ValueCountPair { public double value; public int count; };
+
+        public string getProfitabilityByInfoString()
+        {
+            Dictionary<string, ValueCountPair> infoDict = new Dictionary<string, ValueCountPair>();
+            foreach (ClosedPosition c in closedPositions)
+            {
+                if(c.info != null)
+                {
+                    if (infoDict.ContainsKey(c.info) == false)
+                        infoDict.Add(c.info, new ValueCountPair() { value = 0, count = 0 });
+
+                    ValueCountPair p = infoDict[c.info];
+                    p.value += c.getProfitPercent();
+                    p.count++;
+
+                    infoDict[c.info] = p;
+                }
+            }
+
+            StringBuilder s = new StringBuilder();
+            foreach(KeyValuePair<string, ValueCountPair> pair in infoDict)
+            {
+                s.Append(pair.Key + ": " + pair.Value.value / Convert.ToDouble(pair.Value.count) + "%/t (" + pair.Value.count + ")" + Environment.NewLine);
+            }
+
+            return s.ToString();
         }
 
         public Image getCapitalCurveVisualization(int width, int heigth)
