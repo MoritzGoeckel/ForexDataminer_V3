@@ -13,56 +13,65 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         private double outcomeCodePercentage;
         private long outcomeCodeTimestpan;
 
+        //Todo: Outside accessable
+        private double sl = 1;
+        private double predictionMulitplyer = 2.1;
+        private double differenceMutliplyer = 2.1;
+        private double outcomeCodesPropThreshold = 0.9;
+        private double negativeCodesPropThreshold = 0.1;
+        private double amount = 10 * 1000;
+
         public FirstOrderMachine(MarketModul mm, double outcomeCodePercentage, long outcomeCodeTimestpan) : base(mm)
         {
             this.outcomeCodePercentage = outcomeCodePercentage;
             this.outcomeCodeTimestpan = outcomeCodeTimestpan;
         }
 
-        public int BuySignals = 0, SellSignals = 0;
+        private int BuySignals = 0, SellSignals = 0;
+        private int BuyByPrediction = 0, SellByPrediction = 0, BuyByCodeProb = 0, SellByCodeProb = 0, BuyByDifference = 0, SellByDifference = 0;
 
         public override void doOrderTick(long timestamp, double[] signal)
         {
             bool buySignal = false;
             bool sellSignal = false;
 
-            double sl = 1;
-            double predictionMulitplyer = 2.5;
-            double outcomeCodesPropThreshold = 0.9;
-            double negativeCodesPropThreshold = 0.1;
-            double amount = 10 * 1000;
-
             //aim for outcome codes
             if(signal[(int)SignalMachineSignal.BuySignal] >= outcomeCodesPropThreshold && signal[(int)SignalMachineSignal.SellSignal] <= negativeCodesPropThreshold)
             {
                 buySignal = true;
+                BuyByCodeProb++;
             }
 
             if (signal[(int)SignalMachineSignal.SellSignal] >= outcomeCodesPropThreshold && signal[(int)SignalMachineSignal.BuySignal] <= negativeCodesPropThreshold)
             {
                 sellSignal = true;
+                SellByCodeProb++;
             }
 
             //aim for prediction
             if (signal[(int)SignalMachineSignal.prediction] > outcomeCodePercentage * predictionMulitplyer)
             {
                 buySignal = true;
+                BuyByPrediction++;
             }
             else if (signal[(int)SignalMachineSignal.prediction] < -outcomeCodePercentage * predictionMulitplyer)
             {
                 sellSignal = true;
+                SellByPrediction++;
             }
 
             //aim for min max difference
             if (signal[(int)SignalMachineSignal.maxPrediction]
-                + signal[(int)SignalMachineSignal.minPrediction] > outcomeCodePercentage * predictionMulitplyer)
+                + signal[(int)SignalMachineSignal.minPrediction] > outcomeCodePercentage * differenceMutliplyer)
             {
                 buySignal = true;
+                BuyByDifference++;
             }
             else if(signal[(int)SignalMachineSignal.minPrediction]
-                + signal[(int)SignalMachineSignal.minPrediction] < -outcomeCodePercentage * predictionMulitplyer)
+                + signal[(int)SignalMachineSignal.minPrediction] < -outcomeCodePercentage * differenceMutliplyer)
             {
                 sellSignal = true;
+                SellByDifference++;
             }
 
             //Only open position if unamigous
@@ -100,6 +109,18 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
             }
+        }
+
+        public override string getStatistics()
+        {
+            string sep = Environment.NewLine;
+            StringBuilder s = new StringBuilder();
+            s.Append("CodeProp:" + sep + "  B: " + BuyByCodeProb + sep + "  S: " + SellByCodeProb + sep);
+            s.Append("Prediction:" + sep + "  B: " + BuyByPrediction + sep + "  S: " + SellByPrediction + sep);
+            s.Append("Difference:" + sep + "  B: " + BuyByDifference + sep + "  S: " + SellByDifference + sep);
+            s.Append("Signals:" + sep + "  B: " + BuySignals + sep + "  S: " + SellSignals);
+
+            return s.ToString();
         }
     }
 }

@@ -17,5 +17,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         }
 
         public abstract void doOrderTick(long timestamp, double[] signal);
+
+        public abstract string getStatistics();
     }
 }

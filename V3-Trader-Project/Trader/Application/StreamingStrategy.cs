@@ -25,7 +25,7 @@ namespace V3_Trader_Project.Trader.Application
 
         List<string> okayIndicators = new List<string>();
 
-        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, double minPercentThreshold, string fileNameIndicators)
+        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, OrderMachine om, double minPercentThreshold, string fileNameIndicators)
         {
             this.outcomeCodePercent = outcomeCodePercent;
             this.outcomeTimeframe = outcomeTimeframe;
@@ -37,9 +37,8 @@ namespace V3_Trader_Project.Trader.Application
                 okayIndicators = File.ReadAllText(fileNameIndicators).Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList<string>();
             else
                 okayIndicators = new List<string>();
-
-            //Make this accessable from outside? todo:
-            this.orderMachine = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
+            
+            this.orderMachine = om;
         }
 
         public void updateIndicators(long timeframeToLookBack, long timeframeToLookBackForIndicatorInit, IndicatorSelector indicatorSelector)

@@ -131,7 +131,7 @@ namespace V3_Trader_Project.Trader.Market
                 profitIngoreAmount += (closedPositions[i].getProfitIngoreAmount() * 10 * 1000);
                 profits[i] = closedPositions[i].getProfit();
                 timeframes[i] = closedPositions[i].getTimeDuration();
-                volume += closedPositions[i].amount * 2;
+                volume += closedPositions[i].amount;
             }
 
             standartDeviation = profits.StandardDeviation();

@@ -37,9 +37,12 @@ namespace V3_Trader_Project.Trader.Forms
                 10 * 1000);
 
             long outcomeTimeframe = 1000 * 60 * 60 * 4;
+            double outcomeCodePercent = 0.15;
 
             MarketModul mm = new MarketModul(pair);
-            StreamingStrategy strategy = new StreamingStrategy(0.07, outcomeTimeframe, mm, 0.4, "goodIndicators.txt");
+            OrderMachine om = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
+
+            StreamingStrategy strategy = new StreamingStrategy(outcomeCodePercent, outcomeTimeframe, mm, om, 0.3, "goodIndicators.txt");
 
             string lastMessage = "";
 
@@ -53,7 +56,7 @@ namespace V3_Trader_Project.Trader.Forms
                 if (lastUpdateTimestamp == 0)
                     lastUpdateTimestamp = timestampNow;
 
-                if (timestampNow - (5l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
+                if (timestampNow - (2l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
                 {
                     Logger.log("Updateing indicators...");
                     strategy.updateIndicators(1000l * 60 * 60 * 24 * 10,
@@ -77,8 +80,11 @@ namespace V3_Trader_Project.Trader.Forms
 
             mm.flatAll(Convert.ToInt64(priceData[priceData.Length - 1][(int)PriceDataIndeces.Date]));
 
-            mm.removeInvalidTimeFramePositions(outcomeTimeframe * 2, 0.08, -0.08);
-            MessageBox.Show(mm.getStatisticsString());
+            mm.removeInvalidTimeFramePositions(outcomeTimeframe * 2, outcomeCodePercent + 0.01, -(outcomeCodePercent + 0.01));
+
+            string report = mm.getStatisticsString() + Environment.NewLine + om.getStatistics();
+            MessageBox.Show(report);
+
             this.BackgroundImage = mm.getCapitalCurveVisualization(this.Width, this.Height);
         }
     }
