@@ -76,7 +76,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 info += "diff";
             }
 
-            if (signal[(int)SignalMachineSignal.minPrediction]
+            if (signal[(int)SignalMachineSignal.maxPrediction]
                 + signal[(int)SignalMachineSignal.minPrediction] < -outcomeCodePercentage * differenceMutliplyer)
             {
                 sellSignal = true;
