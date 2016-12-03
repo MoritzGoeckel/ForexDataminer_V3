@@ -85,7 +85,9 @@ namespace V3_Trader_Project.Trader.Market
 
             return true;
         }
-        
+
+        private WinLossStreak currentStreak = null;
+
         public bool closePosition(OrderType type, long timestamp)
         {
             OpenPosition p = null;
@@ -103,6 +105,17 @@ namespace V3_Trader_Project.Trader.Market
                     openPositionsLong = null;
                 else
                     openPositionShort = null;
+
+                bool win = closedPositions[closedPositions.Count - 1].getProfit() > 0;
+                if (currentStreak == null)
+                    currentStreak = new WinLossStreak(win, 1);
+                else
+                {
+                    if (currentStreak.win == win)
+                        currentStreak.streak++;
+                    else
+                        currentStreak = new WinLossStreak(win, 1);
+                }
 
                 return true;
             }
@@ -174,6 +187,33 @@ namespace V3_Trader_Project.Trader.Market
             closedPositions = newClosedPositions;
         }
 
+        public string lossWinStreakString()
+        {
+            StringBuilder output = new StringBuilder();
+            int streak = 0;
+            bool win = true;
+            foreach (ClosedPosition c in closedPositions)
+            {
+                if (c.getProfit() > 0 == win)
+                    streak++;
+                else
+                {
+                    output.Append(streak + ":");
+                    streak = 1;
+                    win = c.getProfit() > 0;
+                }
+            }
+
+            return output.ToString();
+        }
+
+        public class WinLossStreak { public bool win; public int streak; public WinLossStreak(bool win, int streak) { this.win = win; this.streak = streak; } }
+
+        public WinLossStreak getLastStreak()
+        {
+            return currentStreak;
+        }
+
         public string getStatisticsString()
         {
             double standartDeviation, profit, profitIngoreAmount, sharpe, trades, tradesPerDay, profitPerTrade, tradesWinningRatio, winningTradesAvg, loosingTradesAvg, maxProfit, maxLoss, avgTimeframe, standartDeviationTimeframes, volume;
@@ -221,7 +261,7 @@ namespace V3_Trader_Project.Trader.Market
             StringBuilder s = new StringBuilder();
             foreach(KeyValuePair<string, ValueCountPair> pair in infoDict)
             {
-                s.Append(pair.Key + ": " + pair.Value.value / Convert.ToDouble(pair.Value.count) + "%/t (" + pair.Value.count + ")" + Environment.NewLine);
+                s.Append(pair.Key + ": " + Math.Round(pair.Value.value / Convert.ToDouble(pair.Value.count), 4) + "% (" + pair.Value.count + ")" + Environment.NewLine);
             }
 
             return s.ToString();

@@ -37,7 +37,7 @@ namespace V3_Trader_Project.Trader.Forms
                 10 * 1000);
 
             long outcomeTimeframe = 1000 * 60 * 60 * 4;
-            double outcomeCodePercent = 0.15;
+            double outcomeCodePercent = 0.06;
 
             MarketModul mm = new MarketModul(pair);
             OrderMachine om = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
@@ -80,9 +80,14 @@ namespace V3_Trader_Project.Trader.Forms
 
             mm.flatAll(Convert.ToInt64(priceData[priceData.Length - 1][(int)PriceDataIndeces.Date]));
 
-            mm.removeInvalidTimeFramePositions(outcomeTimeframe * 2, outcomeCodePercent + 0.01, -(outcomeCodePercent + 0.01));
+            MessageBox.Show("Without remove: " + mm.getPositionHistory().Count());
 
-            string report = mm.getStatisticsString() + Environment.NewLine 
+            mm.removeInvalidTimeFramePositions(outcomeTimeframe * 10, outcomeCodePercent + 0.05, -(outcomeCodePercent + 0.05));
+
+            MessageBox.Show("Streak analysis: " + mm.lossWinStreakString());
+
+            string report = "Statistics: " + Environment.NewLine
+                + mm.getStatisticsString() + Environment.NewLine 
                 + om.getStatistics() + Environment.NewLine 
                 + mm.getProfitabilityByInfoString();
 
