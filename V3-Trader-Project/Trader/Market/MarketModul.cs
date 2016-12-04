@@ -26,6 +26,7 @@ namespace V3_Trader_Project.Trader.Market
 
         private OpenPosition openPositionsLong, openPositionShort;
         private List<ClosedPosition> closedPositions = new List<ClosedPosition>();
+        private WinLossStreak currentStreak = null;
 
         private double[] currentPriceData;
 
@@ -85,9 +86,7 @@ namespace V3_Trader_Project.Trader.Market
 
             return true;
         }
-
-        private WinLossStreak currentStreak = null;
-
+        
         public bool closePosition(OrderType type, long timestamp)
         {
             OpenPosition p = null;
@@ -205,6 +204,24 @@ namespace V3_Trader_Project.Trader.Market
             }
 
             return output.ToString();
+        }
+
+        public double getWinRateLastTrades(int trades)
+        {
+            int profitable = 0;
+            int regarded = 0;
+
+            for(int i = closedPositions.Count - 1; i > 0 && i > closedPositions.Count - 1 - trades; i--)
+            {
+                if (closedPositions[i].getProfit() > 0)
+                    profitable++;
+                regarded++;
+            }
+
+            if (regarded != 0)
+                return Convert.ToDouble(profitable) / Convert.ToDouble(regarded);
+            else
+                return 1;
         }
 
         public class WinLossStreak { public bool win; public int streak; public WinLossStreak(bool win, int streak) { this.win = win; this.streak = streak; } }

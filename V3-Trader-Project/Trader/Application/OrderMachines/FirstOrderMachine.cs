@@ -33,7 +33,10 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
 
         private int BuySignals = 0, SellSignals = 0;
         private int BuyByPrediction = 0, SellByPrediction = 0, BuyByCodeProb = 0, SellByCodeProb = 0, BuyByDifference = 0, SellByDifference = 0;
-        
+
+        private int tradeNum = 0;
+        private int tradeNumAtReverse = 0;
+
         public override void doOrderTick(long timestamp, double[] signal)
         {
             string info = "";
@@ -90,8 +93,14 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 info += "diff";
             }
 
-            if (mm.getLastStreak() != null && mm.getLastStreak().win == false && mm.getLastStreak().streak > 4)
+            //if (mm.getLastStreak() != null && mm.getLastStreak().win == false && mm.getLastStreak().streak > 4)
+            //    invert = !invert;
+
+            if (tradeNum - tradeNumAtReverse > 6 && mm.getWinRateLastTrades(6) < 0.4)
+            {
                 invert = !invert;
+                tradeNumAtReverse = tradeNum;
+            }
 
             if (invert && buySignal != sellSignal)
             {
@@ -131,6 +140,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Long);
                 if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                 {
+                    tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Long, timestamp);
                     mm.removeInvalidTimeFramePositions(outcomeCodeTimestpan * 10, outcomeCodePercentage + 0.05, -(outcomeCodePercentage + 0.05));
                     //Just for simulation to remove the invalid positions todo:
@@ -142,6 +152,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Short);
                 if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                 {
+                    tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
                     mm.removeInvalidTimeFramePositions(outcomeCodeTimestpan * 10, outcomeCodePercentage + 0.05, -(outcomeCodePercentage + 0.05));
                     //Just for simulation to remove the invalid positions todo:
