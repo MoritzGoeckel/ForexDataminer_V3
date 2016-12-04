@@ -78,7 +78,7 @@ namespace V3_Trader_Project.Trader.Application
         {
             Logger.log("Testing Indicator: " + indicator.getName());
 
-            LearningIndicator li = new LearningIndicator(indicator, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, 0.5, learningIndicatorSteps);
+            LearningIndicator li = new LearningIndicator(indicator, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, 0.5, learningIndicatorSteps, true);
             double[] pp = li.getPredictivePowerArray();
 
             //Results

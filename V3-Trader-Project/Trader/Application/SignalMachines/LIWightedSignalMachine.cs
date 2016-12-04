@@ -103,8 +103,11 @@ namespace V3_Trader_Project.Trader.SignalMachines
             {
                 double[] pred = indicators[i].getPredictivePowerArray();
 
-                foreach (double d in pred)
-                    output.Append(Math.Round(d, 3) + " ");
+                if (pred != null)
+                    foreach (double d in pred)
+                        output.Append(Math.Round(d, 3) + " ");
+                else
+                    output.Append("No stats for learning indicator calculated");
 
                 output.Append(Environment.NewLine);
             }

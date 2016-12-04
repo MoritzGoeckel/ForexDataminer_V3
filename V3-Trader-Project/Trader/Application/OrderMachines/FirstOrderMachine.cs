@@ -102,6 +102,9 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 tradeNumAtReverse = tradeNum;
             }
 
+            if (invert)
+                info += "_inv";
+
             if (invert && buySignal != sellSignal)
             {
                 sellSignal = !sellSignal;

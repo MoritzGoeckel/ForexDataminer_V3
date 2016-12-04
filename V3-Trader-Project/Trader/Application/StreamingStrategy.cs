@@ -109,7 +109,7 @@ namespace V3_Trader_Project.Trader.Application
                 if (ind.getName() != str)
                     throw new Exception(str + "!=" + ind.getName());
 
-                lis.Add(new LearningIndicator(ind, selectedPriceDataArray, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps));
+                lis.Add(new LearningIndicator(ind, selectedPriceDataArray, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps, false));
             }
 
             SignalMachine sm = new LIWightedSignalMachine(lis.ToArray());

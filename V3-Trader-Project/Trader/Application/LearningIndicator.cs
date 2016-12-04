@@ -31,7 +31,7 @@ namespace V3_Trader_Project.Trader.Application
 
         private WalkerIndicator indicator;
 
-        public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double targetPercent, double minPercentThreshold, int steps)
+        public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double targetPercent, double minPercentThreshold, int steps, bool createStatistics)
         {
             this.targetPercent = targetPercent;
             this.timeframe = timeframe;
@@ -56,96 +56,99 @@ namespace V3_Trader_Project.Trader.Application
 
             this.usedValues = usedValuesRatio;
 
-            //Predictive power calculation
-            predictivePower = new double[29];
-            IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
-            IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
-
-            DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(outcomeCodeSamplingTable, minPercentThreshold, out predictivePower[10], out predictivePower[11], out predictivePower[12],  out predictivePower[13]);
-            DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, minPercentThreshold, out predictivePower[14], out predictivePower[15], out predictivePower[16], out predictivePower[17], out predictivePower[18], out predictivePower[19], out predictivePower[20], out predictivePower[21], out predictivePower[22], out predictivePower[23]);
-
-            //Outcome Code
-
-            double totalCodeSamples = 0;
-            foreach (double[] row in outcomeCodeSamplingTable)
+            if (createStatistics)
             {
-                totalCodeSamples += row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
-            }
+                //Predictive power calculation
+                predictivePower = new double[29];
+                IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
+                IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 
-            //Avgs
-            double buyCodeSum = 0, sellCodeSum = 0, regardedSteps = 0;
-            foreach (double[] row in outcomeCodeSamplingTable)
-            {
-                if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
+                DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(outcomeCodeSamplingTable, minPercentThreshold, out predictivePower[10], out predictivePower[11], out predictivePower[12], out predictivePower[13]);
+                DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, minPercentThreshold, out predictivePower[14], out predictivePower[15], out predictivePower[16], out predictivePower[17], out predictivePower[18], out predictivePower[19], out predictivePower[20], out predictivePower[21], out predictivePower[22], out predictivePower[23]);
+
+                //Outcome Code
+
+                double totalCodeSamples = 0;
+                foreach (double[] row in outcomeCodeSamplingTable)
                 {
-                    buyCodeSum += row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
-                    sellCodeSum += row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
-                    regardedSteps++;
+                    totalCodeSamples += row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
                 }
-            }
 
-            double buyCodeAvg = buyCodeSum / regardedSteps;
-            double sellCodeAvg = sellCodeSum / regardedSteps;
-
-            //Avg distances
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] = 0;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] = 0;
-
-            foreach (double[] row in outcomeCodeSamplingTable)
-            {
-                if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
+                //Avgs
+                double buyCodeSum = 0, sellCodeSum = 0, regardedSteps = 0;
+                foreach (double[] row in outcomeCodeSamplingTable)
                 {
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.BuyRatio] - buyCodeAvg); //Should be all the same = average
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.SellRatio] - sellCodeAvg); //Should be all the same = average
+                    if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
+                    {
+                        buyCodeSum += row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
+                        sellCodeSum += row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
+                        regardedSteps++;
+                    }
                 }
-            }
 
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] /= regardedSteps;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] /= regardedSteps;
+                double buyCodeAvg = buyCodeSum / regardedSteps;
+                double sellCodeAvg = sellCodeSum / regardedSteps;
 
-            //Outcome
+                //Avg distances
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] = 0;
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] = 0;
 
-            double totalSamples = 0;
-            foreach (double[] row in outcomeSamplingTable)
-            {
-                totalSamples += row[(int)SampleValuesOutcomeIndices.SamplesCount];
-            }
-
-            //Avgs
-            double maxAvgSum = 0, minAvgSum = 0; regardedSteps = 0;
-            foreach (double[] row in outcomeSamplingTable)
-            {
-                if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold ) //minPercentThreshold
+                foreach (double[] row in outcomeCodeSamplingTable)
                 {
-                    maxAvgSum += row[(int)SampleValuesOutcomeIndices.MaxAvg];
-                    minAvgSum += row[(int)SampleValuesOutcomeIndices.MinAvg];
-                    regardedSteps++;
+                    if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
+                    {
+                        predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.BuyRatio] - buyCodeAvg); //Should be all the same = average
+                        predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.SellRatio] - sellCodeAvg); //Should be all the same = average
+                    }
                 }
-            }
 
-            double maxAvgAvg = maxAvgSum / regardedSteps;
-            double minAvgAvg = minAvgSum / regardedSteps;
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] /= regardedSteps;
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] /= regardedSteps;
 
-            //avg distances
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] = 0;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] = 0;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] = 0;
+                //Outcome
 
-            foreach (double[] row in outcomeSamplingTable)
-            {
-                if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold ) //minPercentThreshold
+                double totalSamples = 0;
+                foreach (double[] row in outcomeSamplingTable)
                 {
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] += Math.Abs(row[(int)SampleValuesOutcomeIndices.ActualAvg]); //should average out to 0
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg] - maxAvgAvg); //Should be all the same = average
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MinAvg] - minAvgAvg); //Should be all the same = average
+                    totalSamples += row[(int)SampleValuesOutcomeIndices.SamplesCount];
                 }
+
+                //Avgs
+                double maxAvgSum = 0, minAvgSum = 0; regardedSteps = 0;
+                foreach (double[] row in outcomeSamplingTable)
+                {
+                    if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold) //minPercentThreshold
+                    {
+                        maxAvgSum += row[(int)SampleValuesOutcomeIndices.MaxAvg];
+                        minAvgSum += row[(int)SampleValuesOutcomeIndices.MinAvg];
+                        regardedSteps++;
+                    }
+                }
+
+                double maxAvgAvg = maxAvgSum / regardedSteps;
+                double minAvgAvg = minAvgSum / regardedSteps;
+
+                //avg distances
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] = 0;
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] = 0;
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] = 0;
+
+                foreach (double[] row in outcomeSamplingTable)
+                {
+                    if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold) //minPercentThreshold
+                    {
+                        predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] += Math.Abs(row[(int)SampleValuesOutcomeIndices.ActualAvg]); //should average out to 0
+                        predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg] - maxAvgAvg); //Should be all the same = average
+                        predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MinAvg] - minAvgAvg); //Should be all the same = average
+                    }
+                }
+
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] /= regardedSteps;
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] /= regardedSteps;
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] /= regardedSteps;
+
+                //End predictive power calculation
             }
-
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] /= regardedSteps;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] /= regardedSteps;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] /= regardedSteps;
-
-            //End predictive power calculation
 
             this.indicator = indicator;
         }
