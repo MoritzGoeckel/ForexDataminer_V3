@@ -73,7 +73,7 @@ namespace V3_Trader_Project.Trader
 
             spearmanMin = Correlation.Spearman(valuesList, minList);
             spearmanMax = Correlation.Spearman(valuesList, maxList);
-            spearmanActual = Correlation.Spearman(valuesList, maxList);
+            spearmanActual = Correlation.Spearman(valuesList, actualList);
 
             pearsonMin = Correlation.Pearson(valuesList, minList);
             pearsonMax = Correlation.Pearson(valuesList, maxList);

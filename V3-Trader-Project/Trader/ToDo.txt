@@ -5,11 +5,13 @@ Visualize the MarketModul
 Visualize the backtesting framework
 Implement good Backtesting statistics and visualization
 
+Indicator Selector with distance from zero as pp
+
 Test different
 	 wights / Timeframes / Markets / Percentages / Train periods / Signal machines / Order Machines
 
 Visualize the order machine
-Visualize Situation
+Visualize Situation -> A lot ^^
 
 Create live papertrade api / framework
 Create demo account trading api

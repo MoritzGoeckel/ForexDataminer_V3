@@ -57,12 +57,68 @@ namespace V3_Trader_Project.Trader.Application
             this.usedValues = usedValuesRatio;
 
             //Predictive power calculation
-            predictivePower = new double[24];
+            predictivePower = new double[29];
             IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
             IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 
             DistributionHelper.getSampleOutcomeCodesBuyMaxSellMax(outcomeCodeSamplingTable, minPercentThreshold, out predictivePower[10], out predictivePower[11], out predictivePower[12],  out predictivePower[13]);
             DistributionHelper.getSampleOutcomesMinMax(outcomeSamplingTable, minPercentThreshold, out predictivePower[14], out predictivePower[15], out predictivePower[16], out predictivePower[17], out predictivePower[18], out predictivePower[19], out predictivePower[20], out predictivePower[21], out predictivePower[22], out predictivePower[23]);
+
+            //Outcome Code
+
+            //Avgs
+            double buyCodeSum = 0, sellCodeSum = 0, regarded = 0;
+            foreach (double[] row in outcomeCodeSamplingTable)
+            {
+                if (row[(int)SampleValuesOutcomeCodesIndices.SamplesCount]... ) //minPercentThreshold
+                {
+                    buyCodeSum += row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
+                    sellCodeSum += row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
+                    regarded++;
+                }
+            }
+
+            double buyCodeAvg = buyCodeSum / regarded;
+            double sellCodeAvg = sellCodeSum / regarded;
+
+            //Avg distances
+            foreach (double[] row in outcomeCodeSamplingTable)
+            {
+                if (row[(int)SampleValuesOutcomeCodesIndices.SamplesCount]... ) //minPercentThreshold
+                {
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroBuyCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.BuyRatio] - buyCodeAvg); //Should be all the same = average
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroSellCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.SellRatio] - sellCodeAvg); //Should be all the same = average
+                }
+            }
+
+            //Outcome
+
+            //Avgs
+            double maxAvgSum = 0, minAvgSum = 0; regarded = 0;
+            foreach (double[] row in outcomeSamplingTable)
+            {
+                if (row[(int)SampleValuesOutcomeIndices.SamplesCount]... ) //minPercentThreshold
+                {
+                    maxAvgSum += row[(int)SampleValuesOutcomeIndices.MaxAvg];
+                    minAvgSum += row[(int)SampleValuesOutcomeIndices.MinAvg];
+                    regarded++;
+                }
+            }
+
+            double maxAvgAvg = maxAvgSum / regarded;
+            double minAvgAvg = minAvgSum / regarded;
+
+            //avg distances
+            foreach (double[] row in outcomeSamplingTable)
+            {
+                if (row[(int)SampleValuesOutcomeIndices.SamplesCount]... ) //minPercentThreshold
+                {
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] += Math.Abs(row[(int)SampleValuesOutcomeIndices.ActualAvg]); //should average out to 0
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMax] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg] - maxAvgAvg); //Should be all the same = average
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMin] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MinAvg] - minAvgAvg); //Should be all the same = average
+                }
+            }
+
             //End predictive power calculation
 
             this.indicator = indicator;
@@ -103,24 +159,44 @@ namespace V3_Trader_Project.Trader.Application
 
         public enum LearningIndicatorPredictivePowerIndecies
         {
-            spBuy = 0, spSell = 1, pBuy = 2, pSell = 3, spMin = 4, spMax = 5, spActual = 6, pMin = 7, pMax = 8, pActual = 9, maxBuyCode = 10, maxBuyCodeCount = 11, maxSellCode = 12, maxSellCodeCount = 13, maxMaxGainPercent = 14, maxMaxGainPercentCount = 15, minMinFallPercent = 16, minMinFallPercentCount = 17, maxMinMaxDistancePercent = 18, maxMinMaxDistancePercentCount = 19, maxActualGainPercent = 20, maxActualGainPercentCount = 21, minActualFallPercent = 22, minActualFallPercentCount = 23
+            spBuy = 0, spSell = 1, pBuy = 2, pSell = 3,
+            spMin = 4, spMax = 5, spActual = 6,
+            pMin = 7, pMax = 8, pActual = 9,
+            maxBuyCode = 10, maxBuyCodeCount = 11, maxSellCode = 12,
+            maxSellCodeCount = 13, maxMaxGainPercent = 14, maxMaxGainPercentCount = 15,
+            minMinFallPercent = 16, minMinFallPercentCount = 17, maxMinMaxDistancePercent = 18,
+            maxMinMaxDistancePercentCount = 19, maxActualGainPercent = 20, maxActualGainPercentCount = 21,
+            minActualFallPercent = 22, minActualFallPercentCount = 23, distanceFromZeroActual = 24,
+            distanceFromZeroMin = 25, distanceFromZeroMax = 26, distanceFromZeroSellCode = 27,
+            distanceFromZeroBuyCode = 28
         };
+
+        public static string[] getPredictivePowerArrayColumnNames()
+        {
+            string[] header = new string[29];
+            header[0] = "spBuy"; header[1] = "spSell"; header[2] = "pBuy"; header[3] = "pSell";
+            header[4] = "spMin"; header[5] = "spMax"; header[6] = "spActual";
+            header[7] = "pMin"; header[8] = "pMax"; header[9] = "pActual";
+            header[10] = "maxBuyCode"; header[11] = "maxBuyCodeCount"; header[12] = "maxSellCode";
+            header[13] = "maxSellCodeCount"; header[14] = "maxMaxGainPercent"; header[15] = "maxMaxGainPercentCount";
+            header[16] = "minMinFallPercent"; header[17] = "minMinFallPercentCount"; header[18] = "maxMinMaxDistancePercent";
+            header[19] = "maxMinMaxDistancePercentCount"; header[20] = "maxActualGainPercent"; header[21] = "maxActualGainPercentCount";
+            header[22] = "minActualFallPercent"; header[23] = "minActualFallPercentCount"; header[24] = "distanceFromZeroActual";
+            header[25] = "distanceFromZeroMin"; header[26] = "distanceFromZeroMax"; header[27] = "distanceFromZeroSellCode";
+            header[28] = "distanceFromZeroBuyCode";
+
+            return header;
+        }
 
         public static string getPredictivePowerArrayHeader()
         {
-            return "spBuy;spSell;pBuy;pSell;spMin;spMax;spActual;pMin;pMax;pActual;maxBuyCode;maxBuyCodeCount;maxSellCode;maxSellCodeCount;maxMaxGain%;maxMaxGain%Count;minMinFall%;minMinFall%Count;maxMinMaxDistance%;maxMinMaxDistance%Count;maxActualGain%;maxActualGain%Count;minActualFall%;minActualFall%Count;";
+            StringBuilder s = new StringBuilder();
+            foreach (string column in getPredictivePowerArrayColumnNames())
+                s.Append(column + ";");
+
+            return s.ToString();
         }
-
-        public double getPredictivePowerScore()
-        {
-            double output = 1;
-            foreach (double d in predictivePower)
-                if (double.IsNaN(d) == false)
-                    output += Math.Abs(d);
-
-            return output;
-        }
-
+                
         public void setNewPrice(double[] prices)
         {
             double mid = (prices[(int)PriceDataIndeces.Ask] + prices[(int)PriceDataIndeces.Bid]) / 2d;

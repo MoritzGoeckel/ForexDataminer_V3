@@ -252,7 +252,7 @@ namespace V3_Trader_Project.Trader.Market
                 + "Max-: " + maxLoss + sep
                 + "AvgTimeInMarket: " + avgTimeframe + "min" + sep
                 + "stDTimeInMarket: " + standartDeviationTimeframes + "min" + sep
-                + "Volume: " + volume;
+                + "Volume (once per pos): " + volume;
         }
 
         private struct ValueCountPair { public double value; public int count; };
