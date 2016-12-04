@@ -73,32 +73,35 @@ namespace V3_Trader_Project.Trader.Application
             }
 
             //Avgs
-            double buyCodeSum = 0, sellCodeSum = 0, regarded = 0;
+            double buyCodeSum = 0, sellCodeSum = 0, regardedSteps = 0;
             foreach (double[] row in outcomeCodeSamplingTable)
             {
                 if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
                 {
                     buyCodeSum += row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
                     sellCodeSum += row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
-                    regarded++;
+                    regardedSteps++;
                 }
             }
 
-            double buyCodeAvg = buyCodeSum / regarded;
-            double sellCodeAvg = sellCodeSum / regarded;
+            double buyCodeAvg = buyCodeSum / regardedSteps;
+            double sellCodeAvg = sellCodeSum / regardedSteps;
 
             //Avg distances
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroBuyCode] = 0;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroSellCode] = 0;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] = 0;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] = 0;
 
             foreach (double[] row in outcomeCodeSamplingTable)
             {
                 if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
                 {
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroBuyCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.BuyRatio] - buyCodeAvg); //Should be all the same = average
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroSellCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.SellRatio] - sellCodeAvg); //Should be all the same = average
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.BuyRatio] - buyCodeAvg); //Should be all the same = average
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.SellRatio] - sellCodeAvg); //Should be all the same = average
                 }
             }
+
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] /= regardedSteps;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] /= regardedSteps;
 
             //Outcome
 
@@ -109,34 +112,38 @@ namespace V3_Trader_Project.Trader.Application
             }
 
             //Avgs
-            double maxAvgSum = 0, minAvgSum = 0; regarded = 0;
+            double maxAvgSum = 0, minAvgSum = 0; regardedSteps = 0;
             foreach (double[] row in outcomeSamplingTable)
             {
                 if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold ) //minPercentThreshold
                 {
                     maxAvgSum += row[(int)SampleValuesOutcomeIndices.MaxAvg];
                     minAvgSum += row[(int)SampleValuesOutcomeIndices.MinAvg];
-                    regarded++;
+                    regardedSteps++;
                 }
             }
 
-            double maxAvgAvg = maxAvgSum / regarded;
-            double minAvgAvg = minAvgSum / regarded;
+            double maxAvgAvg = maxAvgSum / regardedSteps;
+            double minAvgAvg = minAvgSum / regardedSteps;
 
             //avg distances
             predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] = 0;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMax] = 0;
-            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMin] = 0;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] = 0;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] = 0;
 
             foreach (double[] row in outcomeSamplingTable)
             {
                 if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold ) //minPercentThreshold
                 {
                     predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] += Math.Abs(row[(int)SampleValuesOutcomeIndices.ActualAvg]); //should average out to 0
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMax] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg] - maxAvgAvg); //Should be all the same = average
-                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMin] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MinAvg] - minAvgAvg); //Should be all the same = average
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg] - maxAvgAvg); //Should be all the same = average
+                    predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MinAvg] - minAvgAvg); //Should be all the same = average
                 }
             }
+
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax] /= regardedSteps;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin] /= regardedSteps;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] /= regardedSteps;
 
             //End predictive power calculation
 
@@ -186,8 +193,8 @@ namespace V3_Trader_Project.Trader.Application
             minMinFallPercent = 16, minMinFallPercentCount = 17, maxMinMaxDistancePercent = 18,
             maxMinMaxDistancePercentCount = 19, maxActualGainPercent = 20, maxActualGainPercentCount = 21,
             minActualFallPercent = 22, minActualFallPercentCount = 23, distanceFromZeroActual = 24,
-            distanceFromZeroMin = 25, distanceFromZeroMax = 26, distanceFromZeroSellCode = 27,
-            distanceFromZeroBuyCode = 28
+            distanceFromAvgMin = 25, distanceFromAvgMax = 26, distanceFromAvgSellCode = 27,
+            distanceFromAvgBuyCode = 28
         };
 
         public static string[] getPredictivePowerArrayColumnNames()
@@ -201,8 +208,8 @@ namespace V3_Trader_Project.Trader.Application
             header[16] = "minMinFallPercent"; header[17] = "minMinFallPercentCount"; header[18] = "maxMinMaxDistancePercent";
             header[19] = "maxMinMaxDistancePercentCount"; header[20] = "maxActualGainPercent"; header[21] = "maxActualGainPercentCount";
             header[22] = "minActualFallPercent"; header[23] = "minActualFallPercentCount"; header[24] = "distanceFromZeroActual";
-            header[25] = "distanceFromZeroMin"; header[26] = "distanceFromZeroMax"; header[27] = "distanceFromZeroSellCode";
-            header[28] = "distanceFromZeroBuyCode";
+            header[25] = "distanceFromAvgMin"; header[26] = "distanceFromAvgMax"; header[27] = "distanceFromAvgSellCode";
+            header[28] = "distanceFromZeroAvgCode";
 
             return header;
         }
