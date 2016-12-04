@@ -23,8 +23,12 @@ namespace V3_Trader_Project.Trader.Application
 
         public string state;
 
-        public IndicatorOptimizerExcel(string resultFolderPath, double[][] priceData, double[][] outcomeData, bool[][] outcomeCodeData, long outcomeTimeframe, double buyDist, double sellDist, double outcomeCodePercent)
+        private int learningIndicatorSteps;
+
+        public IndicatorOptimizerExcel(string resultFolderPath, double[][] priceData, double[][] outcomeData, bool[][] outcomeCodeData, long outcomeTimeframe, double buyDist, double sellDist, double outcomeCodePercent, int learningIndicatorSteps)
         {
+            this.learningIndicatorSteps = learningIndicatorSteps;
+
             this.resultFolderPath = resultFolderPath;
             this.priceData = priceData;
             this.outcomeData = outcomeData;
@@ -74,7 +78,7 @@ namespace V3_Trader_Project.Trader.Application
         {
             Logger.log("Testing Indicator: " + indicator.getName());
 
-            LearningIndicator li = new LearningIndicator(indicator, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, 0.5);
+            LearningIndicator li = new LearningIndicator(indicator, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, 0.5, learningIndicatorSteps);
             double[] pp = li.getPredictivePowerArray();
 
             //Results
@@ -85,8 +89,8 @@ namespace V3_Trader_Project.Trader.Application
             output += li.getUsedValues() + ";";
             output += indicator.getName().Split('_')[0] + ";" + indicator.getName();
 
-            Logger.log("Result: " + Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName());
-            state = Math.Round(li.getPredictivePowerScore(), 4) + " " + li.getName();
+            Logger.log("Result: " + li.getName());
+            state = li.getName();
             submitResults(output);
         }
 

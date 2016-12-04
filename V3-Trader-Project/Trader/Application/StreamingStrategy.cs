@@ -26,8 +26,12 @@ namespace V3_Trader_Project.Trader.Application
 
         List<string> okayIndicators = new List<string>();
 
-        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, OrderMachine om, double minPercentThreshold, string cachePath = null)
+        private int learningIndicatorSteps;
+
+        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, OrderMachine om, double minPercentThreshold, int learningIndicatorSteps, string cachePath = null)
         {
+            this.learningIndicatorSteps = learningIndicatorSteps;
+
             this.outcomeCodePercent = outcomeCodePercent;
             this.outcomeTimeframe = outcomeTimeframe;
 
@@ -81,7 +85,7 @@ namespace V3_Trader_Project.Trader.Application
             {
                 //Shuffle okay indicators? todo:
                 Logger.log("Generated optimal indicators");
-                IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
+                IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps);
                 IndicatorGenerator generator = new IndicatorGenerator(okayIndicators);
                 indicatorIds = optimizer.getOptimizedIndicators(generator, indicatorSelector, 7);
 
@@ -105,7 +109,7 @@ namespace V3_Trader_Project.Trader.Application
                 if (ind.getName() != str)
                     throw new Exception(str + "!=" + ind.getName());
 
-                lis.Add(new LearningIndicator(ind, selectedPriceDataArray, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold));
+                lis.Add(new LearningIndicator(ind, selectedPriceDataArray, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps));
             }
 
             SignalMachine sm = new LIWightedSignalMachine(lis.ToArray());

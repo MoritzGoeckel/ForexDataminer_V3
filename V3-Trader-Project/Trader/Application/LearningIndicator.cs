@@ -31,7 +31,7 @@ namespace V3_Trader_Project.Trader.Application
 
         private WalkerIndicator indicator;
 
-        public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double targetPercent, double minPercentThreshold)
+        public LearningIndicator(WalkerIndicator indicator, double[][] prices, bool[][] outcomeCodes, double[][] outcomes, long timeframe, double targetPercent, double minPercentThreshold, int steps)
         {
             this.targetPercent = targetPercent;
             this.timeframe = timeframe;
@@ -46,7 +46,7 @@ namespace V3_Trader_Project.Trader.Application
             //DistributionHelper.getMinMax(values, 4, out min, out max);
             DistributionHelper.getMinMax(values, out min, out max);
 
-            outcomeCodeSamplingTable = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, 40, out usedValuesRatio);
+            outcomeCodeSamplingTable = IndicatorSampler.sampleValuesOutcomeCode(values, outcomeCodes, min, max, steps, out usedValuesRatio);
             if (usedValuesRatio < 0.5)
                 throw new TooLittleValidDataException("Not enough sampling for outcomeCode: " + usedValuesRatio);
 
@@ -66,11 +66,17 @@ namespace V3_Trader_Project.Trader.Application
 
             //Outcome Code
 
+            double totalCodeSamples = 0;
+            foreach (double[] row in outcomeCodeSamplingTable)
+            {
+                totalCodeSamples += row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
+            }
+
             //Avgs
             double buyCodeSum = 0, sellCodeSum = 0, regarded = 0;
             foreach (double[] row in outcomeCodeSamplingTable)
             {
-                if (row[(int)SampleValuesOutcomeCodesIndices.SamplesCount]... ) //minPercentThreshold
+                if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
                 {
                     buyCodeSum += row[(int)SampleValuesOutcomeCodesIndices.BuyRatio];
                     sellCodeSum += row[(int)SampleValuesOutcomeCodesIndices.SellRatio];
@@ -82,9 +88,12 @@ namespace V3_Trader_Project.Trader.Application
             double sellCodeAvg = sellCodeSum / regarded;
 
             //Avg distances
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroBuyCode] = 0;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroSellCode] = 0;
+
             foreach (double[] row in outcomeCodeSamplingTable)
             {
-                if (row[(int)SampleValuesOutcomeCodesIndices.SamplesCount]... ) //minPercentThreshold
+                if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
                 {
                     predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroBuyCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.BuyRatio] - buyCodeAvg); //Should be all the same = average
                     predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroSellCode] += Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.SellRatio] - sellCodeAvg); //Should be all the same = average
@@ -93,11 +102,17 @@ namespace V3_Trader_Project.Trader.Application
 
             //Outcome
 
+            double totalSamples = 0;
+            foreach (double[] row in outcomeSamplingTable)
+            {
+                totalSamples += row[(int)SampleValuesOutcomeIndices.SamplesCount];
+            }
+
             //Avgs
             double maxAvgSum = 0, minAvgSum = 0; regarded = 0;
             foreach (double[] row in outcomeSamplingTable)
             {
-                if (row[(int)SampleValuesOutcomeIndices.SamplesCount]... ) //minPercentThreshold
+                if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold ) //minPercentThreshold
                 {
                     maxAvgSum += row[(int)SampleValuesOutcomeIndices.MaxAvg];
                     minAvgSum += row[(int)SampleValuesOutcomeIndices.MinAvg];
@@ -109,9 +124,13 @@ namespace V3_Trader_Project.Trader.Application
             double minAvgAvg = minAvgSum / regarded;
 
             //avg distances
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] = 0;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMax] = 0;
+            predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMin] = 0;
+
             foreach (double[] row in outcomeSamplingTable)
             {
-                if (row[(int)SampleValuesOutcomeIndices.SamplesCount]... ) //minPercentThreshold
+                if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold ) //minPercentThreshold
                 {
                     predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] += Math.Abs(row[(int)SampleValuesOutcomeIndices.ActualAvg]); //should average out to 0
                     predictivePower[(int)LearningIndicatorPredictivePowerIndecies.distanceFromZeroMax] += Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg] - maxAvgAvg); //Should be all the same = average

@@ -42,7 +42,7 @@ namespace V3_Trader_Project.Trader.Forms
             MarketModul mm = new MarketModul(pair);
             OrderMachine om = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
 
-            StreamingStrategy strategy = new StreamingStrategy(outcomeCodePercent, outcomeTimeframe, mm, om, 0.3, "#cache");
+            StreamingStrategy strategy = new StreamingStrategy(outcomeCodePercent, outcomeTimeframe, mm, om, 0.3, 40, "#cache");
 
             string lastMessage = "";
 

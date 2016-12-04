@@ -21,8 +21,12 @@ namespace V3_Trader_Project.Trader.Application
         private long outcomeTimeframe;
         private double minPercentThreshold;
 
-        public IndicatorOptimizer(double[][] priceData, double[][] outcomeData, bool[][] outcomeCodeData, long outcomeTimeframe, double outcomeCodePercent, double minPercentThreshold)
+        private int learningIndicatorSteps;
+
+        public IndicatorOptimizer(double[][] priceData, double[][] outcomeData, bool[][] outcomeCodeData, long outcomeTimeframe, double outcomeCodePercent, double minPercentThreshold, int learningIndicatorSteps)
         {
+            this.learningIndicatorSteps = learningIndicatorSteps;
+
             this.priceData = priceData;
             this.outcomeData = outcomeData;
             this.outcomeCodeData = outcomeCodeData;
@@ -65,7 +69,7 @@ namespace V3_Trader_Project.Trader.Application
                 try
                 {
                     WalkerIndicator wi = generator.getGeneratedIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000));
-                    LearningIndicator li = new LearningIndicator(wi, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold);
+                    LearningIndicator li = new LearningIndicator(wi, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps);
 
                     selector.pushIndicatorStatistics(li);
                     generator.feedBackGoodIndicator(wi.getName());
