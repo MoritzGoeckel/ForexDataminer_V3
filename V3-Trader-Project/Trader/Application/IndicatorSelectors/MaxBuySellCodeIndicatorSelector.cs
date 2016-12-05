@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 {
-    class DiverseIndicatorSelector : IndicatorSelector
+    class MaxBuySellCodeIndicatorSelector : IndicatorSelector
     {
         struct ValueAndIDPair { public double _value; public string _id; };
 
@@ -15,7 +15,7 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
         private int targetCount;
         private int runs;
 
-        public DiverseIndicatorSelector(int targetCount, int runs)
+        public MaxBuySellCodeIndicatorSelector(int targetCount, int runs)
         {
             this.targetCount = targetCount;
             this.runs = runs;
@@ -59,17 +59,13 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 
             double[] pp = li.getPredictivePowerArray();
 
-            double score = 0;
+            double buySellCodeScore = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxBuyCode] + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxSellCode];
 
-            foreach (double d in pp)
-                if (double.IsNaN(d) == false && Math.Abs(d) < 1 && Math.Abs(d) > 0)
-                    score += Math.Abs(d);
-            
-            ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = score };
+            ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = buySellCodeScore };
 
             if (candidates.ContainsKey(algo) == false)
                 candidates.Add(algo, pair);
-            else if (candidates[algo]._value < score)
+            else if (candidates[algo]._value < buySellCodeScore)
                 candidates[algo] = pair;
 
             analysedIndicators++;
@@ -77,10 +73,21 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 
         private int analysedIndicators = 0;
 
+        private int okayOnes = 0;
         public override bool isSatisfied()
         {
-            Logger.log("Indicator: " + analysedIndicators + " / " + runs);
-            return analysedIndicators > runs;
+            /*try {
+                okayOnes = 0;
+                foreach (KeyValuePair<string, ValueAndIDPair> pair in candidates)
+                {
+                    if (pair.Value._value > 1.8)
+                        okayOnes++;
+                }
+            }
+            catch (Exception e) { }*/
+
+            Logger.log("Analyzed: " + analysedIndicators + " / " + runs);
+            return analysedIndicators > runs || okayOnes >= targetCount;
         }
 
         public override string getState()
@@ -91,7 +98,8 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
                 s += pair.Key + " " + pair.Value._value + Environment.NewLine;
             }
 
-            s += "Todo: " + (analysedIndicators - runs);
+            s += "Todo: " + (analysedIndicators - runs) + Environment.NewLine +
+                "Okay: " + okayOnes + "/" + targetCount;
 
             return s;
         }

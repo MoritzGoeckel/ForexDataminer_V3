@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 {
-    class DiverseBuySellCodeIndicatorSelector : IndicatorSelector
+    class StDIndicatorSelector : IndicatorSelector
     {
         struct ValueAndIDPair { public double _value; public string _id; };
 
@@ -15,7 +15,7 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
         private int targetCount;
         private int runs;
 
-        public DiverseBuySellCodeIndicatorSelector(int targetCount, int runs)
+        public StDIndicatorSelector(int targetCount, int runs)
         {
             this.targetCount = targetCount;
             this.runs = runs;
@@ -59,13 +59,21 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 
             double[] pp = li.getPredictivePowerArray();
 
-            double buySellCodeScore = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxBuyCode] + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxSellCode];
+            double score = 0;
 
-            ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = buySellCodeScore };
+            score = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.buySellCodeDistanceStD] //Codeprop
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.buyCodeStD] //Codeprop
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.sellCodeStD] //Codeprop
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minStD] //Diff
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxStD] //Diff
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minMaxDistanceStd] //Diff
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.actualStD]; //Pred
+
+            ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = score };
 
             if (candidates.ContainsKey(algo) == false)
                 candidates.Add(algo, pair);
-            else if (candidates[algo]._value < buySellCodeScore)
+            else if (candidates[algo]._value < score)
                 candidates[algo] = pair;
 
             analysedIndicators++;
@@ -73,21 +81,10 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 
         private int analysedIndicators = 0;
 
-        private int okayOnes = 0;
         public override bool isSatisfied()
         {
-            /*try {
-                okayOnes = 0;
-                foreach (KeyValuePair<string, ValueAndIDPair> pair in candidates)
-                {
-                    if (pair.Value._value > 1.8)
-                        okayOnes++;
-                }
-            }
-            catch (Exception e) { }*/
-
-            Logger.log("Analyzed: " + analysedIndicators + " / " + runs);
-            return analysedIndicators > runs || okayOnes >= targetCount;
+            Logger.log("Indicator: " + analysedIndicators + " / " + runs);
+            return analysedIndicators > runs;
         }
 
         public override string getState()
@@ -98,8 +95,7 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
                 s += pair.Key + " " + pair.Value._value + Environment.NewLine;
             }
 
-            s += "Todo: " + (analysedIndicators - runs) + Environment.NewLine +
-                "Okay: " + okayOnes + "/" + targetCount;
+            s += "Todo: " + (analysedIndicators - runs);
 
             return s;
         }

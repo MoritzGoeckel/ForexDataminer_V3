@@ -145,8 +145,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Trader\Application\IndicatorSelectors\StDIndicatorSelector.cs" />
     <Compile Include="Trader\Application\IndicatorSelectors\DiverseIndicatorSelector.cs" />
-    <Compile Include="Trader\Application\IndicatorSelectors\DiverseBuySellCodeIndicatorSelector.cs" />
+    <Compile Include="Trader\Application\IndicatorSelectors\MaxBuySellCodeIndicatorSelector.cs" />
     <Compile Include="Trader\Application\IndicatorSelectors\IndicatorSelector.cs" />
     <Compile Include="Trader\Application\Optimizers\IndicatorOptimizer.cs" />
     <Compile Include="Trader\Application\Optimizers\IndicatorOptimizerExcel.cs" />
