@@ -65,6 +65,15 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
                 if (double.IsNaN(d) == false && Math.Abs(d) < 1 && Math.Abs(d) > 0)
                     score += Math.Abs(d);
 
+            //Alternative:
+            /*score = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.distanceFromAvgBuyCode] //Codeprop
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.distanceFromAvgSellCode] //Codeprop
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.distanceFromAvgMax]
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.distanceFromAvgMin]
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.distanceFromZeroActual] //Pred
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxMinMaxDistancePercent];
+                TODO: */
+
             ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = score };
 
             if (candidates.ContainsKey(algo) == false)
