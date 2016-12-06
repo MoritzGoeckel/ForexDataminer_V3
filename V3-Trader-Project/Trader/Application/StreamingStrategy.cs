@@ -22,13 +22,12 @@ namespace V3_Trader_Project.Trader.Application
         double minPercentThreshold;
 
         string cachePath;
-        string cachedIndicatorsFile;
 
         List<string> okayIndicators = new List<string>();
 
         private int learningIndicatorSteps;
 
-        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, OrderMachine om, double minPercentThreshold, int learningIndicatorSteps, string cachePath = null)
+        public StreamingStrategy(double outcomeCodePercent, long outcomeTimeframe, MarketModul mm, OrderMachine om, double minPercentThreshold, int learningIndicatorSteps, List<string> okayIndicators, string cachePath = null)
         {
             this.learningIndicatorSteps = learningIndicatorSteps;
 
@@ -44,12 +43,8 @@ namespace V3_Trader_Project.Trader.Application
                 Logger.log("Created log directory: " + cachePath);
             }
 
-            this.cachedIndicatorsFile = cachePath + "/" + "cachedIndicators"+ outcomeTimeframe +".txt";
-            if (cachePath != null && File.Exists(cachedIndicatorsFile))
-                okayIndicators = File.ReadAllText(cachedIndicatorsFile).Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList<string>();
-            else
-                okayIndicators = new List<string>();
-            
+            this.okayIndicators = okayIndicators;
+
             this.orderMachine = om;
         }
 
@@ -89,17 +84,9 @@ namespace V3_Trader_Project.Trader.Application
                 //Shuffle okay indicators? todo:
                 Logger.log("Generated optimal indicators");
                 IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeFirstData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps);
-                IndicatorGenerator generator = new IndicatorGenerator(okayIndicators);
-                indicatorIds = optimizer.getOptimizedIndicators(generator, indicatorSelector, 7);
+                indicatorIds = optimizer.getOptimizedIndicators(okayIndicators, indicatorSelector, 8);
 
-                List<string> newGoodIndicators = generator.getGoodGeneratedIndicators();
-                if (cachePath != null)
-                {
-                    File.AppendAllLines(cachedIndicatorsFile, newGoodIndicators);
-                    File.WriteAllLines(optimalIndicatorsFileName, indicatorIds);
-                }
-
-                okayIndicators.AddRange(newGoodIndicators);
+                File.WriteAllLines(optimalIndicatorsFileName, indicatorIds);
             }
 
             Logger.log("Selected indicators: ");

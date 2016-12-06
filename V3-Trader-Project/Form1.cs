@@ -20,30 +20,27 @@ namespace V3_Trader_Project
             InitializeComponent();
         }
 
-        IndicatorOptimizer op;
-        private void Form1_Load(object sender, EventArgs e)
-        {
+        long outcomeTimeframe = 1000 * 60 * 60 * 4;
+        double outcomeCodePercent = 0.06;
+        double minPercentThreshold = 0.3;
+        int samplingSteps = 20;
+        long updateFrequency = 5l * 24 * 60 * 60 * 1000l;
+        long updateLookback = 1000l * 60 * 60 * 24 * 15;
+        long indicatorInitTime = 1000l * 60 * 60 * 24 * 3;
+        int indicatorsToChooseCount = 8;
+        long monthsToTest = 3;
+        string pair = "EURUSD";
 
+        private void findIndicators_btn_Click(object sender, EventArgs e)
+        {
+            FindOkayIndicatorsForm form = new FindOkayIndicatorsForm(outcomeTimeframe, outcomeCodePercent, minPercentThreshold, samplingSteps, pair, updateLookback);
+            form.ShowDialog();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void backtest_btn_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            new BacktestForm().ShowDialog();
+            BacktestForm form = new BacktestForm(pair, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, samplingSteps, updateFrequency, updateLookback, indicatorInitTime, indicatorsToChooseCount, monthsToTest);
+            form.ShowDialog();
         }
     }
 }

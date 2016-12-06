@@ -60,7 +60,7 @@ namespace V3_Trader_Project.Trader.Application
             if (createStatistics)
             {
                 //Predictive power calculation
-                predictivePower = new double[29];
+                predictivePower = new double[31];
                 IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
                 IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 

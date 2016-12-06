@@ -170,6 +170,12 @@
     <Compile Include="Trader\Forms\BacktestForm.Designer.cs">
       <DependentUpon>BacktestForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Trader\Forms\FindOkayIndicatorsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Trader\Forms\FindOkayIndicatorsForm.Designer.cs">
+      <DependentUpon>FindOkayIndicatorsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Trader\Indicators\BolingerBandsIndicator.cs" />
     <Compile Include="Trader\IndicatorGenerator.cs" />
     <Compile Include="Trader\Indicators\MACDContinousIndicator.cs" />
@@ -239,6 +245,9 @@
     </Compile>
     <EmbeddedResource Include="Trader\Forms\BacktestForm.resx">
       <DependentUpon>BacktestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Trader\Forms\FindOkayIndicatorsForm.resx">
+      <DependentUpon>FindOkayIndicatorsForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

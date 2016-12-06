@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,13 +18,35 @@ namespace V3_Trader_Project.Trader.Forms
 {
     public partial class BacktestForm : Form
     {
-        public BacktestForm()
+        string pair;
+
+        public BacktestForm(string pair, long outcomeTimeframe, double outcomeCodePercent, double minPercentThreshold, 
+            int samplingSteps, long updateFrequency, long updateLookback, long indicatorInitTime, int indicatorsToChooseCount, long monthsToTest)
         {
+            this.outcomeTimeframe = outcomeTimeframe;
+            this.outcomeCodePercent = outcomeCodePercent;
+            this.minPercentThreshold = minPercentThreshold;
+            this.samplingSteps = samplingSteps;
+            this.updateFrequency = updateFrequency;
+            this.updateLookback = updateLookback;
+            this.indicatorInitTime = indicatorInitTime;
+            this.indicatorsToChooseCount = indicatorsToChooseCount;
+            this.pair = pair;
+            this.monthsToTest = monthsToTest;
+
             InitializeComponent();
         }
 
-        string pair = "EURUSD";
- 
+        long outcomeTimeframe;
+        double outcomeCodePercent;
+        double minPercentThreshold;
+        int samplingSteps;
+        long updateFrequency;
+        long updateLookback;
+        long indicatorInitTime;
+        int indicatorsToChooseCount;
+        long monthsToTest;
+
         private void BacktestForm_Load(object sender, EventArgs e)
         {
 
@@ -33,19 +56,24 @@ namespace V3_Trader_Project.Trader.Forms
         {
             DataLoader dl = new DataLoader(Config.DataPath + pair);
             double[][] priceData = dl.getArray(0,
-                31l * 24l * 60l * 60l * 1000l * 11,
-                10 * 1000);
-
-            long outcomeTimeframe = 1000 * 60 * 60 * 4;
-            double outcomeCodePercent = 0.06;
+                31l * 24l * 60l * 60l * 1000l * monthsToTest,
+                1000 * 5);
 
             MarketModul mm = new MarketModul(pair);
             OrderMachine om = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
 
-            StreamingStrategy strategy = new StreamingStrategy(outcomeCodePercent, outcomeTimeframe, mm, om, 0.3, 40, "#cache");
+            List<string> okayIndicators;
+            string okayIndicatorsFile = "okayIndicators" + outcomeTimeframe + ".txt";
+            if (File.Exists(okayIndicatorsFile))
+                okayIndicators = File.ReadAllText(okayIndicatorsFile).Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            else
+                throw new Exception("Okay indicators not found!");
+
+            StreamingStrategy strategy = new StreamingStrategy(outcomeCodePercent, outcomeTimeframe, mm, om, minPercentThreshold, samplingSteps, okayIndicators, "#cache");
 
             string lastMessage = "";
 
+            long beginningTimestamp = Convert.ToInt64(priceData[0][(int)PriceDataIndeces.Date]);
             long lastUpdateTimestamp = 0;
             for (int i = 0; i < priceData.Length; i++)
             {
@@ -56,12 +84,13 @@ namespace V3_Trader_Project.Trader.Forms
                 if (lastUpdateTimestamp == 0)
                     lastUpdateTimestamp = timestampNow;
 
-                if (timestampNow - (2l * 24 * 60 * 60 * 1000) > lastUpdateTimestamp)
+                if (timestampNow - updateFrequency > lastUpdateTimestamp 
+                    && timestampNow - beginningTimestamp > updateLookback)
                 {
                     Logger.log("Updateing indicators...");
-                    strategy.updateIndicators(1000l * 60 * 60 * 24 * 10,
-                        1000l * 60 * 60 * 24 * 5, 
-                        new DiverseIndicatorSelector(8, 1000));
+                    strategy.updateIndicators(updateLookback,
+                        indicatorInitTime, 
+                        new StDIndicatorSelector(indicatorsToChooseCount));
 
                     lastUpdateTimestamp = timestampNow;
                     Logger.log("End updateing indicators.");
@@ -79,8 +108,7 @@ namespace V3_Trader_Project.Trader.Forms
             }
 
             mm.flatAll(Convert.ToInt64(priceData[priceData.Length - 1][(int)PriceDataIndeces.Date]));
-
-
+            
             string report = "NOT removed: " + Environment.NewLine
                 + mm.getStatisticsString() + Environment.NewLine
                 + om.getStatistics() + Environment.NewLine

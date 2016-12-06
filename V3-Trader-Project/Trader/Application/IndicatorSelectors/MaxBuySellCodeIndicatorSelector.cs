@@ -74,21 +74,6 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
         private int analysedIndicators = 0;
 
         private int okayOnes = 0;
-        public override bool isSatisfied()
-        {
-            /*try {
-                okayOnes = 0;
-                foreach (KeyValuePair<string, ValueAndIDPair> pair in candidates)
-                {
-                    if (pair.Value._value > 1.8)
-                        okayOnes++;
-                }
-            }
-            catch (Exception e) { }*/
-
-            Logger.log("Analyzed: " + analysedIndicators + " / " + runs);
-            return analysedIndicators > runs || okayOnes >= targetCount;
-        }
 
         public override string getState()
         {

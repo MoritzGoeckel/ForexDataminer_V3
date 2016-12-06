@@ -13,12 +13,10 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
         Dictionary<string, ValueAndIDPair> candidates = new Dictionary<string, ValueAndIDPair>();
 
         private int targetCount;
-        private int runs;
 
-        public StDIndicatorSelector(int targetCount, int runs)
+        public StDIndicatorSelector(int targetCount)
         {
             this.targetCount = targetCount;
-            this.runs = runs;
         }
 
         public override string[] getResultingCandidates()
@@ -75,16 +73,6 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
                 candidates.Add(algo, pair);
             else if (candidates[algo]._value < score)
                 candidates[algo] = pair;
-
-            analysedIndicators++;
-        }
-
-        private int analysedIndicators = 0;
-
-        public override bool isSatisfied()
-        {
-            Logger.log("Indicator: " + analysedIndicators + " / " + runs);
-            return analysedIndicators > runs;
         }
 
         public override string getState()
@@ -94,8 +82,6 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
             {
                 s += pair.Key + " " + pair.Value._value + Environment.NewLine;
             }
-
-            s += "Todo: " + (analysedIndicators - runs);
 
             return s;
         }

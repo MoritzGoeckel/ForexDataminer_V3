@@ -11,35 +11,27 @@ namespace V3_Trader_Project.Trader
     public class IndicatorGenerator
     {
         private Random z = new Random();
-        private int indexInTryFirstList = 0;
-        private Dictionary<string, bool> isGeneratedIndicatorOkay = new Dictionary<string, bool>();
-        private List<string> toTryFirst;
 
-        public IndicatorGenerator(List<string> toTryFirst)
+        private Dictionary<string, bool> doneIndicators = new Dictionary<string, bool>();
+
+        public IndicatorGenerator()
         {
-            this.toTryFirst = toTryFirst;
+
         }
 
         public WalkerIndicator getGeneratedIndicator(int minTimeFrameSeconds, int maxTimeframeSeconds)
         {
-            if (indexInTryFirstList < toTryFirst.Count)
+            while (true)
             {
-                return getIndicatorByString(toTryFirst[indexInTryFirstList++]);
-            }
-            else
-            {
-                while (true)
+                WalkerIndicator theIndicator = getRandomIndicator(minTimeFrameSeconds, maxTimeframeSeconds);
+                if (doneIndicators.ContainsKey(theIndicator.getName()) == false)
                 {
-                    WalkerIndicator theIndicator = getRandomIndicator(minTimeFrameSeconds, maxTimeframeSeconds);
-                    if (isGeneratedIndicatorOkay.ContainsKey(theIndicator.getName()) == false)
-                    {
-                        try {
-                            isGeneratedIndicatorOkay.Add(theIndicator.getName(), false);
-                        }
-                        catch (Exception e) { Logger.log("#######: " + e.Message); }
-
-                        return theIndicator;
+                    try {
+                        doneIndicators.Add(theIndicator.getName(), true);
                     }
+                    catch (Exception e) { Logger.log("#######: " + e.Message); }
+
+                    return theIndicator;
                 }
             }
         }
@@ -137,23 +129,6 @@ namespace V3_Trader_Project.Trader
             }
 
             return theIndicator;
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void feedBackGoodIndicator(string id)
-        {
-            if(isGeneratedIndicatorOkay.ContainsKey(id))
-                isGeneratedIndicatorOkay[id] = true;
-        }
-
-        public List<string> getGoodGeneratedIndicators()
-        {
-            List<string> strs = new List<string>();
-            foreach (KeyValuePair<string, bool> pair in isGeneratedIndicatorOkay)
-                if (pair.Value)
-                    strs.Add(pair.Key);
-
-            return strs;
         }
 
         private double getRanDouble(double min, double max)

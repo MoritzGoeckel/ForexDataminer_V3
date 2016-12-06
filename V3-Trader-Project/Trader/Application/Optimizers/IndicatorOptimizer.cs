@@ -36,17 +36,21 @@ namespace V3_Trader_Project.Trader.Application
             this.outcomeCodePercent = outcomeCodePercent;
             this.outcomeTimeframe = outcomeTimeframe;
         }
-        
-        private bool ended = false;
 
-        public string[] getOptimizedIndicators(IndicatorGenerator generator, IndicatorSelector selector, int threads)
+        bool ended = false;
+        double indicatorsToTryCount;
+
+        public string[] getOptimizedIndicators(List<string> indicatorsToTry, IndicatorSelector selector, int threads)
         {
             ended = false;
+            indicatorToTryIndex = 0;
+            indicatorsToTryCount = indicatorsToTry.Count;
+
             Logger.log("Start testing indicators");
             List<Thread> ths = new List<Thread>();
             
             for(int i = 0; i < threads; i++)
-                ths.Add(new Thread(delegate () { optimizeInternally(generator, selector); }));
+                ths.Add(new Thread(delegate () { optimizeInternally(indicatorsToTry, selector); }));
 
             foreach (Thread t in ths)
                 t.Start();
@@ -60,17 +64,30 @@ namespace V3_Trader_Project.Trader.Application
             return selector.getResultingCandidates();
         }
 
-        private void optimizeInternally(IndicatorGenerator generator, IndicatorSelector selector)
+        private int indicatorToTryIndex = 0;
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private int getNextIndex()
         {
-            while (ended == false && selector.isSatisfied() == false)
+            Logger.log("Trying Indicators: " + Math.Round((indicatorToTryIndex / indicatorsToTryCount) * 100d, 2) + "%");
+            return indicatorToTryIndex++;
+        }
+
+        private void optimizeInternally(List<string> indicatorsToTry, IndicatorSelector selector)
+        {
+            while (ended == false)
             {
                 try
                 {
-                    WalkerIndicator wi = generator.getGeneratedIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000));
+                    //generator.getGeneratedIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000));
+                    int index = getNextIndex();
+                    if (index > indicatorsToTry.Count)
+                        break;
+
+                    WalkerIndicator wi = IndicatorGenerator.getIndicatorByString(indicatorsToTry[index]);
                     LearningIndicator li = new LearningIndicator(wi, priceData, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps, true);
 
                     selector.pushIndicatorStatistics(li);
-                    generator.feedBackGoodIndicator(wi.getName());
                 }
                 catch (TooLittleValidDataException e)
                 {
