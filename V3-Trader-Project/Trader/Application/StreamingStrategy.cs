@@ -66,9 +66,12 @@ namespace V3_Trader_Project.Trader.Application
 
             double[][] selectedPriceDataArray = selectedPriceData.ToArray();
             double s;
+
             double[][] outcomeData = OutcomeGenerator.getOutcome(selectedPriceDataArray, outcomeTimeframe, out s);
             if (s < 0.6) throw new Exception("s < o.6: " + s);
-            bool[][] outcomeCodeData = OutcomeGenerator.getOutcomeCode(selectedPriceDataArray, outcomeData, outcomeCodePercent, out s);
+
+            //bool[][] outcomeCodeData = OutcomeGenerator.getOutcomeCode(selectedPriceDataArray, outcomeData, outcomeCodePercent, out s);
+            bool[][] outcomeCodeFirstData = OutcomeGenerator.getOutcomeCodeFirst(selectedPriceDataArray, outcomeTimeframe, outcomeCodePercent, out s);
             if (s < 0.6) throw new Exception("s < o.6: " + s);
 
             string[] indicatorIds;
@@ -85,7 +88,7 @@ namespace V3_Trader_Project.Trader.Application
             {
                 //Shuffle okay indicators? todo:
                 Logger.log("Generated optimal indicators");
-                IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps);
+                IndicatorOptimizer optimizer = new IndicatorOptimizer(selectedPriceDataArray, outcomeData, outcomeCodeFirstData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps);
                 IndicatorGenerator generator = new IndicatorGenerator(okayIndicators);
                 indicatorIds = optimizer.getOptimizedIndicators(generator, indicatorSelector, 7);
 
@@ -109,7 +112,7 @@ namespace V3_Trader_Project.Trader.Application
                 if (ind.getName() != str)
                     throw new Exception(str + "!=" + ind.getName());
 
-                lis.Add(new LearningIndicator(ind, selectedPriceDataArray, outcomeCodeData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps, false));
+                lis.Add(new LearningIndicator(ind, selectedPriceDataArray, outcomeCodeFirstData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps, false));
             }
 
             SignalMachine sm = new LIWightedSignalMachine(lis.ToArray());

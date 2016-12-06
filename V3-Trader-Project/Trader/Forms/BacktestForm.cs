@@ -80,16 +80,21 @@ namespace V3_Trader_Project.Trader.Forms
 
             mm.flatAll(Convert.ToInt64(priceData[priceData.Length - 1][(int)PriceDataIndeces.Date]));
 
-            MessageBox.Show("Without remove: " + mm.getPositionHistory().Count());
 
-            mm.removeInvalidClosedPositions(outcomeTimeframe * 5, outcomeCodePercent * 2, -(outcomeCodePercent * 2));
+            string report = "NOT removed: " + Environment.NewLine
+                + mm.getStatisticsString() + Environment.NewLine
+                + om.getStatistics() + Environment.NewLine
+                + mm.getProfitabilityByInfoString();
 
-            MessageBox.Show("Streak analysis: " + mm.lossWinStreakString());
+            mm.removeInvalidClosedPositions(outcomeTimeframe * 3, 100, -100);
 
-            string report = "Statistics: " + Environment.NewLine
+            report += Environment.NewLine + Environment.NewLine
+                + "Removed: " + Environment.NewLine
                 + mm.getStatisticsString() + Environment.NewLine 
                 + om.getStatistics() + Environment.NewLine 
                 + mm.getProfitabilityByInfoString();
+
+            Clipboard.SetText(report);
 
             MessageBox.Show(report);
 

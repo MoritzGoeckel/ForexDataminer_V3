@@ -29,8 +29,6 @@ namespace V3_Trader_Project.Trader
 
             for(int currentElement = 0; currentElement < dataInput.Length; currentElement++)
             {
-                double[] outputLine = new double[3];
-                
                 while (futureElement < dataInput.Length && dataInput[futureElement][(int)PriceDataIndeces.Date] - dataInput[currentElement][(int)PriceDataIndeces.Date] < msTimeframe)
                 {
                     elementsInTimeframe.Add(dataInput[futureElement]);
@@ -87,6 +85,56 @@ namespace V3_Trader_Project.Trader
             return output;
         }
 
+        /// <summary>
+        /// Which code is hit first
+        /// </summary>
+        public static bool[][] getOutcomeCodeFirst(double[][] dataInput, long msTimeframe, double percent, out double successRatio)
+        {
+            bool[][] output = new bool[dataInput.Length][];
+            int futureElement = 0;
+
+            successRatio = 0;
+
+            for (int currentElement = 0; currentElement < dataInput.Length; currentElement++)
+            {
+                while (futureElement < dataInput.Length && dataInput[futureElement][(int)PriceDataIndeces.Date] - dataInput[currentElement][(int)PriceDataIndeces.Date] < msTimeframe)
+                {
+                    futureElement++;
+                }
+
+                if (futureElement != dataInput.Length)
+                {
+                    bool sell = false, buy = false;
+
+                    double currentMid = (dataInput[currentElement][(int)PriceDataIndeces.Ask] + dataInput[currentElement][(int)PriceDataIndeces.Bid]) / 2d;
+                    for (int i = currentElement; i < futureElement; i++)
+                    {
+                        double futureMid = (dataInput[i][(int)PriceDataIndeces.Ask] + dataInput[i][(int)PriceDataIndeces.Bid]) / 2d;
+                        double gain = ((futureMid / currentMid) - 1d) * 100d;
+                        if (gain >= percent)
+                        {
+                            buy = true;
+                            break;
+                        }
+                        else if(gain <= -percent)
+                        {
+                            sell = true;
+                            break;
+                        }
+                    }
+
+                    output[currentElement] = new bool[] { buy, sell };
+                    successRatio++;
+                }
+            }
+
+            successRatio /= output.Length;
+            return output;
+        }
+
+        /// <summary>
+        /// Will it hit this value within the timeframe
+        /// </summary
         public static bool[][] getOutcomeCode(double[][] pricesInput, double[][] outcomeInput, double percent, out double successRatio)
         {
             if (pricesInput.Length != outcomeInput.Length)

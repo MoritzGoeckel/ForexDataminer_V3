@@ -36,14 +36,12 @@ namespace V3_Trader_Project.Trader.Application
             this.outcomeCodePercent = outcomeCodePercent;
             this.outcomeTimeframe = outcomeTimeframe;
         }
-
-        private int round = 0;
+        
         private bool ended = false;
 
         public string[] getOptimizedIndicators(IndicatorGenerator generator, IndicatorSelector selector, int threads)
         {
             ended = false;
-            round = 0;
             Logger.log("Start testing indicators");
             List<Thread> ths = new List<Thread>();
             

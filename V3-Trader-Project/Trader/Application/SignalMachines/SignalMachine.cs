@@ -8,7 +8,7 @@ namespace V3_Trader_Project.Trader.SignalMachines
 {
     public enum SignalMachineSignal
     {
-        BuySignal = 0, SellSignal = 1, minPrediction = 2, maxPrediction = 3, prediction = 4
+        BuyProbability = 0, SellProbability = 1, minPrediction = 2, maxPrediction = 3, prediction = 4
     };
 
     public abstract class SignalMachine
@@ -21,8 +21,8 @@ namespace V3_Trader_Project.Trader.SignalMachines
         {
             double[] s = getSignal(timestamp);
 
-            return "BuySignal: " + s[(int)SignalMachineSignal.BuySignal] + Environment.NewLine
-                + "SellSignal: " + s[(int)SignalMachineSignal.SellSignal] + Environment.NewLine
+            return "BuySignal: " + s[(int)SignalMachineSignal.BuyProbability] + Environment.NewLine
+                + "SellSignal: " + s[(int)SignalMachineSignal.SellProbability] + Environment.NewLine
                 + "minPrediction: " + s[(int)SignalMachineSignal.minPrediction] + Environment.NewLine
                 + "maxPrediction: " + s[(int)SignalMachineSignal.maxPrediction] + Environment.NewLine
                 + "Prediction: " + s[(int)SignalMachineSignal.prediction] + Environment.NewLine;

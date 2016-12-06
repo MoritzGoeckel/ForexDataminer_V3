@@ -152,6 +152,8 @@
     <Compile Include="Trader\Application\Optimizers\IndicatorOptimizer.cs" />
     <Compile Include="Trader\Application\Optimizers\IndicatorOptimizerExcel.cs" />
     <Compile Include="Trader\Application\LearningIndicator.cs" />
+    <Compile Include="Trader\Application\OrderHistoryAnalysis\OrderHistoryStreakAnalysis.cs" />
+    <Compile Include="Trader\Application\OrderHistoryAnalysis\OrderHistoryTagAnalysis.cs" />
     <Compile Include="Trader\Application\OrderMachines\FirstOrderMachine.cs" />
     <Compile Include="Trader\Application\OrderMachines\OrderMachine.cs" />
     <Compile Include="Trader\Application\Optimizers\OutcomeCodePercentOptimizer.cs" />
@@ -199,7 +201,7 @@
     <Compile Include="Trader\Market\ClosedPosition.cs" />
     <Compile Include="Trader\Market\MarketModul.cs" />
     <Compile Include="Trader\Market\OpenPosition.cs" />
-    <Compile Include="Trader\Market\OrderHistoryTimeAnalysis.cs" />
+    <Compile Include="Trader\Application\OrderHistoryAnalysis\OrderHistoryTimeAnalysis.cs" />
     <Compile Include="Trader\Tests\ArrayHelper_Test.cs" />
     <Compile Include="Trader\Tests\ArrayVisualizer_Test.cs" />
     <Compile Include="Trader\Tests\DataValidator_Test.cs" />

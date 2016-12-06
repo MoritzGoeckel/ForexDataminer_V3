@@ -64,9 +64,9 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
             score = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.buySellCodeDistanceStD] //Codeprop
                 + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.buyCodeStD] //Codeprop
                 + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.sellCodeStD] //Codeprop
-                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minStD] //Diff
-                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxStD] //Diff
-                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minMaxDistanceStd] //Diff
+                //+ pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minStD] //Diff
+                //+ pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxStD] //Diff
+                //+ pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minMaxDistanceStd] //Diff
                 + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.actualStD]; //Pred
 
             ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = score };

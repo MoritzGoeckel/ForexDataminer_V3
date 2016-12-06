@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using V3_Trader_Project.Trader.Market;
 
-namespace V3_Trader_Project.Trader.Market
+namespace V3_Trader_Project.Trader
 {
     class OrderHistoryTimeAnalysis
     {

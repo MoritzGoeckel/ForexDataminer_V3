@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static V3_Trader_Project.Trader.OutcomeGenerator;
 
 namespace V3_Trader_Project.Trader.Tests
 {
@@ -143,6 +144,70 @@ namespace V3_Trader_Project.Trader.Tests
                     notAssignedCount++;
             }
             Assert.AreEqual(0, notAssignedCount);
+        }
+
+        [TestMethod]
+        public void getOutcomeCodeFirst_Negative_Test()
+        {
+            double[][] inputs = new double[100][];
+            DateTime dt = DateTime.Now.ToUniversalTime();
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                //Date bid ask volume
+                dt = dt.AddMilliseconds(1000);
+                inputs[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), 2, 2, 0 };
+            }
+            
+            double successRatio;
+            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCodeFirst(inputs, 1000 * 10, 100, out successRatio);
+
+            int notAssignedCount = 0;
+            foreach (bool[] row in outcomeCodes)
+            {
+                if (row != null)
+                {
+                    Assert.IsFalse(row[(int)OutcomeCodeMatrixIndices.Buy]);
+                    Assert.IsFalse(row[(int)OutcomeCodeMatrixIndices.Sell]);
+                }
+                else
+                    notAssignedCount++;
+            }
+            Assert.AreEqual(10, notAssignedCount);
+        }
+
+        [TestMethod]
+        public void getOutcomeCodeFirst_Positive_Test()
+        {
+            double[][] inputs = new double[100][];
+            DateTime dt = DateTime.Now.ToUniversalTime();
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                //Date bid ask volume
+                dt = dt.AddMilliseconds(1000);
+                inputs[i] = new double[] { Timestamp.dateTimeToMilliseconds(dt), 2, 2, 0 };
+            }
+
+            inputs[50][1] = inputs[50][2] = 5;
+
+            double successRatio;
+            bool[][] outcomeCodes = OutcomeGenerator.getOutcomeCodeFirst(inputs, 1000 * 10, 100, out successRatio);
+
+            int notAssignedCount = 0;
+            for (int i = 0; i < outcomeCodes.Length; i++)
+            {
+                if (outcomeCodes[i] != null)
+                {
+                    if(i > 40 && i < 50)
+                        Assert.IsTrue(outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy], i + " Buy: " + outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy]);
+                    else
+                        Assert.IsFalse(outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy], i + " Buy: " + outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Buy]);
+
+                    Assert.IsFalse(outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Sell], i + " Sell: " + outcomeCodes[i][(int)OutcomeCodeMatrixIndices.Sell]);
+                }
+                else
+                    notAssignedCount++;
+            }
+            Assert.AreEqual(10, notAssignedCount);
         }
 
         [TestMethod]

@@ -26,7 +26,6 @@ namespace V3_Trader_Project.Trader.Market
 
         private OpenPosition openPositionsLong, openPositionShort;
         private List<ClosedPosition> closedPositions = new List<ClosedPosition>();
-        private WinLossStreak currentStreak = null;
 
         private double[] currentPriceData;
 
@@ -105,17 +104,6 @@ namespace V3_Trader_Project.Trader.Market
                 else
                     openPositionShort = null;
 
-                bool win = closedPositions[closedPositions.Count - 1].getProfit() > 0;
-                if (currentStreak == null)
-                    currentStreak = new WinLossStreak(win, 1);
-                else
-                {
-                    if (currentStreak.win == win)
-                        currentStreak.streak++;
-                    else
-                        currentStreak = new WinLossStreak(win, 1);
-                }
-
                 return true;
             }
             else
@@ -173,13 +161,13 @@ namespace V3_Trader_Project.Trader.Market
         }
 
         //Sanity check
-        public List<ClosedPosition> getCleanedClosedPositions(long maxTimeframeToConsider, double maxProfit, double maxLoss)
+        public List<ClosedPosition> getCleanedClosedPositions(long maxTimeframeToConsider, double maxProfitPercent, double maxLossPercent)
         {
             List<ClosedPosition> newClosedPositions = new List<ClosedPosition>();
             foreach (ClosedPosition c in closedPositions)
             {
                 double profitPercent = c.getProfitPercent();
-                if (c.getTimeDuration() <= maxTimeframeToConsider && profitPercent < maxProfit && profitPercent > maxLoss)
+                if (c.getTimeDuration() <= maxTimeframeToConsider && profitPercent < maxProfitPercent && profitPercent > maxLossPercent)
                     newClosedPositions.Add(c);
             }
 
@@ -190,52 +178,7 @@ namespace V3_Trader_Project.Trader.Market
         {
             this.closedPositions = getCleanedClosedPositions(maxTimeframeToConsider, maxProfit, maxLoss);
         }
-
-        public string lossWinStreakString()
-        {
-            StringBuilder output = new StringBuilder();
-            int streak = 0;
-            bool win = true;
-            foreach (ClosedPosition c in closedPositions)
-            {
-                if (c.getProfit() > 0 == win)
-                    streak++;
-                else
-                {
-                    output.Append(streak + ":");
-                    streak = 1;
-                    win = c.getProfit() > 0;
-                }
-            }
-
-            return output.ToString();
-        }
-
-        public double getWinRateLastTrades(int trades)
-        {
-            int profitable = 0;
-            int regarded = 0;
-
-            for(int i = closedPositions.Count - 1; i > 0 && i > closedPositions.Count - 1 - trades; i--)
-            {
-                if (closedPositions[i].getProfit() > 0)
-                    profitable++;
-                regarded++;
-            }
-
-            if (regarded != 0)
-                return Convert.ToDouble(profitable) / Convert.ToDouble(regarded);
-            else
-                return 1;
-        }
-
-        public class WinLossStreak { public bool win; public int streak; public WinLossStreak(bool win, int streak) { this.win = win; this.streak = streak; } }
-
-        public WinLossStreak getLastStreak()
-        {
-            return currentStreak;
-        }
-
+        
         public string getStatisticsString()
         {
             double standartDeviation, profit, profitIngoreAmount, sharpe, trades, tradesPerDay, profitPerTrade, tradesWinningRatio, winningTradesAvg, loosingTradesAvg, maxProfit, maxLoss, avgTimeframe, standartDeviationTimeframes, volume;

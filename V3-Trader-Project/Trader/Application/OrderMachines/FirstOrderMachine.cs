@@ -15,13 +15,21 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
 
         //Todo: Outside accessable
         private double tp = 1;
-        private double sl = 1 * 2;
-        private double predictionMulitplyer = 3;
-        private double differenceMutliplyer = 3;
-        private double outcomeCodesPropThreshold = 0.8;
-        private double negativeCodesPropThreshold = 0.3;
+        private double sl = 1;
+
+        private double predictionMulitplyer = 6;
+        private double outcomeCodesPropThreshold = 0.65;
+        private double negativeOutcomeCodesPropThreshold = 0.5;
+
         private double amount = 10 * 1000;
         private bool hedge = true;
+
+        //private double predictionDifferenceMutliplyer = 6;
+        //private double buySellDifferenceThreshold = 0.3;
+
+        private bool enableInverse = false;
+        private int inverseFrequency = 10;
+        private double inverseThreshold = 0.3;
 
         private bool invert = false;
 
@@ -29,81 +37,88 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         {
             this.outcomeCodePercentage = outcomeCodePercentage;
             this.outcomeCodeTimestpan = outcomeCodeTimestpan;
+            this.cleanedHistory = mm.getCleanedClosedPositions(outcomeCodeTimestpan * 3, 100, -100);
         }
 
         private int BuySignals = 0, SellSignals = 0;
-        private int BuyByPrediction = 0, SellByPrediction = 0, BuyByCodeProb = 0, SellByCodeProb = 0, BuyByDifference = 0, SellByDifference = 0;
 
         private int tradeNum = 0;
         private int tradeNumAtReverse = 0;
 
+        private List<ClosedPosition> cleanedHistory;
+
         public override void doOrderTick(long timestamp, double[] signal)
         {
-            string info = "";
+            string tags = ";";
 
             bool buySignal = false;
             bool sellSignal = false;
 
             //aim for outcome codes
-            if(signal[(int)SignalMachineSignal.BuySignal] >= outcomeCodesPropThreshold
-                && signal[(int)SignalMachineSignal.SellSignal] <= negativeCodesPropThreshold)
+            if(signal[(int)SignalMachineSignal.BuyProbability] >= outcomeCodesPropThreshold 
+                && signal[(int)SignalMachineSignal.SellProbability] <= negativeOutcomeCodesPropThreshold)
             {
                 buySignal = true;
-                BuyByCodeProb++;
-                info += "codeprop";
+                tags += "codeprop;";
             }
 
-            if (signal[(int)SignalMachineSignal.SellSignal] >= outcomeCodesPropThreshold 
-                && signal[(int)SignalMachineSignal.BuySignal] <= negativeCodesPropThreshold)
+            if (signal[(int)SignalMachineSignal.SellProbability] >= outcomeCodesPropThreshold
+                && signal[(int)SignalMachineSignal.BuyProbability] <= negativeOutcomeCodesPropThreshold)
             {
                 sellSignal = true;
-                SellByCodeProb++;
-                info += "codeprop";
+                tags += "codeprop;";
             }
+
+            //aim for outcomecodes difference
+            /*if (signal[(int)SignalMachineSignal.BuyProbability] - signal[(int)SignalMachineSignal.SellProbability] >= buySellDifferenceThreshold)
+            {
+                buySignal = true;
+                tags += "codediff;";
+            }
+
+            if (signal[(int)SignalMachineSignal.SellProbability] - signal[(int)SignalMachineSignal.BuyProbability] >= buySellDifferenceThreshold)
+            {
+                sellSignal = true;
+                tags += "codediff;";
+            }*/
 
             //aim for prediction
             if (signal[(int)SignalMachineSignal.prediction] > outcomeCodePercentage * predictionMulitplyer)
             {
                 buySignal = true;
-                BuyByPrediction++;
-                info += "pred";
+                tags += "pred;";
             }
 
             if (signal[(int)SignalMachineSignal.prediction] < -outcomeCodePercentage * predictionMulitplyer)
             {
                 sellSignal = true;
-                SellByPrediction++;
-                info += "pred";
+                tags += "pred;";
             }
 
             //aim for min max difference
-            if (signal[(int)SignalMachineSignal.maxPrediction]
-                + signal[(int)SignalMachineSignal.minPrediction] > outcomeCodePercentage * differenceMutliplyer)
+            /*if (signal[(int)SignalMachineSignal.maxPrediction]
+                + signal[(int)SignalMachineSignal.minPrediction] > outcomeCodePercentage * predictionDifferenceMutliplyer)
             {
                 buySignal = true;
-                BuyByDifference++;
-                info += "diff";
+                tags += "preddiff;";
             }
 
             if (signal[(int)SignalMachineSignal.maxPrediction]
-                + signal[(int)SignalMachineSignal.minPrediction] < -outcomeCodePercentage * differenceMutliplyer)
+                + signal[(int)SignalMachineSignal.minPrediction] < -outcomeCodePercentage * predictionDifferenceMutliplyer)
             {
                 sellSignal = true;
-                SellByDifference++;
-                info += "diff";
-            }
+                tags += "preddiff;";
+            }*/
 
-            //if (mm.getLastStreak() != null && mm.getLastStreak().win == false && mm.getLastStreak().streak > 4)
-            //    invert = !invert;
-
-            if (tradeNum - tradeNumAtReverse > 6 && mm.getWinRateLastTrades(6) < 0.4)
+            if (enableInverse && tradeNum - tradeNumAtReverse > inverseFrequency
+                && OrderHistoryStreakAnalysis.getWinRateLastTrades(inverseFrequency, cleanedHistory) < inverseThreshold)
             {
                 invert = !invert;
                 tradeNumAtReverse = tradeNum;
             }
 
             if (invert)
-                info += "_inv";
+                tags += "inv;";
 
             if (invert && buySignal != sellSignal)
             {
@@ -125,29 +140,29 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 BuySignals++;
 
             if (buySignal && mm.isPositionOpen(MarketModul.OrderType.Long) == false)
-                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getCleanedClosedPositions(outcomeCodeTimestpan * 5, outcomeCodePercentage * 10, -(outcomeCodePercentage * 10)), 
-                        timestamp) //Sure to clean it? todo:
+                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(cleanedHistory, timestamp)
                     * amount,
                     timestamp,
-                    MarketModul.OrderType.Long, info);
+                    MarketModul.OrderType.Long, tags);
 
             if (sellSignal && mm.isPositionOpen(MarketModul.OrderType.Short) == false)
                 mm.openPosition(
-                    OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getCleanedClosedPositions(outcomeCodeTimestpan * 5, outcomeCodePercentage * 10, -(outcomeCodePercentage * 10)),
-                        timestamp) //Sure to clean it? todo:
+                    OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(cleanedHistory, timestamp)
                     * amount,
                     timestamp,
-                    MarketModul.OrderType.Short, info);
+                    MarketModul.OrderType.Short, tags);
 
             //OUT
 
-            if (buySignal == false && mm.isPositionOpen(MarketModul.OrderType.Long))
+            if (buySignal == false && mm.isPositionOpen(MarketModul.OrderType.Long)) 
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Long);
                 if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
                 {
                     tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Long, timestamp);
+
+                    cleanedHistory = mm.getCleanedClosedPositions(outcomeCodeTimestpan * 3, 100, -100);
                 }
             }
 
@@ -158,6 +173,8 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 {
                     tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
+
+                    cleanedHistory = mm.getCleanedClosedPositions(outcomeCodeTimestpan * 3, 100, -100);
                 }
             }
         }
@@ -166,11 +183,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         {
             string sep = Environment.NewLine;
             StringBuilder s = new StringBuilder();
-            s.Append("CodeProp:" + sep + "  B: " + BuyByCodeProb + sep + "  S: " + SellByCodeProb + sep);
-            s.Append("Prediction:" + sep + "  B: " + BuyByPrediction + sep + "  S: " + SellByPrediction + sep);
-            s.Append("Difference:" + sep + "  B: " + BuyByDifference + sep + "  S: " + SellByDifference + sep);
-            s.Append("Signals:" + sep + "  B: " + BuySignals + sep + "  S: " + SellSignals);
-
+            //Nothin to say :)
             return s.ToString();
         }
     }

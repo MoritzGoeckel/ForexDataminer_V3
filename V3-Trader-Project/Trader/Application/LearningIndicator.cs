@@ -112,7 +112,7 @@ namespace V3_Trader_Project.Trader.Application
                     {
                         maxDist.Add(row[(int)SampleValuesOutcomeIndices.MaxAvg]);
                         minDist.Add(row[(int)SampleValuesOutcomeIndices.MinAvg]);
-                        minMaxDistanceDist.Add(Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg]) - row[(int)SampleValuesOutcomeIndices.MinAvg]);
+                        minMaxDistanceDist.Add(Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg]) + row[(int)SampleValuesOutcomeIndices.MinAvg]);
                         actualDist.Add(row[(int)SampleValuesOutcomeIndices.ActualAvg]);
                     }
                 }
