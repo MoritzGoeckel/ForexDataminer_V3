@@ -125,13 +125,16 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 BuySignals++;
 
             if (buySignal && mm.isPositionOpen(MarketModul.OrderType.Long) == false)
-                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
+                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getCleanedClosedPositions(outcomeCodeTimestpan * 5, outcomeCodePercentage * 10, -(outcomeCodePercentage * 10)), 
+                        timestamp) //Sure to clean it? todo:
                     * amount,
                     timestamp,
                     MarketModul.OrderType.Long, info);
 
             if (sellSignal && mm.isPositionOpen(MarketModul.OrderType.Short) == false)
-                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
+                mm.openPosition(
+                    OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getCleanedClosedPositions(outcomeCodeTimestpan * 5, outcomeCodePercentage * 10, -(outcomeCodePercentage * 10)),
+                        timestamp) //Sure to clean it? todo:
                     * amount,
                     timestamp,
                     MarketModul.OrderType.Short, info);
@@ -145,8 +148,6 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 {
                     tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Long, timestamp);
-                    mm.removeInvalidTimeFramePositions(outcomeCodeTimestpan * 10, outcomeCodePercentage + 0.05, -(outcomeCodePercentage + 0.05));
-                    //Just for simulation to remove the invalid positions todo:
                 }
             }
 
@@ -157,8 +158,6 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 {
                     tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
-                    mm.removeInvalidTimeFramePositions(outcomeCodeTimestpan * 10, outcomeCodePercentage + 0.05, -(outcomeCodePercentage + 0.05));
-                    //Just for simulation to remove the invalid positions todo:
                 }
             }
         }

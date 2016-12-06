@@ -173,7 +173,7 @@ namespace V3_Trader_Project.Trader.Market
         }
 
         //Sanity check
-        public void removeInvalidTimeFramePositions(long maxTimeframeToConsider, double maxProfit, double maxLoss)
+        public List<ClosedPosition> getCleanedClosedPositions(long maxTimeframeToConsider, double maxProfit, double maxLoss)
         {
             List<ClosedPosition> newClosedPositions = new List<ClosedPosition>();
             foreach (ClosedPosition c in closedPositions)
@@ -183,7 +183,12 @@ namespace V3_Trader_Project.Trader.Market
                     newClosedPositions.Add(c);
             }
 
-            closedPositions = newClosedPositions;
+            return newClosedPositions;
+        }
+
+        public void removeInvalidClosedPositions(long maxTimeframeToConsider, double maxProfit, double maxLoss)
+        {
+            this.closedPositions = getCleanedClosedPositions(maxTimeframeToConsider, maxProfit, maxLoss);
         }
 
         public string lossWinStreakString()

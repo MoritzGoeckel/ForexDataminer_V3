@@ -82,7 +82,7 @@ namespace V3_Trader_Project.Trader.Forms
 
             MessageBox.Show("Without remove: " + mm.getPositionHistory().Count());
 
-            mm.removeInvalidTimeFramePositions(outcomeTimeframe * 10, outcomeCodePercent + 0.05, -(outcomeCodePercent + 0.05));
+            mm.removeInvalidClosedPositions(outcomeTimeframe * 5, outcomeCodePercent * 2, -(outcomeCodePercent * 2));
 
             MessageBox.Show("Streak analysis: " + mm.lossWinStreakString());
 
