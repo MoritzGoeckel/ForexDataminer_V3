@@ -83,6 +83,7 @@ namespace V3_Trader_Project.Trader.Application
                     totalCodeSamples += row[(int)SampleValuesOutcomeCodesIndices.SamplesCount];
                 }
 
+                int regardedStates = 0;
                 foreach (double[] row in outcomeCodeSamplingTable)
                 {
                     if ((row[(int)SampleValuesOutcomeCodesIndices.SamplesCount] / totalCodeSamples) * 100 >= minPercentThreshold) //minPercentThreshold
@@ -90,8 +91,12 @@ namespace V3_Trader_Project.Trader.Application
                         buyCodesDist.Add(row[(int)SampleValuesOutcomeCodesIndices.BuyRatio]);
                         sellCodesDist.Add(row[(int)SampleValuesOutcomeCodesIndices.SellRatio]);
                         buySellDistanceDist.Add(Math.Abs(row[(int)SampleValuesOutcomeCodesIndices.BuyRatio] - row[(int)SampleValuesOutcomeCodesIndices.SellRatio]));
+                        regardedStates++;
                     }
                 }
+
+                if (regardedStates <= 2)
+                    throw new TooLittleStatesException("Too little sates: " + regardedStates);
 
                 predictivePower[(int)LearningIndicatorPredictivePowerIndecies.buyCodeStD] = buyCodesDist.StandardDeviation();
                 predictivePower[(int)LearningIndicatorPredictivePowerIndecies.sellCodeStD] = sellCodesDist.StandardDeviation();
@@ -122,6 +127,15 @@ namespace V3_Trader_Project.Trader.Application
                 predictivePower[(int)LearningIndicatorPredictivePowerIndecies.minStD] = minDist.StandardDeviation();
                 predictivePower[(int)LearningIndicatorPredictivePowerIndecies.minMaxDistanceStd] = minMaxDistanceDist.StandardDeviation();
                 predictivePower[(int)LearningIndicatorPredictivePowerIndecies.actualStD] = actualDist.StandardDeviation();
+
+                if (double.IsNaN(predictivePower[(int)LearningIndicatorPredictivePowerIndecies.buyCodeStD])
+                    || double.IsNaN(predictivePower[(int)LearningIndicatorPredictivePowerIndecies.sellCodeStD])
+                    || double.IsNaN(predictivePower[(int)LearningIndicatorPredictivePowerIndecies.buySellCodeDistanceStD])
+                    || double.IsNaN(predictivePower[(int)LearningIndicatorPredictivePowerIndecies.maxStD])
+                    || double.IsNaN(predictivePower[(int)LearningIndicatorPredictivePowerIndecies.minStD])
+                    || double.IsNaN(predictivePower[(int)LearningIndicatorPredictivePowerIndecies.minMaxDistanceStd])
+                    || double.IsNaN(predictivePower[(int)LearningIndicatorPredictivePowerIndecies.actualStD]))
+                    throw new Exception("Not a valid predictive power!");
 
                 //End predictive power calculation
             }

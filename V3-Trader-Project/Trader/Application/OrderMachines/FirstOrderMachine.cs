@@ -17,9 +17,9 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         private double tp = 1;
         private double sl = 1;
 
-        private double predictionMulitplyer = 6;
-        private double outcomeCodesPropThreshold = 0.65;
-        private double negativeOutcomeCodesPropThreshold = 0.5;
+        //private double predictionMulitplyer = 8;
+        private double outcomeCodesPropThreshold = 0.6;
+        private double negativeOutcomeCodesPropThreshold = 0.6;
 
         private double amount = 10 * 1000;
         private bool hedge = true;
@@ -83,7 +83,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             }*/
 
             //aim for prediction
-            if (signal[(int)SignalMachineSignal.prediction] > outcomeCodePercentage * predictionMulitplyer)
+            /*if (signal[(int)SignalMachineSignal.prediction] > outcomeCodePercentage * predictionMulitplyer)
             {
                 buySignal = true;
                 tags += "pred;";
@@ -93,7 +93,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             {
                 sellSignal = true;
                 tags += "pred;";
-            }
+            }*/
 
             //aim for min max difference
             /*if (signal[(int)SignalMachineSignal.maxPrediction]

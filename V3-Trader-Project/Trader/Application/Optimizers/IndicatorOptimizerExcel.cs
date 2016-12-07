@@ -61,6 +61,10 @@ namespace V3_Trader_Project.Trader.Application
                     {
                         Logger.log("E:" + e.Message);
                     }
+                    catch (TooLittleStatesException e)
+                    {
+                        Logger.log("E:" + e.Message);
+                    }
                     catch (Exception e)
                     {
                         Logger.log("FATAL:" + e.Message);

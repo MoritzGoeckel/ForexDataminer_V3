@@ -58,7 +58,7 @@ namespace V3_Trader_Project.Trader.Forms
         {
             DataLoader dl = new DataLoader(Config.DataPath + pair);
             double[][] priceData = dl.getArray(0,
-                31l * 24l * 60l * 60l * 1000l * monthsToTest,
+                31l * 24l * 60l * 60l * 1000l * monthsToTest + updateLookback,
                 minTimestep);
 
             MarketModul mm = new MarketModul(pair);
@@ -84,10 +84,9 @@ namespace V3_Trader_Project.Trader.Forms
                 strategy.pushPrice(priceData[i]);
 
                 if (lastUpdateTimestamp == 0)
-                    lastUpdateTimestamp = timestampNow;
+                    lastUpdateTimestamp = timestampNow - updateFrequency + updateLookback;
 
-                if (timestampNow - updateFrequency > lastUpdateTimestamp 
-                    && timestampNow - beginningTimestamp > updateLookback)
+                if (timestampNow - updateFrequency > lastUpdateTimestamp)
                 {
                     Logger.log("Updateing indicators...");
                     strategy.updateIndicators(updateLookback,
