@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace V3_Trader_Project.Trader.SignalMachines
         public abstract double[] getSignal(long timestamp);
         public abstract void pushPrice(double[] price);
         public abstract string getStateMessage();
+
+        public abstract Image visualize(int width, int inRow);
 
         public string getInfo(long timestamp)
         {

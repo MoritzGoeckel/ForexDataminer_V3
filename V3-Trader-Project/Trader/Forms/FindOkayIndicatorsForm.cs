@@ -16,7 +16,7 @@ namespace V3_Trader_Project.Trader.Forms
 {
     public partial class FindOkayIndicatorsForm : Form
     {
-        public FindOkayIndicatorsForm(long outcomeTimeframe, double outcomeCodePercent, double minPercentThreshold, int samplingSteps, string pair, long timeframeToTest)
+        public FindOkayIndicatorsForm(long outcomeTimeframe, double outcomeCodePercent, double minPercentThreshold, int samplingSteps, string pair, long timeframeToTest, long minTimestep)
         {
             InitializeComponent();
             this.outcomeTimeframe = outcomeTimeframe;
@@ -25,6 +25,7 @@ namespace V3_Trader_Project.Trader.Forms
             this.learningIndicatorSteps = samplingSteps;
             this.pair = pair;
             this.timeframeToTest = timeframeToTest;
+            this.minTimestep = minTimestep;
         }
 
         long outcomeTimeframe;
@@ -32,6 +33,7 @@ namespace V3_Trader_Project.Trader.Forms
         double minPercentThreshold;
         int learningIndicatorSteps;
         long timeframeToTest;
+        long minTimestep;
 
         string pair;
         Dictionary<string, bool> found = new Dictionary<string, bool>();
@@ -57,7 +59,7 @@ namespace V3_Trader_Project.Trader.Forms
             DataLoader dl = new DataLoader(Config.DataPath + pair);
             double[][] priceData = dl.getArray(1000 * 60 * 60 * 24 * 30l,
                 timeframeToTest,
-                10 * 1000); //One month, but the second. Every 10 secs
+                minTimestep); //One month, but the second. Every 10 secs
 
             double success;
             bool[][] outcomeCodeFirstData = OutcomeGenerator.getOutcomeCodeFirst(priceData, outcomeTimeframe, outcomeCodePercent, out success);

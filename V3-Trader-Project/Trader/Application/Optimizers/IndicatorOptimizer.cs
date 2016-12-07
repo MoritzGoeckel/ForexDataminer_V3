@@ -81,7 +81,7 @@ namespace V3_Trader_Project.Trader.Application
                 {
                     //generator.getGeneratedIndicator(Convert.ToInt32(outcomeTimeframe / 1000 / 15), Convert.ToInt32(outcomeTimeframe * 100 / 1000));
                     int index = getNextIndex();
-                    if (index > indicatorsToTry.Count)
+                    if (index >= indicatorsToTry.Count)
                         break;
 
                     WalkerIndicator wi = IndicatorGenerator.getIndicatorByString(indicatorsToTry[index]);

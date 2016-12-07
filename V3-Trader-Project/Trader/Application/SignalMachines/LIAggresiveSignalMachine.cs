@@ -69,7 +69,7 @@ namespace V3_Trader_Project.Trader.SignalMachines
         }
 
         //Todo: Untested
-        public Image visualize(int width, int inRow)
+        public override Image visualize(int width, int inRow)
         {
             int height = indicators.Length / inRow * width / 2;
             Bitmap bmp = new Bitmap(width, height);

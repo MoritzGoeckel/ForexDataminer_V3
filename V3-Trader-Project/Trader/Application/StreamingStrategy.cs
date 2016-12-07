@@ -121,6 +121,11 @@ namespace V3_Trader_Project.Trader.Application
             this.signalMachine = sm;
         }
 
+        public SignalMachine getSignalMachine()
+        {
+            return this.signalMachine;
+        }
+
         long timestampNow;
         private List<double[]> priceData = new List<double[]>();
         public void pushPrice(double[] newPriceData)

@@ -67,6 +67,9 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
                 //+ pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minMaxDistanceStd] //Diff
                 + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.actualStD]; //Pred
 
+            if (double.IsNaN(score) || double.IsInfinity(score))
+                throw new Exception("Score is wired: " + score);
+
             ValueAndIDPair pair = new ValueAndIDPair() { _id = id, _value = score };
 
             if (candidates.ContainsKey(algo) == false)

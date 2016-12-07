@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,11 @@ namespace V3_Trader_Project.Trader.SignalMachines
         }
 
         public override void pushPrice(double[] price)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Image visualize(int width, int inRow)
         {
             throw new NotImplementedException();
         }

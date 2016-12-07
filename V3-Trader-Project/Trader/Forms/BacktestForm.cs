@@ -21,7 +21,7 @@ namespace V3_Trader_Project.Trader.Forms
         string pair;
 
         public BacktestForm(string pair, long outcomeTimeframe, double outcomeCodePercent, double minPercentThreshold, 
-            int samplingSteps, long updateFrequency, long updateLookback, long indicatorInitTime, int indicatorsToChooseCount, long monthsToTest)
+            int samplingSteps, long updateFrequency, long updateLookback, long indicatorInitTime, int indicatorsToChooseCount, long monthsToTest, long minTimestep)
         {
             this.outcomeTimeframe = outcomeTimeframe;
             this.outcomeCodePercent = outcomeCodePercent;
@@ -33,6 +33,7 @@ namespace V3_Trader_Project.Trader.Forms
             this.indicatorsToChooseCount = indicatorsToChooseCount;
             this.pair = pair;
             this.monthsToTest = monthsToTest;
+            this.minTimestep = minTimestep;
 
             InitializeComponent();
         }
@@ -46,6 +47,7 @@ namespace V3_Trader_Project.Trader.Forms
         long indicatorInitTime;
         int indicatorsToChooseCount;
         long monthsToTest;
+        long minTimestep;
 
         private void BacktestForm_Load(object sender, EventArgs e)
         {
@@ -57,7 +59,7 @@ namespace V3_Trader_Project.Trader.Forms
             DataLoader dl = new DataLoader(Config.DataPath + pair);
             double[][] priceData = dl.getArray(0,
                 31l * 24l * 60l * 60l * 1000l * monthsToTest,
-                1000 * 5);
+                minTimestep);
 
             MarketModul mm = new MarketModul(pair);
             OrderMachine om = new FirstOrderMachine(mm, outcomeCodePercent, outcomeTimeframe);
@@ -91,6 +93,9 @@ namespace V3_Trader_Project.Trader.Forms
                     strategy.updateIndicators(updateLookback,
                         indicatorInitTime, 
                         new StDIndicatorSelector(indicatorsToChooseCount));
+
+                    strategy.getSignalMachine().visualize(1500, 2).Save("SignalMachineVis" + timestampNow + ".png");
+                    //Todo: save that somehow
 
                     lastUpdateTimestamp = timestampNow;
                     Logger.log("End updateing indicators.");
