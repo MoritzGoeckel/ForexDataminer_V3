@@ -16,7 +16,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             this.mm = mm;
         }
 
-        public abstract void doOrderTick(long timestamp, double[] signal);
+        public abstract void doOrderTick(long timestamp, double[] signal, long marketClosingIn);
 
         public abstract string getStatistics();
     }

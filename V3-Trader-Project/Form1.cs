@@ -28,7 +28,7 @@ namespace V3_Trader_Project
         long updateLookback = 1000l * 60 * 60 * 24 * 15;
         long indicatorInitTime = 1000l * 60 * 60 * 24 * 3;
         int indicatorsToChooseCount = 8;
-        long monthsToTest = 3;
+        long monthsToTest = 11;
         string pair = "EURUSD";
         long minTimestep = 1000 * 30;
 

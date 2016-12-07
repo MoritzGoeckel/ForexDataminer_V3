@@ -24,10 +24,12 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         private double amount = 10 * 1000;
         private bool hedge = true;
 
+        private long waitAfterSL = 1000 * 60 * 10l;
+
         //private double predictionDifferenceMutliplyer = 6;
         //private double buySellDifferenceThreshold = 0.3;
 
-        private bool enableInverse = false;
+        private bool enableInverse = true;
         private int inverseFrequency = 10;
         private double inverseThreshold = 0.3;
 
@@ -37,7 +39,6 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         {
             this.outcomeCodePercentage = outcomeCodePercentage;
             this.outcomeCodeTimestpan = outcomeCodeTimestpan;
-            this.cleanedHistory = mm.getCleanedClosedPositions(outcomeCodeTimestpan * 3, 100, -100);
         }
 
         private int BuySignals = 0, SellSignals = 0;
@@ -45,9 +46,9 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         private int tradeNum = 0;
         private int tradeNumAtReverse = 0;
 
-        private List<ClosedPosition> cleanedHistory;
+        private long waitUntil = 0;
 
-        public override void doOrderTick(long timestamp, double[] signal)
+        public override void doOrderTick(long timestamp, double[] signal, long marketClosingIn)
         {
             string tags = ";";
 
@@ -111,7 +112,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             }*/
 
             if (enableInverse && tradeNum - tradeNumAtReverse > inverseFrequency
-                && OrderHistoryStreakAnalysis.getWinRateLastTrades(inverseFrequency, cleanedHistory) < inverseThreshold)
+                && OrderHistoryStreakAnalysis.getWinRateLastTrades(inverseFrequency, mm.getPositionHistory()) < inverseThreshold)
             {
                 invert = !invert;
                 tradeNumAtReverse = tradeNum;
@@ -139,43 +140,67 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             if (buySignal)
                 BuySignals++;
 
-            if (buySignal && mm.isPositionOpen(MarketModul.OrderType.Long) == false)
-                mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(cleanedHistory, timestamp)
-                    * amount,
-                    timestamp,
-                    MarketModul.OrderType.Long, tags);
+            //Market still open long enugh
+            if (timestamp >= waitUntil && marketClosingIn > outcomeCodeTimestpan * 1.5)
+            {
+                if (buySignal && mm.isPositionOpen(MarketModul.OrderType.Long) == false)
+                    mm.openPosition(OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
+                        * amount,
+                        timestamp,
+                        MarketModul.OrderType.Long, tags);
 
-            if (sellSignal && mm.isPositionOpen(MarketModul.OrderType.Short) == false)
-                mm.openPosition(
-                    OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(cleanedHistory, timestamp)
-                    * amount,
-                    timestamp,
-                    MarketModul.OrderType.Short, tags);
+                if (sellSignal && mm.isPositionOpen(MarketModul.OrderType.Short) == false)
+                    mm.openPosition(
+                        OrderHistoryTimeAnalysis.getHistoricProfitabilityWight(mm.getPositionHistory(), timestamp)
+                        * amount,
+                        timestamp,
+                        MarketModul.OrderType.Short, tags);
+            }
 
             //OUT
 
-            if (buySignal == false && mm.isPositionOpen(MarketModul.OrderType.Long)) 
+            if (mm.isPositionOpen(MarketModul.OrderType.Long))  
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Long);
-                if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
+                if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage 
+                    || (p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp && buySignal == false)
+                    || (p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan) && buySignal == false)
                 {
+
+                    if(p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage) //SL Case
+                    {
+                        //Halt trading
+                        waitUntil = timestamp + waitAfterSL;
+                    }
+
                     tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Long, timestamp);
-
-                    cleanedHistory = mm.getCleanedClosedPositions(outcomeCodeTimestpan * 3, 100, -100);
                 }
             }
 
-            if (sellSignal == false && mm.isPositionOpen(MarketModul.OrderType.Short))
+            if (mm.isPositionOpen(MarketModul.OrderType.Short)) 
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Short);
-                if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage || p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp || p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan)
+                if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage 
+                    || (p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp && sellSignal == false)
+                    || (p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan) && sellSignal == false)
                 {
+
+                    if(p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage)
+                    {
+                        //Halt trading
+                        waitUntil = timestamp + waitAfterSL;
+                    }
+
                     tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
-
-                    cleanedHistory = mm.getCleanedClosedPositions(outcomeCodeTimestpan * 3, 100, -100);
                 }
+            }
+
+            //Market closing, get out
+            if(marketClosingIn < 1000l * 60 * 30)
+            {
+                mm.flatAll(timestamp);
             }
         }
 
@@ -183,7 +208,8 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         {
             string sep = Environment.NewLine;
             StringBuilder s = new StringBuilder();
-            //Nothin to say :)
+            s.Append("Buy Signal: " + BuySignals + Environment.NewLine);
+            s.Append("Sell Signal: " + SellSignals + Environment.NewLine);
             return s.ToString();
         }
     }

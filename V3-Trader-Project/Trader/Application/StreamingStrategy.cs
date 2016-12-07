@@ -126,6 +126,13 @@ namespace V3_Trader_Project.Trader.Application
             return this.signalMachine;
         }
 
+        private List<long> marketStops = new List<long>();
+        public void addMarketStop(long timestamp)
+        {
+            marketStops.Add(timestamp);
+            marketStops.Sort();
+        }
+
         long timestampNow;
         private List<double[]> priceData = new List<double[]>();
         public void pushPrice(double[] newPriceData)
@@ -141,7 +148,10 @@ namespace V3_Trader_Project.Trader.Application
                 signalMachine.pushPrice(newPriceData);
                 double[] signal = signalMachine.getSignal(timestampNow);
 
-                orderMachine.doOrderTick(timestampNow, signal);
+                while (marketStops.Count != 0 && marketStops[0] < timestampNow)
+                    marketStops.RemoveAt(0);
+
+                orderMachine.doOrderTick(timestampNow, signal, (marketStops.Count != 0 ? marketStops[0] - timestampNow : long.MaxValue));
             }
         }
     }

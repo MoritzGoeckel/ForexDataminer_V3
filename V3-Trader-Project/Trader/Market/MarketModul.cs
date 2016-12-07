@@ -161,7 +161,7 @@ namespace V3_Trader_Project.Trader.Market
         }
 
         //Sanity check
-        public List<ClosedPosition> getCleanedClosedPositions(long maxTimeframeToConsider, double maxProfitPercent, double maxLossPercent)
+        /*public List<ClosedPosition> getCleanedClosedPositions(long maxTimeframeToConsider, double maxProfitPercent, double maxLossPercent)
         {
             List<ClosedPosition> newClosedPositions = new List<ClosedPosition>();
             foreach (ClosedPosition c in closedPositions)
@@ -177,7 +177,7 @@ namespace V3_Trader_Project.Trader.Market
         public void removeInvalidClosedPositions(long maxTimeframeToConsider, double maxProfit, double maxLoss)
         {
             this.closedPositions = getCleanedClosedPositions(maxTimeframeToConsider, maxProfit, maxLoss);
-        }
+        }*/
         
         public string getStatisticsString()
         {

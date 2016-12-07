@@ -73,6 +73,22 @@ namespace V3_Trader_Project.Trader.Forms
 
             StreamingStrategy strategy = new StreamingStrategy(outcomeCodePercent, outcomeTimeframe, mm, om, minPercentThreshold, samplingSteps, okayIndicators, "#cache");
 
+            Logger.log("Getting market stopps...");
+            long lastStop = 0;
+            long lastSeenTimestamp = Convert.ToInt64(priceData[0][(int)PriceDataIndeces.Date]);
+            for (int i = 0; i < priceData.Length; i++)
+            {
+                long timestampNow = Convert.ToInt64(priceData[i][(int)PriceDataIndeces.Date]);
+                if(timestampNow - lastSeenTimestamp > 1000 * 60 * 60l)
+                {
+                    Logger.log("Found stop: " + (lastSeenTimestamp - lastStop) / 1000 / 60 / 60 / 24l + " Days open");
+                    strategy.addMarketStop(lastSeenTimestamp);
+                    lastStop = lastSeenTimestamp;
+                }
+                lastSeenTimestamp = timestampNow;
+            }
+            Logger.log("Done");
+
             string lastMessage = "";
 
             long beginningTimestamp = Convert.ToInt64(priceData[0][(int)PriceDataIndeces.Date]);
@@ -113,17 +129,8 @@ namespace V3_Trader_Project.Trader.Forms
 
             mm.flatAll(Convert.ToInt64(priceData[priceData.Length - 1][(int)PriceDataIndeces.Date]));
             
-            string report = "NOT removed: " + Environment.NewLine
-                + mm.getStatisticsString() + Environment.NewLine
+            string report = mm.getStatisticsString() + Environment.NewLine
                 + om.getStatistics() + Environment.NewLine
-                + mm.getProfitabilityByInfoString();
-
-            mm.removeInvalidClosedPositions(outcomeTimeframe * 3, 100, -100);
-
-            report += Environment.NewLine + Environment.NewLine
-                + "Removed: " + Environment.NewLine
-                + mm.getStatisticsString() + Environment.NewLine 
-                + om.getStatistics() + Environment.NewLine 
                 + mm.getProfitabilityByInfoString();
 
             Clipboard.SetText(report);
