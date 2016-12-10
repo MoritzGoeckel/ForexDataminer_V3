@@ -15,21 +15,21 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
 
         //Todo: Outside accessable
         private double tp = 1;
-        private double sl = 1;
+        private double sl = 0.7; //Lower 0.7
 
         //private double predictionMulitplyer = 8;
-        private double outcomeCodesPropThreshold = 0.6;
-        private double negativeOutcomeCodesPropThreshold = 0.6;
+        private double outcomeCodesPropThreshold = 0.5;
+        private double negativeOutcomeCodesPropThreshold = 1;
 
         private double amount = 10 * 1000;
         private bool hedge = true;
 
-        private long waitAfterSL = 1000 * 60 * 10l;
+        private long waitAfterTrade = 1000 * 60 * 10l;
 
         //private double predictionDifferenceMutliplyer = 6;
         //private double buySellDifferenceThreshold = 0.3;
 
-        private bool enableInverse = true;
+        private bool enableInverse = false;
         private int inverseFrequency = 10;
         private double inverseThreshold = 0.3;
 
@@ -45,6 +45,8 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
 
         private int tradeNum = 0;
         private int tradeNumAtReverse = 0;
+
+        private int tradeNumAtWait = 0;
 
         private long waitUntil = 0;
 
@@ -68,6 +70,16 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             {
                 sellSignal = true;
                 tags += "codeprop;";
+            }
+
+            if (buySignal && sellSignal)
+            {
+                buySignal = sellSignal = true;
+                tags = "2xCodeprop;";
+            }
+            else
+            {
+                buySignal = sellSignal = false;
             }
 
             //aim for outcomecodes difference
@@ -110,6 +122,13 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
                 sellSignal = true;
                 tags += "preddiff;";
             }*/
+
+            //TODO: do I need that
+            if (false && tradeNum - tradeNumAtWait > 5 && OrderHistoryStreakAnalysis.getWinRateLastTrades(5, mm.getPositionHistory()) < 0.5)
+            {
+                waitUntil = timestamp + 1000 * 60 * 60 * 24l;
+                tradeNumAtWait = tradeNum;
+            }
 
             if (enableInverse && tradeNum - tradeNumAtReverse > inverseFrequency
                 && OrderHistoryStreakAnalysis.getWinRateLastTrades(inverseFrequency, mm.getPositionHistory()) < inverseThreshold)
@@ -163,18 +182,12 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Long);
                 if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage 
-                    || (p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp && buySignal == false)
-                    || (p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan) && buySignal == false)
+                    || (p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp)
+                    || (p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan))
                 {
-
-                    if(p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage) //SL Case
-                    {
-                        //Halt trading
-                        waitUntil = timestamp + waitAfterSL;
-                    }
-
                     tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Long, timestamp);
+                    waitUntil = timestamp + waitAfterTrade;
                 }
             }
 
@@ -182,18 +195,12 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             {
                 OpenPosition p = mm.getPosition(MarketModul.OrderType.Short);
                 if (p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage 
-                    || (p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp && sellSignal == false)
-                    || (p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan) && sellSignal == false)
+                    || (p.getProfitPercent(mm.getPriceData()) >= outcomeCodePercentage * tp)
+                    || (p.getTimeInMarket(mm.getPriceData()) >= outcomeCodeTimestpan))
                 {
-
-                    if(p.getProfitPercent(mm.getPriceData()) <= sl * -outcomeCodePercentage)
-                    {
-                        //Halt trading
-                        waitUntil = timestamp + waitAfterSL;
-                    }
-
                     tradeNum++;
                     mm.closePosition(MarketModul.OrderType.Short, timestamp);
+                    waitUntil = timestamp + waitAfterTrade;
                 }
             }
 

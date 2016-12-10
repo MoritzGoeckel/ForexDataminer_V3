@@ -160,6 +160,7 @@
     <Compile Include="Trader\Application\Optimizers\OutcomeCodePercentOptimizer.cs" />
     <Compile Include="Trader\Application\Exceptions\TooLittleValidDataException.cs" />
     <Compile Include="Trader\Application\SignalMachines\LIAggresiveSignalMachine.cs" />
+    <Compile Include="Trader\Application\SignalMachines\AlternativeSignalMachine.cs" />
     <Compile Include="Trader\Application\SignalMachines\LIWightedSignalMachine.cs" />
     <Compile Include="Trader\Application\SignalMachines\MLSignalMachine.cs" />
     <Compile Include="Trader\Application\SignalMachines\SignalMachine.cs" />

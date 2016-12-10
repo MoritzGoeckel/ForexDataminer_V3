@@ -140,7 +140,7 @@ namespace V3_Trader_Project.Trader.Market
             trades = closedPositions.Count;
             tradesPerDay = trades / ((closedPositions[closedPositions.Count - 1].timestampClose - closedPositions[0].timestampOpen) / 1000 / 60 / 60 / 24);
             profitPerTrade = profit / trades;
-            tradesWinningRatio = profits.Count((p => p > 0)) / Convert.ToDouble(closedPositions.Count);
+            tradesWinningRatio = profits.Count((p => p > 0)) / Convert.ToDouble(trades);
             winningTradesAvg = profits.Sum((p => (p > 0 ? p : 0))) / Convert.ToDouble(profits.Count((p => p > 0)));
             loosingTradesAvg = profits.Sum((p => (p < 0 ? p : 0))) / Convert.ToDouble(profits.Count((p => p < 0)));
             maxProfit = profits.Maximum();

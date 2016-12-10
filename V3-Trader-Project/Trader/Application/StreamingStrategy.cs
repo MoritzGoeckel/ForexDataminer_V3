@@ -102,7 +102,7 @@ namespace V3_Trader_Project.Trader.Application
                 lis.Add(new LearningIndicator(ind, selectedPriceDataArray, outcomeCodeFirstData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps, false));
             }
 
-            SignalMachine sm = new LIWightedSignalMachine(lis.ToArray());
+            SignalMachine sm = new AlternativeSignalMachine(lis.ToArray()); //Todo: make accessable
             Logger.log("SM STATE: ##################" + Environment.NewLine + sm.getStateMessage());
 
             //Make them up to date
