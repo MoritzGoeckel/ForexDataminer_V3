@@ -14,7 +14,7 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
         private long outcomeCodeTimestpan;
 
         //Todo: Outside accessable
-        private double tp = 1;
+        private double tp = 1.0;
         private double sl = 0.7; //Lower 0.7
 
         //private double predictionMulitplyer = 8;
@@ -124,9 +124,9 @@ namespace V3_Trader_Project.Trader.Application.OrderMachines
             }*/
 
             //TODO: do I need that
-            if (false && tradeNum - tradeNumAtWait > 5 && OrderHistoryStreakAnalysis.getWinRateLastTrades(5, mm.getPositionHistory()) < 0.5)
+            if (false && tradeNum - tradeNumAtWait > 6 && OrderHistoryStreakAnalysis.getWinRateLastTrades(10, mm.getPositionHistory()) < 0.6)
             {
-                waitUntil = timestamp + 1000 * 60 * 60 * 24l;
+                waitUntil = timestamp + 1000 * 60 * 60 * 24l * 2;
                 tradeNumAtWait = tradeNum;
             }
 

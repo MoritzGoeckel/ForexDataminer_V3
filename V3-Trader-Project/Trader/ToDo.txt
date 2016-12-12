@@ -1,17 +1,17 @@
-﻿Debug the indicators
+﻿Autogenerate everything: (Needs better cacheing for performance)
+	Percent and Timeframe	-> Hitrate: 0.1 0.25 0.5
+	Number of Indicators	-> 1 2 4 8
+	Signal Machine			-> Avg, Threshold 0.5, " 0.7, Aggressive, Defensive
+	Order Machine			-> TP SL Hedge Invert Signal
+	Volume Optimizers		-> Time, Tags, Streak
 
-Visualize the MarketModul
+(Test different: wights / Timeframes / Markets / Percentages / Train periods / Signal machines / Order Machines)
 
-Visualize the backtesting framework
+Debug the indicators
+
+Visualize
+
 Implement good Backtesting statistics and visualization
-
-Indicator Selector with distance from zero as pp
-
-Test different
-	 wights / Timeframes / Markets / Percentages / Train periods / Signal machines / Order Machines
-
-Visualize the order machine
-Visualize Situation -> A lot ^^
 
 Create live papertrade api / framework
 Create demo account trading api
@@ -20,9 +20,6 @@ Possible bugs:
 	Last index of learningIndicator sampling not used
 
 Alternatives:
-	Create Signalmachine with single indicators
 	Create Signalmachine with machine learning
-	Sample signalmachines?
-	Create new Indicators (Linear Regression trend, HMacarovChain)
 	Implement more tests to find bugs
 	Make the Indicator Generation process smart, maybe genetic

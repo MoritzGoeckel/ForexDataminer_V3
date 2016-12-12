@@ -59,13 +59,16 @@ namespace V3_Trader_Project.Trader.Application.IndicatorSelectors
 
             double score = 0;
 
-            score = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.buySellCodeDistanceStD] //Codeprop
-                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.buyCodeStD] //Codeprop
-                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.sellCodeStD] //Codeprop
-                //+ pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minStD] //Diff
-                //+ pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxStD] //Diff
-                //+ pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minMaxDistanceStd] //Diff
-                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.actualStD]; //Pred
+            double wightCode = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.valuesOverMinPercentRatioCode];
+            double wightOutcome = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.valuesOverMinPercentRatioOutcome];
+
+            score = pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.buySellCodeDistanceStD] * wightCode //Codeprop
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.buyCodeStD] * wightCode //Codeprop
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.sellCodeStD] * wightCode //Codeprop
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minStD] * wightOutcome //Diff
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.maxStD] * wightOutcome //Diff
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.minMaxDistanceStd] * wightOutcome //Diff
+                + pp[(int)LearningIndicator.LearningIndicatorPredictivePowerIndecies.actualStD] * wightOutcome; //Pred
 
             if (double.IsNaN(score) || double.IsInfinity(score))
                 throw new Exception("Score is wired: " + score);

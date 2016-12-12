@@ -71,7 +71,7 @@ namespace V3_Trader_Project.Trader.Application
 
             string[] indicatorIds;
 
-            //This part can be skipped by caching
+            //This part can be skipped by caching todo: get from outside
             double hash = outcomeTimeframe + selectedPriceData[0].Sum() + selectedPriceData[selectedPriceData.Count - 1].Sum() + selectedPriceData[selectedPriceData.Count / 2].Sum();
             string optimalIndicatorsFileName = cachePath + "/" + "optimalIndicatorsIn_" + hash + "_" + selectedPriceData[selectedPriceData.Count - 1][(int)PriceDataIndeces.Date] + "_" + timeframeToLookBack + "_" + outcomeCodePercent + ".txt";
             if (cachePath != null && File.Exists(optimalIndicatorsFileName))
@@ -102,7 +102,7 @@ namespace V3_Trader_Project.Trader.Application
                 lis.Add(new LearningIndicator(ind, selectedPriceDataArray, outcomeCodeFirstData, outcomeData, outcomeTimeframe, outcomeCodePercent, minPercentThreshold, learningIndicatorSteps, false));
             }
 
-            SignalMachine sm = new AlternativeSignalMachine(lis.ToArray()); //Todo: make accessable
+            SignalMachine sm = new AlternativeSignalMachine(lis.ToArray()); //Todo: make accessable copy?
             Logger.log("SM STATE: ##################" + Environment.NewLine + sm.getStateMessage());
 
             //Make them up to date

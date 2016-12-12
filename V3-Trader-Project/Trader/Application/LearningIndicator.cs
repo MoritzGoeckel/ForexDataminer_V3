@@ -60,7 +60,7 @@ namespace V3_Trader_Project.Trader.Application
             if (createStatistics)
             {
                 //Predictive power calculation
-                predictivePower = new double[31];
+                predictivePower = new double[33];
                 IndicatorSampler.getStatisticsOutcomeCodes(values, outcomeCodes, out predictivePower[0], out predictivePower[1], out predictivePower[2], out predictivePower[3]);
                 IndicatorSampler.getStatisticsOutcomes(values, prices, outcomes, out predictivePower[4], out predictivePower[5], out predictivePower[6], out predictivePower[7], out predictivePower[8], out predictivePower[9]);
 
@@ -95,6 +95,8 @@ namespace V3_Trader_Project.Trader.Application
                     }
                 }
 
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.valuesOverMinPercentRatioCode] = Convert.ToDouble(regardedStates) / outcomeCodeSamplingTable.Length;
+
                 if (regardedStates <= 2)
                     throw new TooLittleStatesException("Too little sates: " + regardedStates);
 
@@ -111,6 +113,7 @@ namespace V3_Trader_Project.Trader.Application
                 }
 
                 //Avgs
+                regardedStates = 0;
                 foreach (double[] row in outcomeSamplingTable)
                 {
                     if ((row[(int)SampleValuesOutcomeIndices.SamplesCount] / totalSamples) * 100 > minPercentThreshold) //minPercentThreshold
@@ -119,8 +122,11 @@ namespace V3_Trader_Project.Trader.Application
                         minDist.Add(row[(int)SampleValuesOutcomeIndices.MinAvg]);
                         minMaxDistanceDist.Add(Math.Abs(row[(int)SampleValuesOutcomeIndices.MaxAvg]) + row[(int)SampleValuesOutcomeIndices.MinAvg]);
                         actualDist.Add(row[(int)SampleValuesOutcomeIndices.ActualAvg]);
+                        regardedStates++;
                     }
                 }
+
+                predictivePower[(int)LearningIndicatorPredictivePowerIndecies.valuesOverMinPercentRatioOutcome] += Convert.ToDouble(regardedStates) / outcomeSamplingTable.Length;
 
                 //avg distances
                 predictivePower[(int)LearningIndicatorPredictivePowerIndecies.maxStD] = maxDist.StandardDeviation();
@@ -187,12 +193,14 @@ namespace V3_Trader_Project.Trader.Application
             maxMinMaxDistancePercentCount = 19, maxActualGainPercent = 20, maxActualGainPercentCount = 21,
             minActualFallPercent = 22, minActualFallPercentCount = 23, actualStD = 24,
             minStD = 25, maxStD = 26, minMaxDistanceStd = 27,
-            buySellCodeDistanceStD = 28, buyCodeStD = 29, sellCodeStD = 30
+            buySellCodeDistanceStD = 28, buyCodeStD = 29, sellCodeStD = 30,
+            valuesOverMinPercentRatioOutcome = 31,
+            valuesOverMinPercentRatioCode = 32
         };
 
         public static string[] getPredictivePowerArrayColumnNames()
         {
-            string[] header = new string[29];
+            string[] header = new string[33];
             header[0] = "spBuy"; header[1] = "spSell"; header[2] = "pBuy"; header[3] = "pSell";
             header[4] = "spMin"; header[5] = "spMax"; header[6] = "spActual";
             header[7] = "pMin"; header[8] = "pMax"; header[9] = "pActual";
@@ -203,6 +211,7 @@ namespace V3_Trader_Project.Trader.Application
             header[22] = "minActualFallPercent"; header[23] = "minActualFallPercentCount"; header[24] = "actualStD";
             header[25] = "minStD"; header[26] = "maxStD"; header[27] = "minMaxDistanceStd";
             header[28] = "buySellCodeDistanceStD"; header[29] = "buyCodeStD"; header[30] = "sellCodeStD";
+            header[31] = "valuesOverMinPercentRatioOutcome"; header[32] = "valuesOverMinPercentRatioCode";
 
             return header;
         }
